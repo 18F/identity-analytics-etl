@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 class Queries:
 
     def __init__(self):
@@ -30,10 +32,9 @@ class Queries:
 
         self.create_uploaded_files = """CREATE TABLE uploaded_files (
                                         s3filename VARCHAR(100) NOT NULL,
-                                        destination VARCHAR(100) NOT NULL,
                                         uploaded_at TIMESTAMP,
 
-                                        PRIMARY KEY(s3filename,destination));"""
+                                        PRIMARY KEY(s3filename));"""
 
         self.drop_uploaded_files = """DROP TABLE uploaded_files;"""
 
@@ -67,6 +68,42 @@ class Queries:
                                       );"""
 
         self.drop_user_agents = """DROP TABLE user_agents;"""
+
+        self.get_uploaded_files = """SELECT s3filename
+                                     FROM uploaded_files;"""
+
+        self.mark_uploaded = """INSERT INTO uploaded_files (s3filename, uploaded_at)
+                                VALUES ({}, {});"""
+
+    def get_build_queries(self):
+        BuildQueries = namedtuple('BuildQueries', [
+            'create_events',
+            'create_uploaded_files',
+            'create_pageviews',
+            'create_user_agents'
+        ])
+
+        return BuildQueries._make([
+            self.create_events,
+            self.create_uploaded_files,
+            self.create_pageviews,
+            self.create_user_agents
+        ])
+
+    def get_drop_queries(self):
+        DropQueries = namedtuple('DropQueries', [
+            'drop_events',
+            'drop_uploaded_files',
+            'drop_pageviews',
+            'drop_user_agents'
+        ])
+
+        return DropQueries._make([
+            self.drop_events,
+            self.drop_uploaded_files,
+            self.drop_pageviews,
+            self.drop_user_agents
+        ])
 
 if __name__ == '__main__':
     q = Queries()
