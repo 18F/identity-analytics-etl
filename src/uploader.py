@@ -58,6 +58,12 @@ class Uploader:
             k = bucket.new_key(csv_name)
             k.set_contents_from_filename(csv_name)
 
-            self.db_conn.load_csv(# add here)
+            self.db_conn.load_csv(parser.table,
+                                  logfile,
+                                  parser.headers,
+                                  "s3://{}/{}".format(dest_bucket, csv_name),
+                                  "us-west-2",
+                                  "arn:aws:iam::555546682965:role/tf-redshift-iam-role",
+                                  True)
         else:
-            self.db_conn.mark_uploaded(logfile)
+            self.db_conn.mark_uploaded(logfile, parser.table)

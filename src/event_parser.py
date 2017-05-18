@@ -10,7 +10,6 @@ class EventParser:
                'method', 'authn_context', 'service_provider', 'loa3',
                'active_profile', 'errors']
 
-
     def stream_csv(self, in_io, out_io):
         rows = 0
         with open(out_io, 'wb') as csvfile:

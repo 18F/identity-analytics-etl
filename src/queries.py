@@ -32,6 +32,7 @@ class Queries:
 
         self.create_uploaded_files = """CREATE TABLE uploaded_files (
                                         s3filename VARCHAR(100) NOT NULL,
+                                        destination VARCHAR(100) NOT NULL,
                                         uploaded_at TIMESTAMP,
 
                                         PRIMARY KEY(s3filename));"""
@@ -72,8 +73,14 @@ class Queries:
         self.get_uploaded_files = """SELECT s3filename
                                      FROM uploaded_files;"""
 
-        self.mark_uploaded = """INSERT INTO uploaded_files (s3filename, uploaded_at)
-                                VALUES ({}, {});"""
+        self.mark_uploaded = """INSERT INTO uploaded_files (s3filename, destination, uploaded_at)
+                                VALUES ({}, {}, {});"""
+
+        self.load_csv = """COPY {} ({})
+                            FROM {}
+                            IAM_ROLE {}
+                            REGION {}
+                            CSV {};"""
 
     def get_build_queries(self):
         BuildQueries = namedtuple('BuildQueries', [

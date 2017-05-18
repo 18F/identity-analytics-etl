@@ -7,27 +7,30 @@ class DataBaseConnection:
     q = Queries()
 
     def __init__(self):
-        self.engine = sql.create_engine('postgresql://{}'.format)
+        self.engine = sql.create_engine('postgresql://localhost/dev')
         self.connection = engine.connect()
 
     def build_db_if_needed(self):
-        # There is definitely a better way to handle this
         if not self.engine.dialect.has_table(self.engine, 'uploaded_files'):
             for query in self.q.get_build_queries()._as_dict().values():
                 self.connection.execute(query)
 
     def uploaded_files(self):
-        # why do I need destination here?
         return self.connection.execute(self.q.get_uploaded_files)
 
-    def mark_uploaded(self, filename):
+    def mark_uploaded(self, filename, destination):
         # Do I really need destination here?
         uploaded_at = datetime.now()
-        self.connection.execute(self.q.mark_uploaded.format(filename, uploaded_at))
+        self.connection.execute(self.q.mark_uploaded.format(filename,
+            destination,
+            uploaded_at))
 
-    def load_csv(self, filename, csv_path, columns, region, iam_role, redshift):
-        # Call mark uploaded
-        pass
+    def load_csv(self, table, filename, csv_path, columns, region, iam_role, redshift):
+        header = 'IGNOREHEADER 1' if redshift else 'HEADER'
+        self.connection.execute(self.q.load_csv.format(table,
+            columns, csv_path, iam_role, region, header)
+
+        self.mark_uploaded(filename, table)
 
     def drop_tables(self):
         for query in self.q.get_drop_queries()._as_dict().values():
