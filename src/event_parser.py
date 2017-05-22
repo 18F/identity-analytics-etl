@@ -54,4 +54,4 @@ class EventParser:
             json.dump(json['properties']['event_properties']['errors'])
         ]
 
-    return result
+        return result

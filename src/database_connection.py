@@ -1,7 +1,7 @@
 import sqlalchemy as sql
 
 from datetime import datetime
-from .queries import Queries
+from queries import Queries
 
 class DataBaseConnection:
     q = Queries()
@@ -13,7 +13,7 @@ class DataBaseConnection:
         else:
             self.engine = sql.create_engine('')
 
-        self.connection = engine.connect()
+        self.connection = self.engine.connect()
 
     def build_db_if_needed(self):
         if not self.engine.dialect.has_table(self.engine, 'uploaded_files'):
@@ -34,7 +34,7 @@ class DataBaseConnection:
 
         if self.redshift:
             self.connection.execute(self.q.load_csv_redshift.format(table,
-                columns, csv_path, iam_role, region, header)
+                columns, csv_path, iam_role, region, header))
         else:
             self.connection.execute(self.q.load_csv.format(table, columns,
                 csv_path, header))

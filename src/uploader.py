@@ -1,9 +1,9 @@
 import logging
 import boto
 
-from .event_parser import EventParser
-from .pageview_parser import PageViewParser
-from .database_connection import DataBaseConnection
+from event_parser import EventParser
+from pageview_parser import PageViewParser
+from database_connection import DataBaseConnection
 
 class Uploader:
 
@@ -16,8 +16,8 @@ class Uploader:
         self.parsers = (EventParser(), PageViewParser()) if parsers is None else parsers
 
     def run(self):
-        db_conn.build_db_if_needed()
-        uploaded_files = db_conn.uploaded_files()
+        self.db_conn.build_db_if_needed()
+        uploaded_files = self.db_conn.uploaded_files()
 
         logging.info("Total Files: {}".format(len(self.get_s3_logfiles())))
 

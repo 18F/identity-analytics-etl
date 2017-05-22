@@ -7,7 +7,7 @@ class PageViewParser:
                'status', 'duration', 'user_id', 'user_agent', 'ip',
                'host', 'uuid', 'timestamp']
 
-    def stream_csv(self, in, out):
+    def stream_csv(self, in_io, out_io):
         rows = 0
 
         with open(out_io, 'wb') as csvfile:
