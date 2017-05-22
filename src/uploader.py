@@ -6,9 +6,10 @@ from .pageview_parser import PageViewParser
 from .database_connection import DataBaseConnection
 
 class Uploader:
-    db_conn = DataBaseConnection()
 
-    def __init__(self, source_bucket, dest_bucket, s3=None, parsers=None):
+    def __init__(self, source_bucket, dest_bucket, s3=None, parsers=None, redshift=False):
+        self.redshift = redshift
+        self.db_conn = DataBaseConnection(redshift)
         self.source_bucket = source_bucket
         self.dest_bucket = dest_bucket
         self.s3 = s3
@@ -66,3 +67,7 @@ class Uploader:
                                   "arn:aws:iam::555546682965:role/tf-redshift-iam-role")
         else:
             self.db_conn.mark_uploaded(logfile, parser.table)
+
+if __name__ == '__main__':
+    uploader = Uploader('login-gov-prod-logs', 'tf-redshift-bucket')
+    uploader.run()
