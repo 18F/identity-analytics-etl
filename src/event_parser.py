@@ -1,8 +1,9 @@
 import json
 import csv
 import re
+import parser
 
-class EventParser:
+class EventParser(parser.Parser):
     table = 'events'
     headers = ['id', 'name', 'user_agent', 'user_id', 'user_ip',
                'host', 'visit_id', 'visitor_id', 'time', 'event_properties',

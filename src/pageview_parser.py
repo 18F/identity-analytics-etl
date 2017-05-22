@@ -1,7 +1,8 @@
 import json
 import csv
+import parser
 
-class PageViewParser:
+class PageViewParser(parser.Parser):
     table = 'pageviews'
     headers = ['method', 'path', 'format', 'controller', 'action',
                'status', 'duration', 'user_id', 'user_agent', 'ip',
