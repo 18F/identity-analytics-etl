@@ -35,7 +35,7 @@ class Queries:
                                         destination VARCHAR(100) NOT NULL,
                                         uploaded_at TIMESTAMP,
 
-                                        PRIMARY KEY(s3filename));"""
+                                        PRIMARY KEY(s3filename, destination));"""
 
         self.drop_uploaded_files = """DROP TABLE uploaded_files;"""
 
@@ -76,10 +76,14 @@ class Queries:
         self.mark_uploaded = """INSERT INTO uploaded_files (s3filename, destination, uploaded_at)
                                 VALUES ({}, {}, {});"""
 
-        self.load_csv = """COPY {} ({})
+        self.load_csv_redshift = """COPY {} ({})
                             FROM {}
                             IAM_ROLE {}
                             REGION {}
+                            CSV {};"""
+
+        self.load_csv = """COPY {} ({})
+                            FROM {}
                             CSV {};"""
 
     def get_build_queries(self):

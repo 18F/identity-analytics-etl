@@ -25,10 +25,15 @@ class DataBaseConnection:
             destination,
             uploaded_at))
 
-    def load_csv(self, table, filename, csv_path, columns, region, iam_role, redshift):
+    def load_csv(self, table, filename, csv_path, columns, region, iam_role, redshift=True):
         header = 'IGNOREHEADER 1' if redshift else 'HEADER'
-        self.connection.execute(self.q.load_csv.format(table,
-            columns, csv_path, iam_role, region, header)
+
+        if redshift:
+            self.connection.execute(self.q.load_csv_redshift.format(table,
+                columns, csv_path, iam_role, region, header)
+        else:
+            self.connection.execute(self.q.load_csv.format(table, columns,
+                csv_path, header))
 
         self.mark_uploaded(filename, table)
 
