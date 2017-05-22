@@ -13,17 +13,17 @@ class EventParser(parser.Parser):
 
     def stream_csv(self, in_io, out_io):
         rows = 0
-        with open(out_io, 'wb') as csvfile:
+        with open(out_io, 'w') as csvfile:
             writer = csv.writer(csvfile, delimiter=',')
             writer.writerow(self.headers)
+            print(type(in_io))
+            for line in in_io.decode('utf-8').split('\n'):
+                print(line)
+                if 'event_properties' not in line:
+                    continue
 
-            with in_io as f:
-                for line in f:
-                    if 'event_properties' not in line:
-                        continue
-
-                    writer.writerow(self.parse_json(self.extract_json(line)))
-                    rows += 1
+                writer.writerow(self.parse_json(self.extract_json(line)))
+                rows += 1
 
         return rows
 

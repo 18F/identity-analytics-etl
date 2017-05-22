@@ -1,5 +1,4 @@
 import logging
-import boto
 
 from event_parser import EventParser
 from pageview_parser import PageViewParser
@@ -30,8 +29,8 @@ class Uploader:
             for parser in self.parsers:
                 self.etl(parser, f)
 
-    def etl(parser, logfile):
-        csv_name = "{}.{}".format(logfile, parser.table)
+    def etl(self, parser, logfile):
+        csv_name = "{}.{}.csv".format(logfile.replace('.txt', ''), parser.table)
         in_file = self.s3.get_logfile(logfile)
 
         processed_rows = parser.stream_csv(in_file, csv_name)
@@ -45,6 +44,8 @@ class Uploader:
                                   "arn:aws:iam::555546682965:role/tf-redshift-iam-role")
         else:
             self.db_conn.mark_uploaded(logfile, parser.table)
+
+        in_file.close()
 
 if __name__ == '__main__':
     uploader = Uploader('login-gov-prod-logs', 'tf-redshift-bucket')

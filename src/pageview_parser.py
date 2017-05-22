@@ -11,17 +11,16 @@ class PageViewParser(parser.Parser):
     def stream_csv(self, in_io, out_io):
         rows = 0
 
-        with open(out_io, 'wb') as csvfile:
+        with open(out_io, 'w') as csvfile:
             writer = csv.writer(csvfile, delimiter=',')
             writer.writerow(self.headers)
 
-            with open(in_io, 'rb') as f:
-                for line in f:
-                    if ('{' not in line) or ('controller' not in line):
-                        continue
+            for line in in_io:
+                if ('{' not in line) or ('controller' not in line):
+                    continue
 
-                    writer.writerow(self.parse_json(self.extract_json(line)))
-                    rows += 1
+                writer.writerow(self.parse_json(self.extract_json(line)))
+                rows += 1
 
         return rows
 
