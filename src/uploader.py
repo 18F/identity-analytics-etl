@@ -35,8 +35,8 @@ class Uploader:
         bucket = conn.get_bucket(self.source_bucket)
 
         for f in bucket.list():
-            if '.txt' in f:
-                files.append(f)
+            if '.txt' in f.name:
+                files.append(f.name)
 
         return files
 
