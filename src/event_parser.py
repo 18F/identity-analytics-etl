@@ -16,7 +16,7 @@ class EventParser:
             writer = csv.writer(csvfile, delimiter=',')
             writer.writerow(self.headers)
 
-            with open(in_io, 'rb') as f:
+            with in_io as f:
                 for line in f:
                     if 'event_properties' not in line:
                         continue

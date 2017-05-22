@@ -4,6 +4,7 @@ import boto
 from event_parser import EventParser
 from pageview_parser import PageViewParser
 from database_connection import DataBaseConnection
+from s3 import S3
 
 class Uploader:
 
@@ -12,57 +13,34 @@ class Uploader:
         self.db_conn = DataBaseConnection(redshift)
         self.source_bucket = source_bucket
         self.dest_bucket = dest_bucket
-        self.s3 = s3
+        self.s3 = S3(self.source_bucket, self.dest_bucket) if s3 is None else s3
         self.parsers = (EventParser(), PageViewParser()) if parsers is None else parsers
 
     def run(self):
         self.db_conn.build_db_if_needed()
         uploaded_files = self.db_conn.uploaded_files()
+        logfiles = self.s3.get_s3_logfiles()
 
-        logging.info("Total Files: {}".format(len(self.get_s3_logfiles())))
+        logging.info("Total Files: {}".format(len(logfiles)))
 
-        for f in self.get_s3_logfiles():
+        for f in logfiles:
             if f in uploaded_files:
                 continue
 
             for parser in self.parsers:
                 self.etl(parser, f)
 
-    def get_s3_logfiles(self):
-        files = []
-
-        conn = self.get_s3()
-        bucket = conn.get_bucket(self.source_bucket)
-
-        for f in bucket.list():
-            if '.txt' in f.name:
-                files.append(f.name)
-
-        return files
-
-    def get_s3(self):
-        if self.s3:
-            return self.s3
-        else:
-            # May Need Connect_to_region here to leverage IAM roles
-            return boto.connect_s3()
-
     def etl(parser, logfile):
         csv_name = "{}.{}".format(logfile, parser.table)
-        conn = self.get_s3()
-
-        in_file = conn.get_bucket(self.source_bucket).Object(logfile)
+        in_file = self.s3.get_logfile(logfile)
 
         processed_rows = parser.stream_csv(in_file, csv_name)
         if processed_rows > 0:
-            bucket = conn.get_bucket(self.dest_bucket)
-            k = bucket.new_key(csv_name)
-            k.set_contents_from_filename(csv_name)
-
+            self.s3.new_file(csv_name)
             self.db_conn.load_csv(parser.table,
                                   logfile,
                                   parser.headers,
-                                  "s3://{}/{}".format(dest_bucket, csv_name),
+                                  "s3://{}/{}".format(self.dest_bucket, csv_name),
                                   "us-west-2",
                                   "arn:aws:iam::555546682965:role/tf-redshift-iam-role")
         else:
