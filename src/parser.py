@@ -1,6 +1,6 @@
 class Parser(object):
 
-    def stream_csv(self, in_io, out_io):
+    def stream_csv(self, in_io):
         raise NotImplementedError()
 
     def extract_json(self, line):

@@ -33,9 +33,9 @@ class Uploader:
         csv_name = "{}.{}.csv".format(logfile.replace('.txt', ''), parser.table)
         in_file = self.s3.get_logfile(logfile)
 
-        processed_rows = parser.stream_csv(in_file.read(), csv_name)
+        processed_rows, out = parser.stream_csv(in_file.read())
         if processed_rows > 0:
-            self.s3.new_file(csv_name)
+            self.s3.new_file(out, csv_name)
             self.db_conn.load_csv(parser.table,
                                   logfile,
                                   parser.headers,
@@ -46,6 +46,7 @@ class Uploader:
             self.db_conn.mark_uploaded(logfile, parser.table)
 
         in_file.close()
+        out.close()
 
 if __name__ == '__main__':
     uploader = Uploader('login-gov-prod-logs', 'tf-redshift-bucket')

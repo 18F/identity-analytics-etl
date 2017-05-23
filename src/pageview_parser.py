@@ -1,5 +1,6 @@
 import json
 import csv
+import io
 import parser
 
 class PageViewParser(parser.Parser):
@@ -8,21 +9,20 @@ class PageViewParser(parser.Parser):
                'status', 'duration', 'user_id', 'user_agent', 'ip',
                'host', 'uuid', 'timestamp']
 
-    def stream_csv(self, in_io, out_io):
+    def stream_csv(self, in_io):
         rows = 0
+        out = io.StringIO()
+        writer = csv.writer(out, delimiter=',')
+        writer.writerow(self.headers)
 
-        with open(out_io, 'w') as csvfile:
-            writer = csv.writer(csvfile, delimiter=',')
-            writer.writerow(self.headers)
+        for line in in_io.decode('utf-8').split('\n'):
+            if ('{' not in line) or ('controller' not in line):
+                continue
 
-            for line in in_io.decode('utf-8').split('\n'):
-                if ('{' not in line) or ('controller' not in line):
-                    continue
+            writer.writerow(self.parse_json(self.extract_json(line)))
+            rows += 1
 
-                writer.writerow(self.parse_json(self.extract_json(line)))
-                rows += 1
-
-        return rows
+        return rows, out
 
     def extract_json(self, line):
         json_part = line[line.index('{'):]

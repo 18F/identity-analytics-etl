@@ -13,5 +13,5 @@ class S3:
     def get_logfile(self, filename):
         return self.source_bucket.Object(filename).get()['Body']
 
-    def new_file(self, filename):
-        self.dest_bucket.upload_file(filename, filename)
+    def new_file(self, out, filename):
+        self.dest_bucket.upload_fileobj(out, filename)

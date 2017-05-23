@@ -1,6 +1,7 @@
 import json
 import csv
 import re
+import io
 import parser
 
 class EventParser(parser.Parser):
@@ -11,20 +12,20 @@ class EventParser(parser.Parser):
                'method', 'authn_context', 'service_provider', 'loa3',
                'active_profile', 'errors']
 
-    def stream_csv(self, in_io, out_io):
+    def stream_csv(self, in_io):
         rows = 0
-        with open(out_io, 'w') as csvfile:
-            writer = csv.writer(csvfile, delimiter=',')
-            writer.writerow(self.headers)
+        out = io.StringIO()
+        writer = csv.writer(out, delimiter=',')
+        writer.writerow(self.headers)
 
-            for line in in_io.decode('utf-8').split('\n'):
-                if 'event_properties' not in line:
-                    continue
+        for line in in_io.decode('utf-8').split('\n'):
+            if 'event_properties' not in line:
+                continue
 
-                writer.writerow(self.parse_json(self.extract_json(line)))
-                rows += 1
+            writer.writerow(self.parse_json(self.extract_json(line)))
+            rows += 1
 
-        return rows
+        return rows, out
 
     def extract_json(self, line):
         json_part = line[line.index('{'):]
