@@ -33,7 +33,7 @@ class Uploader:
         csv_name = "{}.{}.csv".format(logfile.replace('.txt', ''), parser.table)
         in_file = self.s3.get_logfile(logfile)
 
-        processed_rows = parser.stream_csv(in_file, csv_name)
+        processed_rows = parser.stream_csv(in_file.read(), csv_name)
         if processed_rows > 0:
             self.s3.new_file(csv_name)
             self.db_conn.load_csv(parser.table,

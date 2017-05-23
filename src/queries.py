@@ -74,7 +74,7 @@ class Queries:
                                      FROM uploaded_files;"""
 
         self.mark_uploaded = """INSERT INTO uploaded_files (s3filename, destination, uploaded_at)
-                                VALUES ({}, {}, {});"""
+                                VALUES ('{}', '{}', '{}');"""
 
         self.load_csv_redshift = """COPY {} ({})
                             FROM {}

@@ -16,9 +16,8 @@ class EventParser(parser.Parser):
         with open(out_io, 'w') as csvfile:
             writer = csv.writer(csvfile, delimiter=',')
             writer.writerow(self.headers)
-            print(type(in_io))
+
             for line in in_io.decode('utf-8').split('\n'):
-                print(line)
                 if 'event_properties' not in line:
                     continue
 
@@ -28,31 +27,32 @@ class EventParser(parser.Parser):
         return rows
 
     def extract_json(self, line):
-        json_part = line[line.index('{'):-1]
+        json_part = line[line.index('{'):]
         return json.loads(json_part)
 
     def parse_json(self, data):
+        print(data)
         result = [
-            json['id'],
-            json['name'],
-            json['properties']['user_agent'],
-            json['properties']['user_id'],
-            json['properties']['user_ip'],
-            json['properites']['host'],
-            json['visit_id'],
-            json['visitor_id'],
-            re.sub(r"/\.\d+Z$/", '', json['time'].replace('T', ' ')),
-            json.dump(json['properties']['event_properties']),
-            json['properties']['event_properties']['success'],
-            json['properties']['event_properties']['existing_user'],
-            json['properties']['event_properties']['otp_method'],
-            json['properties']['event_properties']['context'],
-            json['properties']['event_properties']['method'],
-            json['properties']['event_properties']['authn_context'],
-            json['properties']['event_properties']['service_provider'],
-            json['properties']['event_properties']['loa3'],
-            json['properties']['event_properties']['active_profile'],
-            json.dump(json['properties']['event_properties']['errors'])
+            data['id'],
+            data['name'],
+            data['properties']['user_agent'],
+            data['properties']['user_id'],
+            data['properties']['user_ip'],
+            data['properties']['host'],
+            data['visit_id'],
+            data['visitor_id'],
+            re.sub(r"/\.\d+Z$/", '', data['time'].replace('T', ' ')),
+            json.dumps(data['properties']['event_properties']),
+            data['properties']['event_properties']['success'],
+            data['properties']['event_properties']['existing_user'],
+            data['properties']['event_properties']['otp_method'],
+            data['properties']['event_properties']['context'],
+            data['properties']['event_properties']['method'],
+            data['properties']['event_properties']['authn_context'],
+            data['properties']['event_properties']['service_provider'],
+            data['properties']['event_properties']['loa3'],
+            data['properties']['event_properties']['active_profile'],
+            json.dumps(data['properties']['event_properties']['errors'])
         ]
 
         return result

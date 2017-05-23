@@ -11,7 +11,7 @@ class S3:
         return [f.key for f in self.source_bucket.objects.all() if '.txt' in f.key]
 
     def get_logfile(self, filename):
-        return self.source_bucket.Object(filename).get()['Body'].read()
+        return self.source_bucket.Object(filename).get()['Body']
 
     def new_file(self, filename):
         k = self.dest_bucket.new_key(filename)

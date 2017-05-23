@@ -11,6 +11,7 @@ class DataBaseConnection:
         if not redshift:
             self.engine = sql.create_engine('postgresql://localhost/dev')
         else:
+            # How to connect to Redshift using IAM roles + Name?
             self.engine = sql.create_engine('')
 
         self.connection = self.engine.connect()
@@ -21,7 +22,8 @@ class DataBaseConnection:
                 self.connection.execute(query)
 
     def uploaded_files(self):
-        return self.connection.execute(self.q.get_uploaded_files)
+        result = self.connection.execute(self.q.get_uploaded_files)
+        return [row['s3filename'] for row in result]
 
     def mark_uploaded(self, filename, destination):
         uploaded_at = datetime.now()

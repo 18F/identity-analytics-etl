@@ -15,7 +15,7 @@ class PageViewParser(parser.Parser):
             writer = csv.writer(csvfile, delimiter=',')
             writer.writerow(self.headers)
 
-            for line in in_io:
+            for line in in_io.decode('utf-8').split('\n'):
                 if ('{' not in line) or ('controller' not in line):
                     continue
 
@@ -24,24 +24,24 @@ class PageViewParser(parser.Parser):
 
         return rows
 
-    def extract_json(line):
-        json_part = line[line.index('{'):-1]
+    def extract_json(self, line):
+        json_part = line[line.index('{'):]
         return json.loads(json_part)
 
-    def parse_json(data):
+    def parse_json(self, data):
         result = [
-                  json['method'],
-                  json['path'],
-                  json['format'],
-                  json['controller'],
-                  json['action'],
-                  json['status'],
-                  json['duration'],
-                  json['user_id'],
-                  json['user_agent'],
-                  json['ip'],
-                  json['host'],
-                  json['uuid'],
-                  re.sub(r" \+\d+$/", '', json['timestamp'])
+                  data['method'],
+                  data['path'],
+                  data['format'],
+                  data['controller'],
+                  data['action'],
+                  data['status'],
+                  data['duration'],
+                  data['user_id'],
+                  data['user_agent'],
+                  data['ip'],
+                  data['host'],
+                  data['uuid'],
+                  re.sub(r" \+\d+$/", '', data['timestamp'])
                  ]
         return result
