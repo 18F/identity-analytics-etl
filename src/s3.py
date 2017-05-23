@@ -14,5 +14,4 @@ class S3:
         return self.source_bucket.Object(filename).get()['Body']
 
     def new_file(self, filename):
-        k = self.dest_bucket.new_key(filename)
-        k.set_contents_from_filename(filename)
+        self.dest_bucket.upload_file(filename, filename)

@@ -31,7 +31,6 @@ class EventParser(parser.Parser):
         return json.loads(json_part)
 
     def parse_json(self, data):
-        print(data)
         result = [
             data['id'],
             data['name'],
@@ -42,17 +41,27 @@ class EventParser(parser.Parser):
             data['visit_id'],
             data['visitor_id'],
             re.sub(r"/\.\d+Z$/", '', data['time'].replace('T', ' ')),
-            json.dumps(data['properties']['event_properties']),
-            data['properties']['event_properties']['success'],
-            data['properties']['event_properties']['existing_user'],
-            data['properties']['event_properties']['otp_method'],
-            data['properties']['event_properties']['context'],
-            data['properties']['event_properties']['method'],
-            data['properties']['event_properties']['authn_context'],
-            data['properties']['event_properties']['service_provider'],
-            data['properties']['event_properties']['loa3'],
-            data['properties']['event_properties']['active_profile'],
-            json.dumps(data['properties']['event_properties']['errors'])
+            json.dumps(data['properties']['event_properties'])
         ]
+
+        if len(data['properties']['event_properties'].keys()) > 0:
+            result.extend(
+                [
+                    data['properties']['event_properties']['success'],
+                    data['properties']['event_properties']['existing_user'],
+                    data['properties']['event_properties']['otp_method'],
+                    data['properties']['event_properties']['context'],
+                    data['properties']['event_properties']['method'],
+                    data['properties']['event_properties']['authn_context'],
+                    data['properties']['event_properties']['service_provider'],
+                    data['properties']['event_properties']['loa3'],
+                    data['properties']['event_properties']['active_profile'],
+                    json.dumps(data['properties']['event_properties']['errors'])
+                ]
+            )
+        else:
+            result.extend(
+                [None]*10
+            )
 
         return result
