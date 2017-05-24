@@ -1,4 +1,5 @@
 import logging
+import os
 
 from event_parser import EventParser
 from pageview_parser import PageViewParser
@@ -49,5 +50,10 @@ class Uploader:
         out.close()
 
 if __name__ == '__main__':
-    uploader = Uploader('login-gov-prod-logs', 'tf-redshift-bucket')
+    if 'env' in os.environ.keys():
+        bucket = "login-gov-{}-analytics".format(os.environ['env'])
+    else:
+        bucket = 'tf-redshift-bucket'
+
+    uploader = Uploader('login-gov-prod-logs', bucket)
     uploader.run()
