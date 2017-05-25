@@ -12,6 +12,7 @@ There is an open PR (#299) in identity-devops providing the terraform plans for
 creating the infrastructure needed for this.
 
 For running locally do:
+`$ pip install -r requirements.txt`
 `$ python src/uploader.py`
 
 
@@ -38,3 +39,4 @@ and pageview_parser.py. The main script leading the work is uploader.py.
 3. Make plan for migrating/backing-up Redshift Database
 4. Add better more verbose logging?
 5. Use dates in s3 log names to limit lookback-range on inserts, for efficiency
+6. Create s3 bucket for storing lambda function deployments, to be referenced in Terraform plans
