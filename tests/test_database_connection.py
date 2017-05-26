@@ -1,3 +1,8 @@
 import unittest
+import sys
+sys.path.insert(0, "src/")
 
-from src.database_connection import DataBaseConnection
+from database_connection import DataBaseConnection
+from queries import Queries
+
+conn = DataBaseConnection()
