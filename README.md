@@ -12,6 +12,7 @@ There is an open PR (#299) in identity-devops providing the terraform plans for
 creating the infrastructure needed for this.
 
 For running locally do:
+
 `$ pip install -r requirements.txt`
 
 `$ python src/uploader.py`
