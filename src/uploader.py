@@ -9,24 +9,29 @@ from s3 import S3
 class Uploader:
 
     def __init__(self, source_bucket, dest_bucket, s3=None, parsers=None, redshift=False):
+        logging.basicConfig(level=logging.INFO)
         self.redshift = redshift
         self.db_conn = DataBaseConnection(redshift)
         self.source_bucket = source_bucket
         self.dest_bucket = dest_bucket
         self.s3 = S3(self.source_bucket, self.dest_bucket) if s3 is None else s3
         self.parsers = (EventParser(), PageViewParser()) if parsers is None else parsers
+        self.logger = logging.getLogger('uploader')
 
     def run(self):
         self.db_conn.build_db_if_needed()
+        self.s3.create_dest_bucket_if_not_exists()
+
         uploaded_files = self.db_conn.uploaded_files()
         logfiles = self.s3.get_s3_logfiles()
 
-        logging.info("Total Files: {}".format(len(logfiles)))
+        self.logger.info("Total Files: {}".format(len(logfiles)))
 
         for f in logfiles:
             if f in uploaded_files:
                 continue
 
+            self.logger.info("parsing {}".format(f))
             for parser in self.parsers:
                 self.etl(parser, f)
 
@@ -53,7 +58,7 @@ if __name__ == '__main__':
     if 'env' in os.environ.keys():
         bucket = "login-gov-{}-analytics".format(os.environ['env'])
     else:
-        bucket = 'tf-redshift-bucket'
+        bucket = 'tf-redshift-bucket-dev-analytics'
 
     uploader = Uploader('login-gov-prod-logs', bucket)
     uploader.run()

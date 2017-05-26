@@ -1,6 +1,7 @@
 import json
 import csv
 import io
+import re
 import parser
 
 class PageViewParser(parser.Parser):
@@ -22,6 +23,7 @@ class PageViewParser(parser.Parser):
             writer.writerow(self.parse_json(self.extract_json(line)))
             rows += 1
 
+        out.seek(0)
         return rows, out
 
     def extract_json(self, line):
@@ -29,19 +31,21 @@ class PageViewParser(parser.Parser):
         return json.loads(json_part)
 
     def parse_json(self, data):
+        # Use .get() because it is Null safe
         result = [
-                  data['method'],
-                  data['path'],
-                  data['format'],
-                  data['controller'],
-                  data['action'],
-                  data['status'],
-                  data['duration'],
-                  data['user_id'],
-                  data['user_agent'],
-                  data['ip'],
-                  data['host'],
-                  data['uuid'],
-                  re.sub(r" \+\d+$/", '', data['timestamp'])
+                  data.get('method'),
+                  data.get('path'),
+                  data.get('format'),
+                  data.get('controller'),
+                  data.get('action'),
+                  data.get('status'),
+                  data.get('duration'),
+                  data.get('user_id'),
+                  data.get('user_agent'),
+                  data.get('ip'),
+                  data.get('host'),
+                  data.get('uuid'),
+                  re.sub(r" \+\d+$/", '', data.get('timestamp'))
                  ]
+
         return result

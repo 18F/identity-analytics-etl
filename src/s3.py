@@ -15,3 +15,7 @@ class S3:
 
     def new_file(self, out, filename):
         self.dest_bucket.upload_fileobj(out, filename)
+
+    def create_dest_bucket_if_not_exists(self):
+        if self.dest_bucket not in self.conn.buckets.all():
+            self.dest_bucket = self.conn.create_bucket(Bucket=self.dest_bucket.name)

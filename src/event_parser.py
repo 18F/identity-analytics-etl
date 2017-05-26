@@ -25,6 +25,7 @@ class EventParser(parser.Parser):
             writer.writerow(self.parse_json(self.extract_json(line)))
             rows += 1
 
+        out.seek(0)
         return rows, out
 
     def extract_json(self, line):
@@ -32,32 +33,33 @@ class EventParser(parser.Parser):
         return json.loads(json_part)
 
     def parse_json(self, data):
+        # Use .get to access the JSON as it is Null safe
         result = [
-            data['id'],
-            data['name'],
-            data['properties']['user_agent'],
-            data['properties']['user_id'],
-            data['properties']['user_ip'],
-            data['properties']['host'],
-            data['visit_id'],
-            data['visitor_id'],
-            re.sub(r"/\.\d+Z$/", '', data['time'].replace('T', ' ')),
-            json.dumps(data['properties']['event_properties'])
+            data.get('id'),
+            data.get('name'),
+            data.get('properties').get('user_agent'),
+            data.get('properties').get('user_id'),
+            data.get('properties').get('user_ip'),
+            data.get('properties').get('host'),
+            data.get('visit_id'),
+            data.get('visitor_id'),
+            re.sub(r"/\.\d+Z$/", '', data.get('time').replace('T', ' ')),
+            json.dumps(data.get('properties').get('event_properties'))
         ]
 
-        if len(data['properties']['event_properties'].keys()) > 0:
+        if len(data.get('properties').get('event_properties').keys()) > 0:
             result.extend(
                 [
-                    data['properties']['event_properties']['success'],
-                    data['properties']['event_properties']['existing_user'],
-                    data['properties']['event_properties']['otp_method'],
-                    data['properties']['event_properties']['context'],
-                    data['properties']['event_properties']['method'],
-                    data['properties']['event_properties']['authn_context'],
-                    data['properties']['event_properties']['service_provider'],
-                    data['properties']['event_properties']['loa3'],
-                    data['properties']['event_properties']['active_profile'],
-                    json.dumps(data['properties']['event_properties']['errors'])
+                    data['properties']['event_properties'].get('success'),
+                    data['properties']['event_properties'].get('existing_user'),
+                    data['properties']['event_properties'].get('otp_method'),
+                    data['properties']['event_properties'].get('context'),
+                    data['properties']['event_properties'].get('method'),
+                    data['properties']['event_properties'].get('authn_context'),
+                    data['properties']['event_properties'].get('service_provider'),
+                    data['properties']['event_properties'].get('loa3'),
+                    data['properties']['event_properties'].get('active_profile'),
+                    json.dumps(data['properties']['event_properties'].get('errors'))
                 ]
             )
         else:
