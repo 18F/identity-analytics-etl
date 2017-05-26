@@ -48,6 +48,7 @@ class Uploader:
                                   "s3://{}/{}".format(self.dest_bucket, csv_name),
                                   "us-west-2",
                                   "arn:aws:iam::555546682965:role/tf-redshift-iam-role")
+                                  
         else:
             self.db_conn.mark_uploaded(logfile, parser.table)
 

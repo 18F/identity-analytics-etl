@@ -1,4 +1,5 @@
 import boto3
+import io
 
 class S3:
 
@@ -14,7 +15,10 @@ class S3:
         return self.source_bucket.Object(filename).get()['Body']
 
     def new_file(self, out, filename):
-        self.dest_bucket.upload_fileobj(out, filename)
+        # This conversion to BytesIO feels hacky, but upload_fileobj requires it
+        # Ideas?
+        res = io.BytesIO(out.getvalue().encode('utf-8'))
+        self.dest_bucket.upload_fileobj(res, filename)
 
     def create_dest_bucket_if_not_exists(self):
         if self.dest_bucket not in self.conn.buckets.all():
