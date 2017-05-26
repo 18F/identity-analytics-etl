@@ -13,6 +13,7 @@ creating the infrastructure needed for this.
 
 For running locally do:
 `$ pip install -r requirements.txt`
+
 `$ python src/uploader.py`
 
 
