@@ -1,47 +1,51 @@
 import json
 import csv
+import io
+import re
+import parser
 
-class PageViewParser:
+class PageViewParser(parser.Parser):
     table = 'pageviews'
     headers = ['method', 'path', 'format', 'controller', 'action',
                'status', 'duration', 'user_id', 'user_agent', 'ip',
                'host', 'uuid', 'timestamp']
 
-    def stream_csv(self, in, out):
+    def stream_csv(self, in_io):
         rows = 0
+        out = io.StringIO()
+        writer = csv.writer(out, delimiter=',')
+        writer.writerow(self.headers)
 
-        with open(out_io, 'wb') as csvfile:
-            writer = csv.writer(csvfile, delimiter=',')
-            writer.writerow(self.headers)
+        for line in in_io.decode('utf-8').split('\n'):
+            if ('{' not in line) or ('controller' not in line):
+                continue
 
-            with open(in_io, 'rb') as f:
-                for line in f:
-                    if ('{' not in line) or ('controller' not in line):
-                        continue
+            writer.writerow(self.parse_json(self.extract_json(line)))
+            rows += 1
 
-                    writer.writerow(self.parse_json(self.extract_json(line)))
-                    rows += 1
+        out.seek(0)
+        return rows, out
 
-        return rows
-
-    def extract_json(line):
-        json_part = line[line.index('{'):-1]
+    def extract_json(self, line):
+        json_part = line[line.index('{'):]
         return json.loads(json_part)
 
-    def parse_json(data):
+    def parse_json(self, data):
+        # Use .get() because it is Null safe
         result = [
-                  json['method'],
-                  json['path'],
-                  json['format'],
-                  json['controller'],
-                  json['action'],
-                  json['status'],
-                  json['duration'],
-                  json['user_id'],
-                  json['user_agent'],
-                  json['ip'],
-                  json['host'],
-                  json['uuid'],
-                  re.sub(r" \+\d+$/", '', json['timestamp'])
+                  data.get('method'),
+                  data.get('path'),
+                  data.get('format'),
+                  data.get('controller'),
+                  data.get('action'),
+                  data.get('status'),
+                  data.get('duration'),
+                  data.get('user_id'),
+                  data.get('user_agent'),
+                  data.get('ip'),
+                  data.get('host'),
+                  data.get('uuid'),
+                  re.sub(r" \+\d+$/", '', data.get('timestamp'))
                  ]
+
         return result
