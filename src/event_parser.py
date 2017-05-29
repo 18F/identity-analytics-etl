@@ -4,6 +4,7 @@ import re
 import io
 import parser
 
+
 class EventParser(parser.Parser):
     table = 'events'
     headers = ['id', 'name', 'user_agent', 'user_id', 'user_ip',
@@ -29,8 +30,7 @@ class EventParser(parser.Parser):
         return rows, out
 
     def extract_json(self, line):
-        json_part = line[line.index('{'):]
-        return json.loads(json_part)
+        return parser.Parser.extract_json(self, line)
 
     def parse_json(self, data):
         # Use .get to access the JSON as it is Null safe
@@ -43,7 +43,7 @@ class EventParser(parser.Parser):
             data.get('properties').get('host'),
             data.get('visit_id'),
             data.get('visitor_id'),
-            re.sub(r"/\.\d+Z$/", '', data.get('time').replace('T', ' ')),
+            re.sub(r"\.\d+Z$", '', data.get('time').replace('T', ' ')),
             json.dumps(data.get('properties').get('event_properties'))
         ]
 

@@ -77,13 +77,13 @@ class Queries:
                                 VALUES ('{}', '{}', '{}');"""
 
         self.load_csv_redshift = """COPY {} ({})
-                            FROM {}
+                            FROM '{}'
                             IAM_ROLE {}
                             REGION {}
                             CSV {};"""
 
         self.load_csv = """COPY {} ({})
-                            FROM {}
+                            FROM '{}'
                             CSV {};"""
 
     def get_build_queries(self):

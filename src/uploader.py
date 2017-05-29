@@ -44,16 +44,17 @@ class Uploader:
             self.s3.new_file(out, csv_name)
             self.db_conn.load_csv(parser.table,
                                   logfile,
-                                  parser.headers,
                                   "s3://{}/{}".format(self.dest_bucket, csv_name),
-                                  "us-west-2",
-                                  "arn:aws:iam::555546682965:role/tf-redshift-iam-role")
+                                  parser.headers,
+                                  'us-west-2',
+                                  'arn:aws:iam::555546682965:role/tf-redshift-iam-role')
 
         else:
             self.db_conn.mark_uploaded(logfile, parser.table)
 
         in_file.close()
         out.close()
+        self.db_conn.close_connection()
 
 if __name__ == '__main__':
     if 'env' in os.environ.keys():

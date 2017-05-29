@@ -27,8 +27,7 @@ class PageViewParser(parser.Parser):
         return rows, out
 
     def extract_json(self, line):
-        json_part = line[line.index('{'):]
-        return json.loads(json_part)
+        return parser.Parser.extract_json(self, line)
 
     def parse_json(self, data):
         # Use .get() because it is Null safe
@@ -45,7 +44,7 @@ class PageViewParser(parser.Parser):
                   data.get('ip'),
                   data.get('host'),
                   data.get('uuid'),
-                  re.sub(r" \+\d+$/", '', data.get('timestamp'))
+                  re.sub(r" \+\d+$", '', data.get('timestamp'))
                  ]
 
         return result
