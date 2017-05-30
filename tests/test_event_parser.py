@@ -2,9 +2,8 @@ import unittest
 import sys
 import os
 import json
-sys.path.insert(0, "src/")
 
-from event_parser import EventParser
+from context import EventParser
 
 
 class EventParserTestCases(unittest.TestCase):

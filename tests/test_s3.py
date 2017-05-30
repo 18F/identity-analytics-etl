@@ -2,9 +2,8 @@ import unittest
 import sys
 import os
 import io
-sys.path.insert(0, 'src/')
 
-from s3 import S3
+from context import S3
 
 
 class S3TestCases(unittest.TestCase):

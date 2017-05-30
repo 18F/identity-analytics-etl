@@ -2,10 +2,10 @@ import unittest
 import sys
 import csv
 import os
-sys.path.insert(0, 'src/')
 
-from database_connection import DataBaseConnection
-from queries import Queries
+
+from context import DataBaseConnection
+from context import Queries
 
 
 class DataBaseTestCases(unittest.TestCase):

@@ -33,8 +33,8 @@ class DataBaseConnection:
 
     def load_csv(self, table, filename, csv_path, columns, region, iam_role):
         header = 'IGNOREHEADER 1' if self.redshift else 'HEADER'
-        columns = ",".join(columns)
-
+        columns = '"' + '", "'.join(columns) + '"'
+        
         if self.redshift:
             self.connection.execute(self.q.load_csv_redshift.format(table,
                 columns, csv_path, iam_role, region, header))
