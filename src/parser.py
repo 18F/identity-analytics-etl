@@ -10,5 +10,5 @@ class Parser(object):
         json_part = line[line.index('{'):]
         return json.loads(json_part)
 
-    def parse_json(self, data):
+    def json_to_csv(self, data):
         raise NotImplementedError()

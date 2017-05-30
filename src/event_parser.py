@@ -23,7 +23,7 @@ class EventParser(parser.Parser):
             if 'event_properties' not in line:
                 continue
 
-            writer.writerow(self.parse_json(self.extract_json(line)))
+            writer.writerow(self.json_to_csv(self.extract_json(line)))
             rows += 1
 
         out.seek(0)
@@ -32,7 +32,7 @@ class EventParser(parser.Parser):
     def extract_json(self, line):
         return parser.Parser.extract_json(self, line)
 
-    def parse_json(self, data):
+    def json_to_csv(self, data):
         """
         Use .get to access the JSON as it is Null safe
         The RegEx replacement using \.\d+Z$ will convert a timestramp structured
