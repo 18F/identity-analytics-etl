@@ -28,7 +28,7 @@ class Queries:
 
                                   PRIMARY KEY(id));"""
 
-        self.drop_events = """DROP TABLE events;"""
+        self.drop_events = """DROP TABLE IF EXISTS events;"""
 
         self.create_uploaded_files = """CREATE TABLE uploaded_files (
                                         s3filename VARCHAR(100) NOT NULL,
@@ -37,7 +37,7 @@ class Queries:
 
                                         PRIMARY KEY(s3filename, destination));"""
 
-        self.drop_uploaded_files = """DROP TABLE uploaded_files;"""
+        self.drop_uploaded_files = """DROP TABLE IF EXISTS uploaded_files;"""
 
         self.create_pageviews = """CREATE TABLE pageviews (
                                     method VARCHAR(10) NOT NULL,
@@ -57,7 +57,7 @@ class Queries:
                                     PRIMARY KEY(path, ip, timestamp)
                                   );"""
 
-        self.drop_pageviews = """DROP TABLE pageviews;"""
+        self.drop_pageviews = """DROP TABLE IF EXISTS pageviews;"""
 
         self.create_user_agents = """CREATE TABLE user_agents (
                                         user_agent VARCHAR(255) NOT NULL,
@@ -68,7 +68,7 @@ class Queries:
                                         PRIMARY KEY(user_agent)
                                       );"""
 
-        self.drop_user_agents = """DROP TABLE user_agents;"""
+        self.drop_user_agents = """DROP TABLE IF EXISTS user_agents;"""
 
         self.get_uploaded_files = """SELECT s3filename
                                      FROM uploaded_files;"""
