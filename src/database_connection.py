@@ -11,7 +11,7 @@ class DataBaseConnection:
         Connects by default to local postgresql. This should eventually default
         to redshift
         """
-        
+
         self.redshift = redshift
         if not redshift:
             self.engine = sql.create_engine('postgresql://localhost/dev')
@@ -44,6 +44,7 @@ class DataBaseConnection:
             self.connection.execute(self.q.load_csv_redshift.format(table,
                 columns, csv_path, iam_role, region, header))
         else:
+            # TODO: Make this run for Postgres + s3 bucket, get file, format file path , etc
             self.connection.execute(self.q.load_csv.format(table, columns,
                 csv_path, header))
 

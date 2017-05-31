@@ -19,14 +19,14 @@ class DataBaseTestCases(unittest.TestCase):
 
     def csv_upload(self):
         db_conn = self.setup()
-        with open("{}/test_csv.csv".format(os.getcwd()), 'w') as out:
+        with open("{}/fixtures/test_csv.csv".format(os.path.dirname(os.path.realpath(__file__))), 'w') as out:
             writer = csv.writer(out, delimiter=',')
             writer.writerow(self.columns)
             writer.writerow(['GET', '/', '127.0.0.1', '2017-04-10 17:45:22'])
 
         db_conn.load_csv('pageviews',
                          'test_csv.csv',
-                         "{}/test_csv.csv".format(os.getcwd()),
+                         "{}/fixtures/test_csv.csv".format(os.path.dirname(os.path.realpath(__file__))),
                          self.columns,
                          'us-west-2',
                          'arn:aws:iam::555546682965:role/tf-redshift-iam-role')

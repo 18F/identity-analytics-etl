@@ -28,6 +28,7 @@ class Uploader:
         self.logger.info("Total Files: {}".format(len(logfiles)))
 
         for f in logfiles:
+            #TODO: make this validate table name as well
             if f in uploaded_files:
                 continue
 
@@ -44,7 +45,7 @@ class Uploader:
             self.s3.new_file(out, csv_name)
             self.db_conn.load_csv(parser.table,
                                   logfile,
-                                  "s3://{}/{}".format(self.dest_bucket, csv_name),
+                                  self.s3.get_path(csv_name),
                                   parser.headers,
                                   'us-west-2',
                                   'arn:aws:iam::555546682965:role/tf-redshift-iam-role')
@@ -54,7 +55,6 @@ class Uploader:
 
         in_file.close()
         out.close()
-        self.db_conn.close_connection()
 
 if __name__ == '__main__':
     if 'env' in os.environ.keys():
