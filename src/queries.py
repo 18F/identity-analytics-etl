@@ -1,4 +1,9 @@
 from collections import namedtuple
+from sqlalchemy.ext import compiler
+from sqlalchemy.dialects.postgresql.base import PGIdentifierPreparer as pg
+
+import sqlalchemy as sql
+
 
 class Queries:
 
@@ -76,15 +81,50 @@ class Queries:
         self.mark_uploaded = """INSERT INTO uploaded_files (s3filename, destination, uploaded_at)
                                 VALUES ('{}', '{}', '{}');"""
 
-        self.load_csv_redshift = """COPY {} ({})
-                            FROM '{}'
-                            IAM_ROLE {}
-                            REGION {}
-                            CSV {};"""
+        self.load_csv_redshift = """COPY {table_name} ({columns})
+                            FROM :filepath
+                            IAM_ROLE {iam_role}
+                            REGION {region}
+                            FORMAT AS CSV IGNOREHEADER 1;"""
 
-        self.load_csv = """COPY {} ({})
-                            FROM '{}'
-                            CSV {};"""
+        self.load_csv = """COPY {table_name} ({columns})
+                            FROM :filepath
+                            CSV HEADER;"""
+
+    def get_load_csv(self, table, columns, filepath):
+        columns =  ', '.join(
+            '"{}"'.format(column) for column in columns
+        )
+        q = self.load_csv.format(table_name=table, columns=columns)
+        query = sql.text(q)
+        query = query.bindparams(
+            sql.bindparam(
+                'filepath',
+                value=filepath,
+                type_=sql.String,
+        ))
+        return query
+
+    def get_load_csv_redshift(self, table, columns, filepath, iam_role, region):
+        columns =  ', '.join(
+            '"{}"'.format(column) for column in columns
+        )
+        q = self.load_csv_redshift.format(
+                table_name=table,
+                columns=columns,
+                iam_role=iam_role,
+                region=region
+            )
+
+        query = sql.text(q)
+        query = query.bindparams(
+            sql.bindparam(
+                'filepath',
+                value=filepath,
+                type_=sql.String
+            )
+        )
+        return query
 
     def get_build_queries(self):
         BuildQueries = namedtuple('BuildQueries', [
@@ -115,7 +155,3 @@ class Queries:
             self.drop_pageviews,
             self.drop_user_agents
         ])
-
-if __name__ == '__main__':
-    q = Queries()
-    print(q.create_user_agents)
