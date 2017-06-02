@@ -1,0 +1,12 @@
+#!/bin/bash
+
+rm -f lambda_deploy.zip
+rm -rf lambda_deploy/
+mkdir lambda_deploy
+cp -R src lambda_deploy && cp function.py lambda_deploy
+pip install -Ur requirements.txt -t ./lambda_deploy/
+zip -r lambda_deploy.zip lambda_deploy
+rm -rf lambda_deploy/
+aws s3 mb s3://tf-redshift-bucket-dev-deployments
+aws s3 cp lambda_deploy.zip s3://tf-redshift-bucket-dev-deployments/
+rm -f lambda_deploy.zip

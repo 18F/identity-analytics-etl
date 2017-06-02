@@ -15,3 +15,6 @@ clean: venv destroy_db test
 
 run: venv
 	venv/bin/python src/uploader.py
+
+deploy:
+	./deploy

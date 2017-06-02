@@ -16,10 +16,16 @@ To install requirements:
 make venv
 ```
 
-To run tests
+To run tests:
 
 ```
 make tests
+```
+
+to deploy a new lambda function to the deployments s3 bucket:
+
+```
+make deploy
 ```
 
 ### Notes
