@@ -81,10 +81,12 @@ class Queries:
         self.mark_uploaded = """INSERT INTO uploaded_files (s3filename, destination, uploaded_at)
                                 VALUES ('{}', '{}', '{}');"""
 
+        # TODO: Switch to SQLAlchemy ORM in #3
+        
         self.load_csv_redshift = """COPY {table_name} ({columns})
                             FROM :filepath
-                            IAM_ROLE {iam_role}
-                            REGION {region}
+                            IAM_ROLE :iam_role
+                            REGION :region
                             FORMAT AS CSV IGNOREHEADER 1;"""
 
         self.load_csv = """COPY {table_name} ({columns})
@@ -95,7 +97,9 @@ class Queries:
         columns =  ', '.join(
             '"{}"'.format(column) for column in columns
         )
-        q = self.load_csv.format(table_name=table, columns=columns)
+        table_name = '"{}"'.format(table)
+
+        q = self.load_csv.format(table_name=table_name, columns=columns)
         query = sql.text(q)
         query = query.bindparams(
             sql.bindparam(
@@ -103,27 +107,39 @@ class Queries:
                 value=filepath,
                 type_=sql.String,
         ))
+
         return query
 
     def get_load_csv_redshift(self, table, columns, filepath, iam_role, region):
         columns =  ', '.join(
             '"{}"'.format(column) for column in columns
         )
+        table_name = '"{}"'.format(table)
+
+        bindparams = [
+                sql.bindparam(
+                    'filepath',
+                    value=filepath,
+                    type_=sql.String,
+                ),
+                sql.bindparam(
+                    'iam_role',
+                    value=iam_role,
+                    type_=sql.String,
+                ),
+                sql.bindparam(
+                    'region',
+                    value=region,
+                    type_=sql.String,
+                )
+        ]
+
         q = self.load_csv_redshift.format(
                 table_name=table,
-                columns=columns,
-                iam_role=iam_role,
-                region=region
+                columns=columns
             )
 
-        query = sql.text(q)
-        query = query.bindparams(
-            sql.bindparam(
-                'filepath',
-                value=filepath,
-                type_=sql.String
-            )
-        )
+        query = sql.text(q).bindparams(*bindparams)
         return query
 
     def get_build_queries(self):
