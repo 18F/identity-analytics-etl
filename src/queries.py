@@ -1,4 +1,9 @@
 from collections import namedtuple
+from sqlalchemy.ext import compiler
+from sqlalchemy.dialects.postgresql.base import PGIdentifierPreparer as pg
+
+import sqlalchemy as sql
+
 
 class Queries:
 
@@ -28,7 +33,7 @@ class Queries:
 
                                   PRIMARY KEY(id));"""
 
-        self.drop_events = """DROP TABLE events;"""
+        self.drop_events = """DROP TABLE IF EXISTS events;"""
 
         self.create_uploaded_files = """CREATE TABLE uploaded_files (
                                         s3filename VARCHAR(100) NOT NULL,
@@ -37,7 +42,7 @@ class Queries:
 
                                         PRIMARY KEY(s3filename, destination));"""
 
-        self.drop_uploaded_files = """DROP TABLE uploaded_files;"""
+        self.drop_uploaded_files = """DROP TABLE IF EXISTS uploaded_files;"""
 
         self.create_pageviews = """CREATE TABLE pageviews (
                                     method VARCHAR(10) NOT NULL,
@@ -57,7 +62,7 @@ class Queries:
                                     PRIMARY KEY(path, ip, timestamp)
                                   );"""
 
-        self.drop_pageviews = """DROP TABLE pageviews;"""
+        self.drop_pageviews = """DROP TABLE IF EXISTS pageviews;"""
 
         self.create_user_agents = """CREATE TABLE user_agents (
                                         user_agent VARCHAR(255) NOT NULL,
@@ -68,7 +73,7 @@ class Queries:
                                         PRIMARY KEY(user_agent)
                                       );"""
 
-        self.drop_user_agents = """DROP TABLE user_agents;"""
+        self.drop_user_agents = """DROP TABLE IF EXISTS user_agents;"""
 
         self.get_uploaded_files = """SELECT s3filename
                                      FROM uploaded_files;"""
@@ -76,15 +81,66 @@ class Queries:
         self.mark_uploaded = """INSERT INTO uploaded_files (s3filename, destination, uploaded_at)
                                 VALUES ('{}', '{}', '{}');"""
 
-        self.load_csv_redshift = """COPY {} ({})
-                            FROM {}
-                            IAM_ROLE {}
-                            REGION {}
-                            CSV {};"""
+        # TODO: Switch to SQLAlchemy ORM in #3
+        
+        self.load_csv_redshift = """COPY {table_name} ({columns})
+                            FROM :filepath
+                            IAM_ROLE :iam_role
+                            REGION :region
+                            FORMAT AS CSV IGNOREHEADER 1;"""
 
-        self.load_csv = """COPY {} ({})
-                            FROM {}
-                            CSV {};"""
+        self.load_csv = """COPY {table_name} ({columns})
+                            FROM :filepath
+                            CSV HEADER;"""
+
+    def get_load_csv(self, table, columns, filepath):
+        columns =  ', '.join(
+            '"{}"'.format(column) for column in columns
+        )
+        table_name = '"{}"'.format(table)
+
+        q = self.load_csv.format(table_name=table_name, columns=columns)
+        query = sql.text(q)
+        query = query.bindparams(
+            sql.bindparam(
+                'filepath',
+                value=filepath,
+                type_=sql.String,
+        ))
+
+        return query
+
+    def get_load_csv_redshift(self, table, columns, filepath, iam_role, region):
+        columns =  ', '.join(
+            '"{}"'.format(column) for column in columns
+        )
+        table_name = '"{}"'.format(table)
+
+        bindparams = [
+                sql.bindparam(
+                    'filepath',
+                    value=filepath,
+                    type_=sql.String,
+                ),
+                sql.bindparam(
+                    'iam_role',
+                    value=iam_role,
+                    type_=sql.String,
+                ),
+                sql.bindparam(
+                    'region',
+                    value=region,
+                    type_=sql.String,
+                )
+        ]
+
+        q = self.load_csv_redshift.format(
+                table_name=table,
+                columns=columns
+            )
+
+        query = sql.text(q).bindparams(*bindparams)
+        return query
 
     def get_build_queries(self):
         BuildQueries = namedtuple('BuildQueries', [
@@ -115,7 +171,3 @@ class Queries:
             self.drop_pageviews,
             self.drop_user_agents
         ])
-
-if __name__ == '__main__':
-    q = Queries()
-    print(q.create_user_agents)

@@ -4,6 +4,7 @@ import re
 import io
 import parser
 
+
 class EventParser(parser.Parser):
     table = 'events'
     headers = ['id', 'name', 'user_agent', 'user_id', 'user_ip',
@@ -22,18 +23,22 @@ class EventParser(parser.Parser):
             if 'event_properties' not in line:
                 continue
 
-            writer.writerow(self.parse_json(self.extract_json(line)))
+            writer.writerow(self.json_to_csv(self.extract_json(line)))
             rows += 1
 
         out.seek(0)
         return rows, out
 
     def extract_json(self, line):
-        json_part = line[line.index('{'):]
-        return json.loads(json_part)
+        return parser.Parser.extract_json(self, line)
 
-    def parse_json(self, data):
-        # Use .get to access the JSON as it is Null safe
+    def json_to_csv(self, data):
+        """
+        Use .get to access the JSON as it is Null safe
+        The RegEx replacement using \.\d+Z$ will convert a timestramp structured
+        as 2017-04-10T17:45:22.754Z -> 2017-04-10 17:45:22
+        """
+
         result = [
             data.get('id'),
             data.get('name'),
@@ -43,7 +48,7 @@ class EventParser(parser.Parser):
             data.get('properties').get('host'),
             data.get('visit_id'),
             data.get('visitor_id'),
-            re.sub(r"/\.\d+Z$/", '', data.get('time').replace('T', ' ')),
+            re.sub(r"\.\d+Z$", '', data.get('time').replace('T', ' ')),
             json.dumps(data.get('properties').get('event_properties'))
         ]
 

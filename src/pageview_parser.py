@@ -20,18 +20,22 @@ class PageViewParser(parser.Parser):
             if ('{' not in line) or ('controller' not in line):
                 continue
 
-            writer.writerow(self.parse_json(self.extract_json(line)))
+            writer.writerow(self.json_to_csv(self.extract_json(line)))
             rows += 1
 
         out.seek(0)
         return rows, out
 
     def extract_json(self, line):
-        json_part = line[line.index('{'):]
-        return json.loads(json_part)
+        return parser.Parser.extract_json(self, line)
 
-    def parse_json(self, data):
-        # Use .get() because it is Null safe
+    def json_to_csv(self, data):
+        """
+        Use .get to access the JSON as it is Null safe
+        The RegEx replacement using \.\d+Z$ will convert a timestramp structured
+        as 2017-04-10T17:45:22.754Z -> 2017-04-10 17:45:22
+        """
+
         result = [
                   data.get('method'),
                   data.get('path'),
@@ -45,7 +49,7 @@ class PageViewParser(parser.Parser):
                   data.get('ip'),
                   data.get('host'),
                   data.get('uuid'),
-                  re.sub(r" \+\d+$/", '', data.get('timestamp'))
+                  re.sub(r" \+\d+$", '', data.get('timestamp'))
                  ]
 
         return result

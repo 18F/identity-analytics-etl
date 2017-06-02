@@ -1,2 +1,7 @@
-src/__pycache__
+*/__pycache__
+__pycache__/
+*.swp
+.cache
 *.csv
+*.pyc
+venv
