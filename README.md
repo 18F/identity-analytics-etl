@@ -19,13 +19,13 @@ make venv
 To run tests:
 
 ```
-make tests
+make clean
 ```
 
 to deploy a new lambda function to the deployments s3 bucket:
 
 ```
-make deploy
+make lambda_deploy ENVIRONMENT="{$ENVIRONMENT_NAME}"
 ```
 
 ### Notes

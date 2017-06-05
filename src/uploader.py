@@ -9,7 +9,7 @@ from s3 import S3
 class Uploader:
 
     def __init__(self, source_bucket, dest_bucket, s3=None, parsers=None, redshift=False):
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(level=logging.WARN)
         self.redshift = redshift
         self.db_conn = DataBaseConnection(redshift)
         self.source_bucket = source_bucket
