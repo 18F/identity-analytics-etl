@@ -1,3 +1,5 @@
+import os
+
 import sqlalchemy as sql
 
 from datetime import datetime
@@ -17,7 +19,13 @@ class DataBaseConnection:
             self.engine = sql.create_engine('postgresql://localhost/dev')
         else:
             # How to connect to Redshift using IAM roles + Name?
-            self.engine = sql.create_engine('')
+            self.engine = sql.create_engine(
+                "redshift+psycopg2://{redshift_user}:{redshift_password}@{redshift_host}:5432/analytics".format(
+                    redshift_user=os.environ['redshift_user'],
+                    redshift_password=os.environ['redshift_password'],
+                    redshift_host=os.environ['redshift_host']
+                )
+            )
 
         self.connection = self.engine.connect()
 
