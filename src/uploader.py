@@ -1,10 +1,10 @@
 import logging
 import os
 
-from event_parser import EventParser
-from pageview_parser import PageViewParser
-from database_connection import DataBaseConnection
-from s3 import S3
+from .event_parser import EventParser
+from .pageview_parser import PageViewParser
+from .database_connection import DataBaseConnection
+from .s3 import S3
 
 class Uploader:
 

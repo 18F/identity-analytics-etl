@@ -2,10 +2,11 @@ import json
 import csv
 import re
 import io
-import log_parser
+
+from .log_parser import Parser
 
 
-class EventParser(log_parser.Parser):
+class EventParser(Parser):
     table = 'events'
     headers = ['id', 'name', 'user_agent', 'user_id', 'user_ip',
                'host', 'visit_id', 'visitor_id', 'time', 'event_properties',
@@ -30,7 +31,7 @@ class EventParser(log_parser.Parser):
         return rows, out
 
     def extract_json(self, line):
-        return log_parser.Parser.extract_json(self, line)
+        return Parser.extract_json(self, line)
 
     def json_to_csv(self, data):
         """

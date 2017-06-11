@@ -2,9 +2,10 @@ import json
 import csv
 import io
 import re
-import log_parser
 
-class PageViewParser(log_parser.Parser):
+from .log_parser import Parser
+
+class PageViewParser(Parser):
     table = 'pageviews'
     headers = ['method', 'path', 'format', 'controller', 'action',
                'status', 'duration', 'user_id', 'user_agent', 'ip',
@@ -27,7 +28,7 @@ class PageViewParser(log_parser.Parser):
         return rows, out
 
     def extract_json(self, line):
-        return log_parser.Parser.extract_json(self, line)
+        return Parser.extract_json(self, line)
 
     def json_to_csv(self, data):
         """

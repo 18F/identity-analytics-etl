@@ -2,15 +2,7 @@ import yaml
 import os
 import sys
 import boto3
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
-
-from queries import Queries
-from parser import Parser
-from event_parser import EventParser
-from pageview_parser import PageViewParser
-from database_connection import DataBaseConnection
-from s3 import S3
-from uploader import Uploader
+import src
 
 
 def set_redshift_configs():
@@ -36,5 +28,5 @@ def lambda_handler(event, context):
     else:
         source_bucket = 'login-gov-dev-logs'
 
-    uploader = Uploader(source_bucket, dest_bucket, redshift=True)
+    uploader = src.Uploader(source_bucket, dest_bucket, redshift=True)
     uploader.run()

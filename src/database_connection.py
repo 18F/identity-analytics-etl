@@ -3,7 +3,7 @@ import os
 import sqlalchemy as sql
 
 from datetime import datetime
-from queries import Queries
+from .queries import Queries
 
 class DataBaseConnection:
     q = Queries()
