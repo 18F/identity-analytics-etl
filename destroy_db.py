@@ -1,8 +1,8 @@
-from database_connection import DataBaseConnection
+import src
 
 
 def destroy():
-    db_conn = DataBaseConnection()
+    db_conn = src.DataBaseConnection()
     db_conn.drop_tables()
     db_conn.close_connection()
 

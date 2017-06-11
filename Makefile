@@ -8,13 +8,13 @@ test: venv
 	venv/bin/python tests/test.py
 
 destroy_db:
-	venv/bin/python src/destroy_db.py
+	venv/bin/python destroy_db.py
 
 clean: venv destroy_db test
 	rm -rf venv
 
 run: venv
-	venv/bin/python src/uploader.py
+	venv/bin/python upload_run.py
 
 lambda_cleanup:
 	rm -f lambda_deploy.zip
