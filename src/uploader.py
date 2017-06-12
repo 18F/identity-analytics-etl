@@ -1,15 +1,15 @@
 import logging
 import os
 
-from event_parser import EventParser
-from pageview_parser import PageViewParser
-from database_connection import DataBaseConnection
-from s3 import S3
+from .event_parser import EventParser
+from .pageview_parser import PageViewParser
+from .database_connection import DataBaseConnection
+from .s3 import S3
 
 class Uploader:
 
     def __init__(self, source_bucket, dest_bucket, s3=None, parsers=None, redshift=False):
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(level=logging.WARN)
         self.redshift = redshift
         self.db_conn = DataBaseConnection(redshift)
         self.source_bucket = source_bucket
@@ -55,12 +55,3 @@ class Uploader:
 
         in_file.close()
         out.close()
-
-if __name__ == '__main__':
-    if 'env' in os.environ.keys():
-        bucket = "login-gov-{}-analytics".format(os.environ['env'])
-    else:
-        bucket = 'tf-redshift-bucket-dev-analytics'
-
-    uploader = Uploader('login-gov-prod-logs', bucket)
-    uploader.run()

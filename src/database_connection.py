@@ -1,7 +1,9 @@
+import os
+
 import sqlalchemy as sql
 
 from datetime import datetime
-from queries import Queries
+from .queries import Queries
 
 class DataBaseConnection:
     q = Queries()
@@ -17,7 +19,7 @@ class DataBaseConnection:
             self.engine = sql.create_engine('postgresql://localhost/dev')
         else:
             # How to connect to Redshift using IAM roles + Name?
-            self.engine = sql.create_engine('')
+            self.engine = sql.create_engine(os.environ['REDSHIFT_URI'])
 
         self.connection = self.engine.connect()
 
