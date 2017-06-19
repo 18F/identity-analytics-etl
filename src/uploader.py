@@ -28,7 +28,6 @@ class Uploader:
         self.logger.info("Total Files: {}".format(len(logfiles)))
 
         for f in logfiles:
-            #TODO: make this validate table name as well
             if f in uploaded_files:
                 continue
 
