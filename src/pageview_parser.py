@@ -2,6 +2,7 @@ import json
 import csv
 import io
 import re
+import hashlib
 
 from .log_parser import Parser
 
@@ -10,6 +11,8 @@ class PageViewParser(Parser):
     headers = ['method', 'path', 'format', 'controller', 'action',
                'status', 'duration', 'user_id', 'user_agent', 'ip',
                'host', 'uuid', 'timestamp']
+
+    uuids = []
 
     def stream_csv(self, in_io):
         rows = 0
@@ -21,7 +24,12 @@ class PageViewParser(Parser):
             if ('{' not in line) or ('controller' not in line):
                 continue
 
-            writer.writerow(self.json_to_csv(self.extract_json(line)))
+            result, uuid = self.json_to_csv(self.extract_json(line))
+            if uuid in self.uuids:
+                continue
+
+            self.uuids.append(uuid)
+            writer.writerow(result)
             rows += 1
 
         out.seek(0)
@@ -36,7 +44,7 @@ class PageViewParser(Parser):
         The RegEx replacement using \.\d+Z$ will convert a timestramp structured
         as 2017-04-10T17:45:22.754Z -> 2017-04-10 17:45:22
         """
-
+        uuid = hashlib.sha256('|'.join([data['path'], data['ip'], data['timestamp'], data['host'], str(data['duration'])]).encode('utf-8')).hexdigest() if data.get('uuid') is None else data.get('uuid')
         result = [
                   data.get('method'),
                   data.get('path'),
@@ -49,8 +57,8 @@ class PageViewParser(Parser):
                   data.get('user_agent'),
                   data.get('ip'),
                   data.get('host'),
-                  data.get('uuid'),
+                  uuid,
                   re.sub(r" \+\d+$", '', data.get('timestamp'))
                  ]
 
-        return result
+        return result, uuid

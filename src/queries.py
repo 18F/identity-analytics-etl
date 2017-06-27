@@ -46,7 +46,7 @@ class Queries:
 
         self.create_pageviews = """CREATE TABLE pageviews (
                                     method VARCHAR(10) NOT NULL,
-                                    path VARCHAR(1024),
+                                    path TEXT,
                                     format VARCHAR(15),
                                     controller VARCHAR(100),
                                     action VARCHAR(15),
@@ -57,9 +57,7 @@ class Queries:
                                     ip VARCHAR(50),
                                     host VARCHAR(255),
                                     timestamp TIMESTAMP,
-                                    uuid VARCHAR(40) NULL UNIQUE,
-
-                                    PRIMARY KEY(path, ip, timestamp)
+                                    uuid VARCHAR(64) NULL UNIQUE
                                   );"""
 
         self.drop_pageviews = """DROP TABLE IF EXISTS pageviews;"""
@@ -82,7 +80,7 @@ class Queries:
                                 VALUES ('{}', '{}', '{}');"""
 
         # TODO: Switch to SQLAlchemy ORM in #3
-        
+
         self.load_csv_redshift = """COPY {table_name} ({columns})
                             FROM :filepath
                             IAM_ROLE :iam_role

@@ -13,6 +13,7 @@ class EventParser(Parser):
                'success', 'existing_user', 'otp_method', 'context',
                'method', 'authn_context', 'service_provider', 'loa3',
                'active_profile', 'errors']
+    uuids = []
 
     def stream_csv(self, in_io):
         rows = 0
@@ -24,7 +25,12 @@ class EventParser(Parser):
             if 'event_properties' not in line:
                 continue
 
-            writer.writerow(self.json_to_csv(self.extract_json(line)))
+            result, uuid = self.json_to_csv(self.extract_json(line))
+            if uuid in self.uuids:
+                continue
+
+            self.uuids.append(uuid)
+            writer.writerow(result)
             rows += 1
 
         out.seek(0)
@@ -73,4 +79,4 @@ class EventParser(Parser):
                 [None]*10
             )
 
-        return result
+        return result, data.get('id')

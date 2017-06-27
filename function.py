@@ -14,21 +14,22 @@ def set_redshift_configs():
     # The bucket name and filename
     # could all be defined inside of the lambda resource in terraform.
     bucket = boto3.resource('s3').Bucket('tf-redshift-bucket-dev-secrets')
+    # TODO: rename test.yml to redshift_secrets.yml
     data = yaml.load(bucket.Object('redshift_secrets.yml').get()['Body'])
-    os.environ['REDSHIFT_URI'] = "redshift+psycopg2://awsuser:{redshift_password}@{redshift_host}:5432/analytics".format(
+    os.environ['REDSHIFT_URI'] = "redshift+psycopg2://awsuser:{redshift_password}@{redshift_host}:5439/analytics".format(
         redshift_password=data['redshift_password'],
-        redshift_host=data['redshift_host']
+        redshift_host=os.environ.get('redshift_host')
     )
 
 def lambda_handler(event, context):
     set_redshift_configs()
     if 'dest' in os.environ.keys():
-        dest_bucket = "login-gov-{}-analytics".format(os.environ['env'])
+        dest_bucket = "login-gov-{}-analytics".format(os.environ.get('env'))
     else:
         dest_bucket = 'tf-redshift-bucket-dev-analytics'
 
     if 'source' in os.environ.keys():
-        source_bucket = "login-gov-{}-logs".format(os.environ['env'])
+        source_bucket = "login-gov-{}-logs".format(os.environ.get('env'))
     else:
         source_bucket = 'login-gov-dev-logs'
 

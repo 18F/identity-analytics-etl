@@ -24,3 +24,6 @@ class S3:
 
     def get_path(self, csv_name):
         return "s3://{}/{}".format(self.dest_bucket.name, csv_name)
+
+    def download_file(self, filename):
+        self.dest_bucket.download_file(filename, "/tmp/{}".format(filename))
