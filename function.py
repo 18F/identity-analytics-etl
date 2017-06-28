@@ -23,15 +23,7 @@ def set_redshift_configs():
 
 def lambda_handler(event, context):
     set_redshift_configs()
-    if 'dest' in os.environ.keys():
-        dest_bucket = "login-gov-{}-analytics".format(os.environ.get('env'))
-    else:
-        dest_bucket = 'tf-redshift-bucket-dev-analytics'
-
-    if 'source' in os.environ.keys():
-        source_bucket = "login-gov-{}-logs".format(os.environ.get('env'))
-    else:
-        source_bucket = 'login-gov-dev-logs'
-
+    dest_bucket = "login-gov-{}-analytics".format(os.environ.get('env'))
+    source_bucket = "login-gov-{}-logs".format(os.environ.get('env'))
     uploader = src.Uploader(source_bucket, dest_bucket, redshift=True)
     uploader.run()

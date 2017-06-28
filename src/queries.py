@@ -29,9 +29,7 @@ class Queries:
                                   service_provider VARCHAR(255),
                                   loa3 BOOLEAN,
                                   active_profile BOOLEAN,
-                                  errors VARCHAR(4096),
-
-                                  PRIMARY KEY(id));"""
+                                  errors VARCHAR(4096));"""
 
         self.drop_events = """DROP TABLE IF EXISTS events;"""
 
@@ -57,8 +55,8 @@ class Queries:
                                     ip VARCHAR(50),
                                     host VARCHAR(255),
                                     timestamp TIMESTAMP,
-                                    uuid VARCHAR(64) NULL UNIQUE
-                                  );"""
+                                    uuid VARCHAR(64) NOT NULL
+                                    );"""
 
         self.drop_pageviews = """DROP TABLE IF EXISTS pageviews;"""
 

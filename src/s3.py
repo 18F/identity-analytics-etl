@@ -9,6 +9,16 @@ class S3:
         self.dest_bucket = self.conn.Bucket(dest_bucket)
 
     def get_s3_logfiles(self):
+        get_last_modified = lambda x: int(x.last_modified.strftime('%s'))
+        sorted_files = sorted(
+                              [f for f in self.source_bucket.objects.filter()],
+                              key=get_last_modified,
+                              reverse=True
+                              )
+
+        return [f.key for f in sorted_files if '.txt' in f.key][:9]
+
+    def get_all_s3_logfiles(self):
         return [f.key for f in self.source_bucket.objects.all() if '.txt' in f.key]
 
     def get_logfile(self, filename):
