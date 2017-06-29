@@ -44,7 +44,7 @@ class Queries:
 
         self.create_pageviews = """CREATE TABLE pageviews (
                                     method VARCHAR(10) NOT NULL,
-                                    path TEXT,
+                                    path VARCHAR(1024),
                                     format VARCHAR(15),
                                     controller VARCHAR(100),
                                     action VARCHAR(15),

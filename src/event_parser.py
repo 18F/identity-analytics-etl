@@ -13,7 +13,7 @@ class EventParser(Parser):
                'success', 'existing_user', 'otp_method', 'context',
                'method', 'authn_context', 'service_provider', 'loa3',
                'active_profile', 'errors']
-    uuids = []
+    uuids = set()
 
     def stream_csv(self, in_io):
         rows = 0
@@ -29,7 +29,7 @@ class EventParser(Parser):
             if uuid in self.uuids:
                 continue
 
-            self.uuids.append(uuid)
+            self.uuids.add(uuid)
             writer.writerow(result)
             rows += 1
 

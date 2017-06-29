@@ -1,10 +1,14 @@
 import logging
 import os
+import pytz
+
+from datetime import datetime, timedelta
 
 from .event_parser import EventParser
 from .pageview_parser import PageViewParser
 from .database_connection import DataBaseConnection
 from .s3 import S3
+
 
 class Uploader:
 
@@ -23,7 +27,7 @@ class Uploader:
         self.s3.create_dest_bucket_if_not_exists()
 
         uploaded_files = self.db_conn.uploaded_files()
-        logfiles = self.s3.get_s3_logfiles()
+        logfiles = self.s3.get_n_s3_logfiles(25)
 
         self.logger.info("Total Files: {}".format(len(logfiles)))
 

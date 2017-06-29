@@ -19,7 +19,6 @@ class DataBaseConnection:
         if not redshift:
             self.engine = sql.create_engine('postgresql://localhost/dev')
         else:
-            # How to connect to Redshift using IAM roles + Name?
             self.engine = sql.create_engine(os.environ['REDSHIFT_URI'])
 
         self.connection = self.engine.connect()
