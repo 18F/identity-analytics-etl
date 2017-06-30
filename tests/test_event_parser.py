@@ -25,7 +25,7 @@ class EventParserTestCases(unittest.TestCase):
     def test_json_to_csv(self):
         parser = EventParser()
         data = json.loads(self.event_json)
-        res = parser.json_to_csv(data)
+        res = parser.json_to_csv(data)[0]
         self.assertEqual(len(res), 20)
         self.assertEqual(res[8], '2017-04-10 17:45:22')
         self.assertFalse(res[-1])
