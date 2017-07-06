@@ -1,20 +1,24 @@
 import logging
 import os
+import pytz
+
+from datetime import datetime, timedelta
 
 from .event_parser import EventParser
 from .pageview_parser import PageViewParser
 from .database_connection import DataBaseConnection
 from .s3 import S3
 
+
 class Uploader:
 
     def __init__(self, source_bucket, dest_bucket, s3=None, parsers=None, redshift=False):
-        logging.basicConfig(level=logging.WARN)
+        logging.basicConfig(level=logging.INFO)
         self.redshift = redshift
-        self.db_conn = DataBaseConnection(redshift)
         self.source_bucket = source_bucket
         self.dest_bucket = dest_bucket
         self.s3 = S3(self.source_bucket, self.dest_bucket) if s3 is None else s3
+        self.db_conn = DataBaseConnection(self.s3, redshift)
         self.parsers = (EventParser(), PageViewParser()) if parsers is None else parsers
         self.logger = logging.getLogger('uploader')
 
@@ -23,12 +27,11 @@ class Uploader:
         self.s3.create_dest_bucket_if_not_exists()
 
         uploaded_files = self.db_conn.uploaded_files()
-        logfiles = self.s3.get_s3_logfiles()
+        logfiles = self.s3.get_n_s3_logfiles(25)
 
         self.logger.info("Total Files: {}".format(len(logfiles)))
 
         for f in logfiles:
-            #TODO: make this validate table name as well
             if f in uploaded_files:
                 continue
 

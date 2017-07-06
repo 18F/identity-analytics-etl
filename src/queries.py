@@ -29,9 +29,7 @@ class Queries:
                                   service_provider VARCHAR(255),
                                   loa3 BOOLEAN,
                                   active_profile BOOLEAN,
-                                  errors VARCHAR(4096),
-
-                                  PRIMARY KEY(id));"""
+                                  errors VARCHAR(4096));"""
 
         self.drop_events = """DROP TABLE IF EXISTS events;"""
 
@@ -57,10 +55,8 @@ class Queries:
                                     ip VARCHAR(50),
                                     host VARCHAR(255),
                                     timestamp TIMESTAMP,
-                                    uuid VARCHAR(40) NULL UNIQUE,
-
-                                    PRIMARY KEY(path, ip, timestamp)
-                                  );"""
+                                    uuid VARCHAR(64) NOT NULL
+                                    );"""
 
         self.drop_pageviews = """DROP TABLE IF EXISTS pageviews;"""
 
@@ -82,7 +78,7 @@ class Queries:
                                 VALUES ('{}', '{}', '{}');"""
 
         # TODO: Switch to SQLAlchemy ORM in #3
-        
+
         self.load_csv_redshift = """COPY {table_name} ({columns})
                             FROM :filepath
                             IAM_ROLE :iam_role

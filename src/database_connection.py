@@ -7,18 +7,18 @@ from .queries import Queries
 
 class DataBaseConnection:
     q = Queries()
-
-    def __init__(self, redshift=False):
+    # TODO: use a seperate DB for tests? add test DB?
+    def __init__(self, s3=None, redshift=False):
         """
         Connects by default to local postgresql. This should eventually default
         to redshift
         """
 
         self.redshift = redshift
+        self.s3 = s3
         if not redshift:
             self.engine = sql.create_engine('postgresql://localhost/dev')
         else:
-            # How to connect to Redshift using IAM roles + Name?
             self.engine = sql.create_engine(os.environ['REDSHIFT_URI'])
 
         self.connection = self.engine.connect()
@@ -43,8 +43,13 @@ class DataBaseConnection:
             self.connection.execute(self.q.get_load_csv_redshift(table,
                 columns, csv_path, iam_role, region))
         else:
-            # TODO: Make this run for Postgres + s3 bucket, get file, format file path , etc
-            self.connection.execute(self.q.get_load_csv(table, columns, csv_path))
+            if 's3' in csv_path:
+                path = csv_path.split('/')[-1]
+                self.s3.download_file(path)
+                self.connection.execute(self.q.get_load_csv(table, columns, "/tmp/{}".format(path)))
+                os.remove("/tmp/{}".format(path))
+            else:
+                self.connection.execute(self.q.get_load_csv(table, columns, csv_path))
 
         self.mark_uploaded(filename, table)
 

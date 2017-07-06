@@ -14,12 +14,13 @@ class FakeS3:
     def get_s3_logfiles(self):
         return [f for f in self.content.keys() if '.txt' in f]
 
+    def get_n_s3_logfiles(self, n):
+        return self.get_s3_logfiles()
+
     def get_logfile(self, filename):
         return open(self.content.get(filename), 'rb')
 
     def new_file(self, out, filename):
-        # This conversion to BytesIO feels hacky, but upload_fileobj requires it
-        # Ideas?
         self.output[filename] = out.getvalue()
         with open(self.get_path(filename), 'w') as f:
             f.write(out.getvalue())

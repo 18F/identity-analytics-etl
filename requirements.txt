@@ -8,3 +8,4 @@ s3transfer==0.1.10
 six==1.10.0
 SQLAlchemy==1.1.9
 pyYAML==3.12
+pytz==2017.2
