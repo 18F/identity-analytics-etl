@@ -24,7 +24,6 @@ class Uploader:
 
     def run(self):
         self.db_conn.build_db_if_needed()
-        self.s3.create_dest_bucket_if_not_exists()
 
         uploaded_files = self.db_conn.uploaded_files()
         logfiles = self.s3.get_n_s3_logfiles(25)
