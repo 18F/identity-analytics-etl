@@ -25,7 +25,7 @@ lambda_build: lambda_cleanup
 	git push origin --tags
 	mkdir lambda_$(TAG)_deploy
 	cp -R src lambda_$(TAG)_deploy && cp function.py lambda_$(TAG)_deploy
-	pip install -Ur requirements.txt -t ./lambda_deploy/
+	pip install -Ur requirements.txt -t ./lambda_$(TAG)_deploy/
 	zip -r lambda_$(TAG)_deploy.zip lambda_$(TAG)_deploy
 
 lambda_release: clean lambda_build
