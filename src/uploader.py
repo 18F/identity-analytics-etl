@@ -13,7 +13,7 @@ from .s3 import S3
 class Uploader:
 
     def __init__(self, source_bucket, dest_bucket, s3=None, parsers=None, redshift=False):
-        logging.basicConfig(level=logging.WARN)
+        logging.basicConfig(level=logging.INFO)
         self.redshift = redshift
         self.source_bucket = source_bucket
         self.dest_bucket = dest_bucket
@@ -26,7 +26,7 @@ class Uploader:
         self.db_conn.build_db_if_needed()
 
         uploaded_files = self.db_conn.uploaded_files()
-        logfiles = self.s3.get_n_s3_logfiles(25)
+        logfiles = self.s3.get_n_s3_logfiles(5)
 
         self.logger.info("Total Files: {}".format(len(logfiles)))
 
