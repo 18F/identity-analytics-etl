@@ -25,7 +25,6 @@ lambda_build: lambda_cleanup
 	git push origin --tags
 	mkdir lambda_$(TAG)_deploy
 	chmod u=rwx,go=r function.py
-	chmod 444 function.py
 	cp -R src lambda_$(TAG)_deploy && cp function.py lambda_$(TAG)_deploy
 	pip install -Ur requirements.txt -t ./lambda_$(TAG)_deploy
 	rm -rf lambda_$(TAG)_deploy/psycopg2
