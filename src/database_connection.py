@@ -20,7 +20,7 @@ class DataBaseConnection:
         if not redshift:
             self.engine = sql.create_engine('postgresql://localhost/dev')
         else:
-            self.engine = sql.create_engine(os.environ['REDSHIFT_URI'])#, connect_args={'sslmode': 'disable'})
+            self.engine = sql.create_engine(os.environ.get('REDSHIFT_URI'))
 
         self.connection = self.engine.connect()
 
