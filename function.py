@@ -21,7 +21,6 @@ def set_redshift_configs():
     )
 
 def lambda_handler(event, context):
-    print(event)
     set_redshift_configs()
     dest_bucket = "login-gov-{}-analytics".format(os.environ.get('env'))
     source_bucket = "login-gov-{}-logs".format(os.environ.get('env'))

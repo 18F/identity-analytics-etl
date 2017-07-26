@@ -2,6 +2,8 @@ import boto3
 import io
 import pytz
 
+from datetime import datetime, timedelta
+
 class S3:
 
     def __init__(self, source_bucket, dest_bucket):
@@ -19,7 +21,7 @@ class S3:
 
         return [f.key for f in sorted_files if '.txt' in f.key][:n]
 
-    def get_last_n_s3_logfiles_by_lookback(self, begin_date, end_date):
+    def get_last_n_s3_logfiles_by_date_range(self, begin_date, end_date):
         get_last_modified = lambda x: int(x.last_modified.strftime('%s'))
         files = []
 
@@ -35,6 +37,10 @@ class S3:
                               )
 
         return [f.key for f in sorted_files if '.txt' in f.key]
+
+    def get_last_n_s3_logfiles_by_lookback(self, delta):
+        time_ = datetime.utcnow().replace(tzinfo=pytz.utc)
+        return self.get_last_n_s3_logfiles_by_date_range(time_ - delta, time_)
 
     def get_all_s3_logfiles(self):
         return [f.key for f in self.source_bucket.objects.all() if '.txt' in f.key]
