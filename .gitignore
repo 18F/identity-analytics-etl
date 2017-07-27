@@ -1,4 +1,5 @@
 */__pycache__
+pg2/*
 __pycache__/
 *.swp
 .cache
@@ -7,3 +8,4 @@ __pycache__/
 venv
 lambda_deploy/
 *.zip
+lambda*

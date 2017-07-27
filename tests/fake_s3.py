@@ -17,6 +17,9 @@ class FakeS3:
     def get_n_s3_logfiles(self, n):
         return self.get_s3_logfiles()
 
+    def get_last_n_s3_logfiles_by_lookback(self, delta):
+        return self.get_s3_logfiles()
+
     def get_logfile(self, filename):
         return open(self.content.get(filename), 'rb')
 

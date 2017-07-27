@@ -26,10 +26,10 @@ class Uploader:
         self.db_conn.build_db_if_needed()
 
         uploaded_files = self.db_conn.uploaded_files()
-        logfiles = self.s3.get_n_s3_logfiles(5)
+        logfiles = self.s3.get_s3_logfiles_by_lookback(timedelta(hours=1))
 
         self.logger.info("Total Files: {}".format(len(logfiles)))
-
+        self.logger.info(logfiles)
         for f in logfiles:
             if f in uploaded_files:
                 continue
