@@ -3,13 +3,19 @@ import io
 import pytz
 
 from datetime import datetime, timedelta
+from botocore.config import Config
 
 class S3:
 
-    def __init__(self, source_bucket, dest_bucket):
-        self.conn = boto3.resource('s3')
+    def __init__(self, source_bucket, dest_bucket, encryption_key):
+        self.conn = boto3.resource(
+            's3',
+            config=Config(signature_version='s3v4')
+        )
+
         self.source_bucket = self.conn.Bucket(source_bucket)
         self.dest_bucket = self.conn.Bucket(dest_bucket)
+        self.encryption_key = encryption_key
 
     def get_n_s3_logfiles(self, n):
         get_last_modified = lambda x: int(x.last_modified.strftime('%s'))
@@ -50,7 +56,14 @@ class S3:
 
     def new_file(self, out, filename):
         res = io.BytesIO(out.getvalue().encode('utf-8'))
-        self.dest_bucket.upload_fileobj(res, filename)
+        self.dest_bucket.upload_fileobj(
+            res,
+            filename,
+            ExtraArgs={
+                "SSEKMSKeyId": self.encryption_key,
+                "ServerSideEncryption": 'aws:kms'
+            }
+        )
 
     def create_dest_bucket_if_not_exists(self):
         if self.dest_bucket not in self.conn.buckets.all():
