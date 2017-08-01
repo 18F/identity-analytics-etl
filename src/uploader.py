@@ -12,12 +12,12 @@ from .s3 import S3
 
 class Uploader:
 
-    def __init__(self, source_bucket, dest_bucket, s3=None, parsers=None, redshift=False):
+    def __init__(self, source_bucket, dest_bucket, s3=None, parsers=None, redshift=False, encryption_key="0fcc4091-b869-41a1-a909-f80534fedc62"):
         logging.basicConfig(level=logging.INFO)
         self.redshift = redshift
         self.source_bucket = source_bucket
         self.dest_bucket = dest_bucket
-        self.s3 = S3(self.source_bucket, self.dest_bucket) if s3 is None else s3
+        self.s3 = S3(self.source_bucket, self.dest_bucket, encryption_key) if s3 is None else s3
         self.db_conn = DataBaseConnection(self.s3, redshift)
         self.parsers = (EventParser(), PageViewParser()) if parsers is None else parsers
         self.logger = logging.getLogger('uploader')

@@ -24,5 +24,12 @@ def lambda_handler(event, context):
     set_redshift_configs()
     dest_bucket = "login-gov-{}-analytics".format(os.environ.get('env'))
     source_bucket = "login-gov-{}-logs".format(os.environ.get('env'))
-    uploader = src.Uploader(source_bucket, dest_bucket, redshift=True)
+
+    uploader = src.Uploader(
+        source_bucket,
+        dest_bucket,
+        redshift=True,
+        encryption_key=os.environ.get('encryption_key')
+    )
+
     uploader.run()
