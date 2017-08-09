@@ -12,7 +12,7 @@ from .s3 import S3
 
 class Uploader:
 
-    def __init__(self, source_bucket, dest_bucket, s3=None, parsers=None, redshift=False, encryption_key="0fcc4091-b869-41a1-a909-f80534fedc62"):
+    def __init__(self, source_bucket, dest_bucket, s3=None, parsers=None, redshift=False, encryption_key="dc12706b-50ea-40b7-8d0e-206962aaa8f7"):
         logging.basicConfig(level=logging.INFO)
         self.redshift = redshift
         self.source_bucket = source_bucket
