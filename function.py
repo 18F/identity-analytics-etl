@@ -28,8 +28,7 @@ def lambda_handler(event, context):
     uploader = src.Uploader(
         source_bucket,
         dest_bucket,
-        redshift=True,
-        encryption_key=os.environ.get('encryption_key')
+        redshift=True
     )
 
     uploader.run()
