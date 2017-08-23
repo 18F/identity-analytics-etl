@@ -5,11 +5,6 @@ import boto3
 import src
 
 
-# TODO: Seems the lambda_handler will run on every configured event and thus,
-# invoke set_redshift_configs() on each run, maybe this should only be invoked once
-# to set the variables in memory, this will prevent breaking in a case where a
-# connection to the s3 bucket cannot be established.
-
 def set_redshift_configs():
     # The bucket name and filename
     # could all be defined inside of the lambda resource in terraform.
