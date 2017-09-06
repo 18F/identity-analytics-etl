@@ -16,6 +16,7 @@ class S3:
         self.source_bucket = self.conn.Bucket(source_bucket)
         self.dest_bucket = self.conn.Bucket(dest_bucket)
         self.encryption_key = encryption_key
+        self.key_check = lambda key: ('.txt' in key) and ('cloud' not in key)
 
     def get_n_s3_logfiles(self, n):
         get_last_modified = lambda x: int(x.last_modified.strftime('%s'))
@@ -25,7 +26,7 @@ class S3:
                               reverse=True
                               )
 
-        return [f.key for f in sorted_files if '.txt' in f.key][:n]
+        return [f.key for f in sorted_files if self.key_check(f.key)][:n]
 
     def get_s3_logfiles_by_date_range(self, begin_date, end_date):
         get_last_modified = lambda x: int(x.last_modified.strftime('%s'))
@@ -42,14 +43,14 @@ class S3:
                               reverse=True
                               )
 
-        return [f.key for f in sorted_files if '.txt' in f.key]
+        return [f.key for f in sorted_files if self.key_check(f.key)]
 
     def get_s3_logfiles_by_lookback(self, delta):
         time_ = datetime.utcnow().replace(tzinfo=pytz.utc)
         return self.get_s3_logfiles_by_date_range(time_ - delta, time_)
 
     def get_all_s3_logfiles(self):
-        return [f.key for f in self.source_bucket.objects.all() if '.txt' in f.key]
+        return [f.key for f in self.source_bucket.objects.all() if self.key_check(f.key)]
 
     def get_logfile(self, filename):
         return self.source_bucket.Object(filename).get()['Body']
