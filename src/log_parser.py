@@ -15,7 +15,7 @@ class Parser(object):
 
         try:
             json.loads(json_part)
-        except ValueError, e:
+        except ValueError:
             return False
 
         return True
