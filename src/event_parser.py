@@ -22,7 +22,7 @@ class EventParser(Parser):
         writer.writerow(self.headers)
 
         for line in in_io.decode('utf-8').split('\n'):
-            if 'event_properties' not in line:
+            if 'event_properties' not in line or not self.has_valid_json(line):
                 continue
 
             result, uuid = self.json_to_csv(self.extract_json(line))
@@ -38,6 +38,9 @@ class EventParser(Parser):
 
     def extract_json(self, line):
         return Parser.extract_json(self, line)
+
+    def has_valid_json(self, line):
+        return Parser.has_valid_json(self, line)
 
     def json_to_csv(self, data):
         """
