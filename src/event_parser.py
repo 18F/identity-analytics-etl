@@ -16,31 +16,22 @@ class EventParser(Parser):
     uuids = set()
 
     def stream_csv(self, in_io):
-        rows = 0
-        out = io.StringIO()
-        writer = csv.writer(out, delimiter=',')
-        writer.writerow(self.headers)
-
-        for line in in_io.decode('utf-8').split('\n'):
-            if 'event_properties' not in line or not self.has_valid_json(line):
-                continue
-
-            result, uuid = self.json_to_csv(self.extract_json(line))
-            if uuid in self.uuids:
-                continue
-
-            self.uuids.add(uuid)
-            writer.writerow(result)
-            rows += 1
-
-        out.seek(0)
-        return rows, out
+        return Parser.stream_csv(self, in_io)
 
     def extract_json(self, line):
         return Parser.extract_json(self, line)
 
     def has_valid_json(self, line):
         return Parser.has_valid_json(self, line)
+
+    def format_check(self, line):
+        if 'event_properties' not in line or not self.has_valid_json(line):
+            return True
+        else:
+            return False
+
+    def get_uuid(self, data):
+        return data.get('id')
 
     def json_to_csv(self, data):
         """
@@ -49,6 +40,7 @@ class EventParser(Parser):
         as 2017-04-10T17:45:22.754Z -> 2017-04-10 17:45:22
         """
 
+        uuid = self.get_uuid(data)
         result = [
             data.get('id'),
             data.get('name'),
@@ -82,4 +74,4 @@ class EventParser(Parser):
                 [None]*10
             )
 
-        return result, data.get('id')
+        return result, uuid

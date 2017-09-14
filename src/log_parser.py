@@ -1,10 +1,33 @@
 import json
+import csv
+import re
+import io
+import hashlib
 
 
 class Parser(object):
+    headers = []
 
     def stream_csv(self, in_io):
-        raise NotImplementedError()
+        rows = 0
+        out = io.StringIO()
+        writer = csv.writer(out, delimiter=',')
+        writer.writerow(self.headers)
+
+        for line in in_io.decode('utf-8').split('\n'):
+            if self.format_check(line):
+                continue
+
+            result, uuid = self.json_to_csv(self.extract_json(line))
+            if uuid in self.uuids:
+                continue
+
+            self.uuids.add(uuid)
+            writer.writerow(result)
+            rows += 1
+
+        out.seek(0)
+        return rows, out
 
     def extract_json(self, line):
         json_part = line[line.index('{'):]
@@ -20,5 +43,13 @@ class Parser(object):
 
         return True
 
-    def json_to_csv(self, data):
+    def format_check(self, line):
+        return self.has_valid_json(line)
+
+    def get_uuid(self, data):
         raise NotImplementedError()
+
+    def json_to_csv(self, data):
+        uuid = self.get_uuid(data)
+        result = [data.get(header) for header in self.headers]
+        return result, uuid
