@@ -23,10 +23,21 @@ make clean
 ```
 
 to deploy a new lambda function to the deployments s3 bucket:
+if running for the first time:
+```
+make lambda_buckets ENVIRONMENT="{$ENVIRONMENT_NAME}"
+```
 
 ```
 make lambda_deploy ENVIRONMENT="{$ENVIRONMENT_NAME}" TAG="{TAG_NUMBER}"
 ```
+
+Then in identity-devops repository:
+```
+./deploy-analytics env apply
+```
+
+Afterwards, be sure to locate the kms key you are using and add all of the roles and user created by terraform to that key. 
 
 ### Notes
 

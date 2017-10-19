@@ -32,7 +32,7 @@ class Uploader:
         if self.trigger_file:
             logfiles = [self.trigger_file]
         else:
-            logfiles = self.s3.get_s3_logfiles_by_lookback(timedelta(days=self.lookback_period))
+            logfiles = self.s3.get_s3_logfiles_by_lookback(timedelta(hours=self.lookback_period))
 
         self.logger.info("Total Files: {}".format(len(logfiles)))
         self.logger.info(logfiles)
