@@ -51,7 +51,7 @@ class Queries:
                                     status SMALLINT,
                                     duration FLOAT,
                                     user_id VARCHAR(40),
-                                    user_agent VARCHAR(4096),
+                                    user_agent VARCHAR(1024),
                                     ip VARCHAR(50),
                                     host VARCHAR(255),
                                     timestamp TIMESTAMP,
