@@ -17,6 +17,7 @@ def set_redshift_configs():
 
 def lambda_handler(event, context):
     set_redshift_configs()
+    trigger_file = event["Records"][0]["s3"]["object"]["key"]
     dest_bucket = "login-gov-{}-analytics".format(os.environ.get('env'))
     source_bucket = "login-gov-{}-logs".format(os.environ.get('env'))
 
@@ -24,7 +25,8 @@ def lambda_handler(event, context):
         source_bucket,
         dest_bucket,
         redshift=True,
-        encryption_key=os.environ.get('encryption_key')
+        encryption_key=os.environ.get('encryption_key'),
+        trigger_file=trigger_file
     )
 
     uploader.run()

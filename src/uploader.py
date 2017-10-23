@@ -12,7 +12,7 @@ from .s3 import S3
 
 class Uploader:
 
-    def __init__(self, source_bucket, dest_bucket, s3=None, parsers=None, redshift=False, encryption_key="dc12706b-50ea-40b7-8d0e-206962aaa8f7"):
+    def __init__(self, source_bucket, dest_bucket, s3=None, parsers=None, redshift=False, encryption_key="dc12706b-50ea-40b7-8d0e-206962aaa8f7", trigger_file=None, lookback_period=None):
         logging.basicConfig(level=logging.INFO)
         self.redshift = redshift
         self.source_bucket = source_bucket
@@ -21,12 +21,18 @@ class Uploader:
         self.db_conn = DataBaseConnection(self.s3, redshift)
         self.parsers = (EventParser(), PageViewParser()) if parsers is None else parsers
         self.logger = logging.getLogger('uploader')
+        self.trigger_file = trigger_file
+        self.lookback_period = 20 if lookback_period is None else lookback_period
 
     def run(self):
         self.db_conn.build_db_if_needed()
 
         uploaded_files = self.db_conn.uploaded_files()
-        logfiles = self.s3.get_s3_logfiles_by_lookback(timedelta(minutes=20))
+
+        if self.trigger_file:
+            logfiles = [self.trigger_file]
+        else:
+            logfiles = self.s3.get_s3_logfiles_by_lookback(timedelta(hours=self.lookback_period))
 
         self.logger.info("Total Files: {}".format(len(logfiles)))
         self.logger.info(logfiles)
