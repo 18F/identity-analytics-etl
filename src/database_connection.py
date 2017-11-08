@@ -6,13 +6,14 @@ import psycopg2
 from datetime import datetime
 from .queries import Queries
 
+
 class DataBaseConnection:
     q = Queries()
     # TODO: use a seperate DB for tests? add test DB?
+
     def __init__(self, s3=None, redshift=False):
         """
-        Connects by default to local postgresql. This should eventually default
-        to redshift
+        Connects by default to local postgresql.
         """
 
         self.redshift = redshift
@@ -20,7 +21,11 @@ class DataBaseConnection:
         if not redshift:
             self.engine = sql.create_engine('postgresql://localhost/dev')
         else:
-            self.engine = sql.create_engine(os.environ.get('REDSHIFT_URI'), connect_args={"sslmode": "disable"})
+            self.engine = sql.create_engine(
+                            os.environ.get('REDSHIFT_URI'),
+                            connect_args={'sslrootcert': 'redshift-ca-bundle.crt',
+                                          'sslmode': 'verify-ca'}
+                          )
 
         self.connection = self.engine.connect()
 
@@ -35,9 +40,12 @@ class DataBaseConnection:
 
     def mark_uploaded(self, filename, destination):
         uploaded_at = datetime.now()
-        self.connection.execute(self.q.mark_uploaded.format(filename,
-            destination,
-            uploaded_at))
+        self.connection.execute(self.q.mark_uploaded.format(
+                                    filename,
+                                    destination,
+                                    uploaded_at
+                                )
+                               )
 
     def load_csv(self, table, filename, csv_path, columns, region, iam_role):
         if self.redshift:
@@ -47,7 +55,13 @@ class DataBaseConnection:
             if 's3' in csv_path:
                 path = csv_path.split('/')[-1]
                 self.s3.download_file(path)
-                self.connection.execute(self.q.get_load_csv(table, columns, "/tmp/{}".format(path)))
+                self.connection.execute(
+                                            self.q.get_load_csv(
+                                                table,
+                                                columns,
+                                                "/tmp/{}".format(path)
+                                            )
+                                        )
                 os.remove("/tmp/{}".format(path))
             else:
                 self.connection.execute(self.q.get_load_csv(table, columns, csv_path))

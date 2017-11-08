@@ -36,8 +36,8 @@ class EventParser(Parser):
     def json_to_csv(self, data):
         """
         Use .get to access the JSON as it is Null safe
-        The RegEx replacement using \.\d+Z$ will convert a timestramp structured
-        as 2017-04-10T17:45:22.754Z -> 2017-04-10 17:45:22
+        The RegEx replacement using \.\d+Z$ will convert a timestramp
+        structured as 2017-04-10T17:45:22.754Z -> 2017-04-10 17:45:22
         """
 
         uuid = self.get_uuid(data)
@@ -71,7 +71,7 @@ class EventParser(Parser):
             )
         else:
             result.extend(
-                [None]*10
+                [None] * 10
             )
 
         return result, uuid
