@@ -23,8 +23,7 @@ class DataBaseConnection:
         else:
             self.engine = sql.create_engine(
                             os.environ.get('REDSHIFT_URI'),
-                            connect_args={'sslrootcert': 'redshift-ca-bundle.crt',
-                                          'sslmode': 'verify-ca'}
+                            connect_args={'sslmode': 'verify-ca'}
                           )
 
         self.connection = self.engine.connect()
