@@ -9,3 +9,7 @@ venv
 lambda_deploy/
 *.zip
 lambda*
+awslambda-psycopg2/
+redshift_secrets.yml
+data.txt
+test/
