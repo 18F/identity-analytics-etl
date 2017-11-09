@@ -6,6 +6,7 @@ import hashlib
 
 from .log_parser import Parser
 
+
 class PageViewParser(Parser):
     table = 'pageviews'
     headers = ['method', 'path', 'format', 'controller', 'action',
@@ -38,13 +39,13 @@ class PageViewParser(Parser):
             return data.get('uuid')
         else:
             return hashlib.sha256('|'.join([
-                                            data['path'],
-                                            data['ip'],
-                                            data['timestamp'],
-                                            data['host'],
-                                            str(data['duration'])
-                                          ]).encode('utf-8')
-                                          ).hexdigest()
+                                                data['path'],
+                                                data['ip'],
+                                                data['timestamp'],
+                                                data['host'],
+                                                str(data['duration'])
+                                           ]).encode('utf-8')
+                                 ).hexdigest()
 
     def truncate_path(self, data):
         if data.get('path') is None:
@@ -59,8 +60,8 @@ class PageViewParser(Parser):
     def json_to_csv(self, data):
         """
         Use .get to access the JSON as it is Null safe
-        The RegEx replacement using \.\d+Z$ will convert a timestramp structured
-        as 2017-04-10T17:45:22.754Z -> 2017-04-10 17:45:22
+        The RegEx replacement using \.\d+Z$ will convert a timestramp
+        structured as 2017-04-10T17:45:22.754Z -> 2017-04-10 17:45:22
         """
         uuid = self.get_uuid(data)
         result = [

@@ -5,6 +5,7 @@ import pytz
 from datetime import datetime, timedelta
 from botocore.config import Config
 
+
 class S3:
 
     def __init__(self, source_bucket, dest_bucket, encryption_key):
