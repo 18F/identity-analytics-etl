@@ -10,10 +10,9 @@ def set_redshift_configs():
     # could all be defined inside of the lambda resource in terraform.
     bucket = boto3.resource('s3').Bucket("login-gov-{}-redshift-secrets".format(os.environ.get('env')))
     data = yaml.load(bucket.Object('redshift_secrets.yml').get()['Body'])
-    os.environ['REDSHIFT_URI'] = "redshift+psycopg2://awsuser:{redshift_password}@{redshift_host}/analytics?sslrootcert={cert}".format(
+    os.environ['REDSHIFT_URI'] = "redshift+psycopg2://awsuser:{redshift_password}@{redshift_host}/analytics".format(
         redshift_password=data['redshift_password'],
-        redshift_host=os.environ.get('redshift_host'),
-        cert='redshift-ca-bundle.crt'
+        redshift_host=os.environ.get('redshift_host')
     )
 
 def lambda_handler(event, context):

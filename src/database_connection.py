@@ -21,9 +21,12 @@ class DataBaseConnection:
         if not redshift:
             self.engine = sql.create_engine('postgresql://localhost/dev')
         else:
+            ssl_bundle = os.path.abspath("{}/redshift-ca-bundle.crt".format(os.path.dirname(__file__)))
+            print(ssl_bundle)
             self.engine = sql.create_engine(
                             os.environ.get('REDSHIFT_URI'),
-                            connect_args={'sslmode': 'verify-ca'}
+                            connect_args={'sslrootcert': ssl_bundle,
+                                          'sslmode': 'verify-ca'}
                           )
 
         self.connection = self.engine.connect()
