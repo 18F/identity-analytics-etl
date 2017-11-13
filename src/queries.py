@@ -11,7 +11,7 @@ class Queries:
         self.create_events = """CREATE TABLE events (
                                   id VARCHAR(40) NOT NULL,
                                   name VARCHAR(255) NOT NULL,
-                                  user_agent VARCHAR(1024),
+                                  user_agent VARCHAR(4096),
                                   user_id VARCHAR(40),
                                   user_ip VARCHAR(50),
                                   host VARCHAR(255),
@@ -52,7 +52,7 @@ class Queries:
                                     status SMALLINT,
                                     duration FLOAT,
                                     user_id VARCHAR(40),
-                                    user_agent VARCHAR(1024),
+                                    user_agent VARCHAR(4096),
                                     ip VARCHAR(50),
                                     host VARCHAR(255),
                                     timestamp TIMESTAMP,
