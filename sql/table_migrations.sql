@@ -1,8 +1,9 @@
 BEGIN;
+  DROP TABLE IF EXISTS events_tt;
   CREATE TABLE events_tt (
     id VARCHAR(40) NOT NULL,
     name VARCHAR(255) NOT NULL,
-    user_agent VARCHAR(1024),
+    user_agent VARCHAR(4096),
     user_id VARCHAR(40),
     user_ip VARCHAR(50),
     host VARCHAR(255),
@@ -23,13 +24,14 @@ BEGIN;
     errors VARCHAR(4096))
     DISTKEY(time) SORTKEY(time);
 
-  SELECT * INTO events_tt FROM events;
+  INSERT INTO events_tt (SELECT * FROM events);
 
   DROP TABLE events;
   ALTER TABLE events_tt RENAME TO events;
 END;
 
 BEGIN;
+  DROP TABLE IF EXISTS pageviews_tt;
   CREATE TABLE pageviews_tt (
     method VARCHAR(10) NOT NULL,
     path VARCHAR(1024),
@@ -39,7 +41,7 @@ BEGIN;
     status SMALLINT,
     duration FLOAT,
     user_id VARCHAR(40),
-    user_agent VARCHAR(1024),
+    user_agent VARCHAR(4096),
     ip VARCHAR(50),
     host VARCHAR(255),
     timestamp TIMESTAMP,
@@ -47,7 +49,7 @@ BEGIN;
     )
     DISTKEY(timestamp) SORTKEY(timestamp);
 
-    SELECT * INTO pageviews_tt FROM pageviews;
+    INSERT INTO pageviews_tt (SELECT * FROM pageviews);
 
     DROP TABLE pageviews;
     ALTER TABLE pageviews_tt RENAME TO pageviews;
