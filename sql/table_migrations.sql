@@ -23,7 +23,7 @@ BEGIN;
     errors VARCHAR(4096))
     DISTKEY(time) SORTKEY(time);
 
-  SELECT * INTO events_tt FROM events;
+  INSERT INTO events_tt (SELECT * FROM events);
 
   DROP TABLE events;
   ALTER TABLE events_tt RENAME TO events;
@@ -47,7 +47,7 @@ BEGIN;
     )
     DISTKEY(timestamp) SORTKEY(timestamp);
 
-    SELECT * INTO pageviews_tt FROM pageviews;
+    INSERT INTO pageviews_tt (SELECT * FROM pageviews);
 
     DROP TABLE pageviews;
     ALTER TABLE pageviews_tt RENAME TO pageviews;
