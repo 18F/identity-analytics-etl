@@ -21,7 +21,7 @@ BEGIN;
     loa3 BOOLEAN,
     active_profile BOOLEAN,
     errors VARCHAR(4096))
-    DISTKEY(time), SORTKEY(time);
+    DISTKEY(time) SORTKEY(time);
 
   SELECT * INTO events_tt FROM events;
 
@@ -45,7 +45,7 @@ BEGIN;
     timestamp TIMESTAMP,
     uuid VARCHAR(64) NOT NULL
     )
-    DISTKEY(timestamp), SORTKEY(timestamp);
+    DISTKEY(timestamp) SORTKEY(timestamp);
 
     SELECT * INTO pageviews_tt FROM pageviews;
 
