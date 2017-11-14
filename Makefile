@@ -24,7 +24,6 @@ lambda_buckets:
 	# TODO: Can We automate bucket logging here as well?
 	aws s3 mb s3://login-gov-$(ENVIRONMENT)-redshift-secrets
 	aws s3 cp redshift_secrets.yml s3://login-gov-$(ENVIRONMENT)-redshift-secrets/redshift_secrets.yml
-	aws s3 mb s3://tf-redshift-bucket-$(ENVIRONMENT)-deployments
 
 lambda_build: lambda_cleanup
 	git tag -a $(TAG) -m "Deployed from Makefile"
@@ -44,5 +43,5 @@ lambda_build: lambda_cleanup
 lambda_release: clean lambda_build
 
 lambda_deploy: lambda_release
-	aws s3 cp lambda_$(TAG)_deploy.zip s3://tf-redshift-bucket-$(ENVIRONMENT)-deployments/
+	aws s3 cp lambda_$(TAG)_deploy.zip s3://tf-redshift-bucket-deployments/
 	make lambda_cleanup
