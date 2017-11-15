@@ -34,6 +34,8 @@ class Queries:
 
         self.drop_events = """DROP TABLE IF EXISTS events;"""
 
+        self.lock_uploaded_files = """LOCK TABLE uploaded_files;"""
+
         self.create_uploaded_files = """CREATE TABLE uploaded_files (
                                         s3filename VARCHAR(100) NOT NULL,
                                         destination VARCHAR(100) NOT NULL,
@@ -90,6 +92,9 @@ class Queries:
         self.load_csv = """COPY {table_name} ({columns})
                             FROM :filepath
                             CSV HEADER;"""
+
+    def get_uploaded_files_lock(self):
+        return self.lock_uploaded_files
 
     def get_load_csv(self, table, columns, filepath):
         columns =  ', '.join(

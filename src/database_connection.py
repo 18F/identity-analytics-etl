@@ -41,12 +41,18 @@ class DataBaseConnection:
 
     def mark_uploaded(self, filename, destination):
         uploaded_at = datetime.now()
-        self.connection.execute(self.q.mark_uploaded.format(
-                                    filename,
-                                    destination,
-                                    uploaded_at
-                                )
-                               )
+        trans = self.connection.begin()
+        try:
+            self.connection.execute(self.q.mark_uploaded.format(
+                                        filename,
+                                        destination,
+                                        uploaded_at
+                                    )
+                                   )
+            trans.commit()
+        except Exception as e:
+            trans.rollback()
+            raise e
 
     def load_csv(self, table, filename, csv_path, columns, region, iam_role):
         if self.redshift:
