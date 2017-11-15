@@ -32,7 +32,7 @@ class DataBaseConnection:
 
     def build_db_if_needed(self):
         if not self.engine.dialect.has_table(self.engine, 'uploaded_files'):
-            for query in self.q.get_build_queries()._asdict().values():
+            for query in self.q.get_build_queries(self.redshift)._asdict().values():
                 self.connection.execute(query)
 
     def uploaded_files(self):

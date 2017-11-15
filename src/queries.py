@@ -32,6 +32,7 @@ class Queries:
                                   errors VARCHAR(4096))
                                   DISTKEY(time), SORTKEY(time);"""
 
+        # Postgres compatible 
         self.create_events_dev = """CREATE TABLE events (
                           id VARCHAR(40) NOT NULL,
                           name VARCHAR(255) NOT NULL,
@@ -84,7 +85,7 @@ class Queries:
                                     uuid VARCHAR(64) NOT NULL
                                     )
                                     DISTKEY(timestamp), SORTKEY(timestamp);"""
-
+        # Postgres compatible 
         self.create_pageviews_dev = """CREATE TABLE pageviews (
                                     method VARCHAR(10) NOT NULL,
                                     path VARCHAR(1024),
@@ -184,7 +185,7 @@ class Queries:
         query = sql.text(q).bindparams(*bindparams)
         return query
 
-    def get_build_queries(self, dev=False):
+    def get_build_queries(self, redshift=True):
         BuildQueries = namedtuple('BuildQueries', [
             'create_events',
             'create_uploaded_files',
@@ -197,7 +198,7 @@ class Queries:
         create_user_agents = self.create_user_agents
         create_uploaded_files = self.create_uploaded_files
 
-        if not dev:
+        if not redshift:
             create_events = self.create_events_dev 
             create_pageviews = self.create_pageviews_dev 
 
