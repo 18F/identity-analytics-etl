@@ -32,6 +32,29 @@ class Queries:
                                   errors VARCHAR(4096))
                                   DISTKEY(time), SORTKEY(time);"""
 
+        self.create_events_dev = """CREATE TABLE events (
+                          id VARCHAR(40) NOT NULL,
+                          name VARCHAR(255) NOT NULL,
+                          user_agent VARCHAR(4096),
+                          user_id VARCHAR(40),
+                          user_ip VARCHAR(50),
+                          host VARCHAR(255),
+                          visit_id VARCHAR(40),
+                          visitor_id VARCHAR(40),
+                          time TIMESTAMP,
+                          event_properties VARCHAR(4096),
+
+                          success BOOLEAN,
+                          existing_user BOOLEAN,
+                          otp_method VARCHAR(20),
+                          context VARCHAR(20),
+                          method VARCHAR(20),
+                          authn_context VARCHAR(50),
+                          service_provider VARCHAR(255),
+                          loa3 BOOLEAN,
+                          active_profile BOOLEAN,
+                          errors VARCHAR(4096));"""
+
         self.drop_events = """DROP TABLE IF EXISTS events;"""
 
         self.lock_uploaded_files = """LOCK TABLE uploaded_files;"""
@@ -61,6 +84,22 @@ class Queries:
                                     uuid VARCHAR(64) NOT NULL
                                     )
                                     DISTKEY(timestamp), SORTKEY(timestamp);"""
+
+        self.create_pageviews_dev = """CREATE TABLE pageviews (
+                                    method VARCHAR(10) NOT NULL,
+                                    path VARCHAR(1024),
+                                    format VARCHAR(255),
+                                    controller VARCHAR(100),
+                                    action VARCHAR(15),
+                                    status SMALLINT,
+                                    duration FLOAT,
+                                    user_id VARCHAR(40),
+                                    user_agent VARCHAR(4096),
+                                    ip VARCHAR(50),
+                                    host VARCHAR(255),
+                                    timestamp TIMESTAMP,
+                                    uuid VARCHAR(64) NOT NULL
+                                    );"""
 
         self.drop_pageviews = """DROP TABLE IF EXISTS pageviews;"""
 
@@ -145,7 +184,7 @@ class Queries:
         query = sql.text(q).bindparams(*bindparams)
         return query
 
-    def get_build_queries(self):
+    def get_build_queries(self, dev=False):
         BuildQueries = namedtuple('BuildQueries', [
             'create_events',
             'create_uploaded_files',
@@ -153,11 +192,21 @@ class Queries:
             'create_user_agents'
         ])
 
+        create_user_agents = self.create_user_agents
+        create_pageviews = self.create_pageviews
+        create_user_agents = self.create_user_agents
+        create_uploaded_files = self.create_uploaded_files
+
+        if not dev:
+            create_events = self.create_events_dev 
+            create_pageviews = self.create_pageviews_dev 
+
+
         return BuildQueries._make([
-            self.create_events,
-            self.create_uploaded_files,
-            self.create_pageviews,
-            self.create_user_agents
+            create_events,
+            create_uploaded_files,
+            create_pageviews,
+            create_user_agents
         ])
 
     def get_drop_queries(self):
