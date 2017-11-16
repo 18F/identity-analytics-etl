@@ -36,14 +36,14 @@ class DataBaseConnection:
                 self.connection.execute(query)
 
     def uploaded_files(self):
-        result = self.connection.execute(self.q.get_uploaded_files)
+        result = self.safe_query(self.q.get_uploaded_files)
         return [row['s3filename'] for row in result]
 
     def mark_uploaded(self, filename, destination):
         uploaded_at = datetime.now()
         trans = self.connection.begin()
         try:
-            self.connection.execute(self.q.mark_uploaded.format(
+            self.safe_query(self.q.mark_uploaded.format(
                                         filename,
                                         destination,
                                         uploaded_at
@@ -74,6 +74,17 @@ class DataBaseConnection:
                 self.connection.execute(self.q.get_load_csv(table, columns, csv_path))
 
         self.mark_uploaded(filename, table)
+
+    def safe_query(self, query):
+        result = None
+        trans = self.connection.begin()
+        try:
+            result = self.connection.execute(query)
+            trans.commit()
+        except Exception as e:
+            trans.rollback()
+            raise e
+        return result
 
     def drop_tables(self):
         for query in self.q.get_drop_queries()._asdict().values():
