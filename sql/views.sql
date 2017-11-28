@@ -107,12 +107,18 @@ CREATE VIEW experience_durations_visitor_id AS (
 );
 
 CREATE VIEW daily_active_users AS
-(SELECT count(DISTINCT events.user_id) AS count, events."time"::date AS "time"
-   FROM events
-  GROUP BY events."time"::date);
+(
+  SELECT count(DISTINCT events.user_id) AS count, events."time"::date AS "time"
+  FROM events
+  WHERE events."time"::date >= (NOW() at time zone 'UTC' - interval '30' day) 
+  GROUP BY events."time"::date
+);
 
 CREATE VIEW hourly_active_users AS
-(SELECT count(DISTINCT events.user_id) AS count, events."time"::date AS "day", pgdate_part('hour'::text, events."time") AS hr
-   FROM events
-  GROUP BY events."time"::date, pgdate_part('hour'::text, events."time"));
+(
+  SELECT count(DISTINCT events.user_id) AS count, events."time"::date AS "day", date_part('hour'::text, events."time") AS hr
+  FROM events
+  WHERE events."time"::date >= (NOW() at time zone 'UTC' - interval '30' day) 
+  GROUP BY events."time"::date, date_part('hour'::text, events."time")
+);
 
