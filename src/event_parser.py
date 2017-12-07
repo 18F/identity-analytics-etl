@@ -41,6 +41,8 @@ class EventParser(Parser):
         """
 
         uuid = self.get_uuid(data)
+        sp = data.get('properties').get('service_provider')
+
         result = [
             data.get('id'),
             data.get('name'),
@@ -63,7 +65,7 @@ class EventParser(Parser):
                     data['properties']['event_properties'].get('context'),
                     data['properties']['event_properties'].get('method'),
                     data['properties']['event_properties'].get('authn_context'),
-                    data['properties']['event_properties'].get('service_provider'),
+                    sp,
                     data['properties']['event_properties'].get('loa3'),
                     data['properties']['event_properties'].get('active_profile'),
                     json.dumps(data['properties']['event_properties'].get('errors'))
