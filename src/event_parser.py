@@ -14,6 +14,7 @@ class EventParser(Parser):
                'method', 'authn_context', 'service_provider', 'loa3',
                'active_profile', 'errors']
     uuids = set()
+    service_provider_index = 6
 
     def stream_csv(self, in_io):
         return Parser.stream_csv(self, in_io)
@@ -32,6 +33,11 @@ class EventParser(Parser):
 
     def get_uuid(self, data):
         return data.get('id')
+
+    def get_default_extension(self, sp):
+        res = [None] * 10
+        res[self.service_provider_index] = sp
+        return res
 
     def json_to_csv(self, data):
         """
@@ -72,7 +78,7 @@ class EventParser(Parser):
                 ]
             )
         else:
-            extra = [None] * 6 + [sp] + [None] * 3
+            extra = self.get_default_extension(sp)
             result.extend(extra)
 
         return result, uuid
