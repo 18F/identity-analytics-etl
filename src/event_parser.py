@@ -72,8 +72,7 @@ class EventParser(Parser):
                 ]
             )
         else:
-            result.extend(
-                [None] * 10
-            )
+            extra = [None] * 6 + [sp] + [None] * 3
+            result.extend(extra)
 
         return result, uuid
