@@ -1,6 +1,6 @@
 import os
 import pytz
-
+import logging
 from datetime import datetime, timedelta
 
 from .event_parser import EventParser
@@ -19,7 +19,6 @@ class Uploader:
         self.db_conn = DataBaseConnection(self.s3, redshift)
         self.parsers = (EventParser(), PageViewParser()) if parsers is None else parsers
         if not logger:
-            import logging
             logging.basicConfig(level=logging.INFO)
             self.logger = logging.getLogger('uploader')
         else:   
