@@ -11,14 +11,19 @@ from .s3 import S3
 
 class Uploader:
 
-    def __init__(self, source_bucket, dest_bucket, logger, s3=None, parsers=None, redshift=False, encryption_key="dc12706b-50ea-40b7-8d0e-206962aaa8f7", trigger_file=None, lookback_period=None):
+    def __init__(self, source_bucket, dest_bucket, logger=None, s3=None, parsers=None, redshift=False, encryption_key="dc12706b-50ea-40b7-8d0e-206962aaa8f7", trigger_file=None, lookback_period=None):
         self.redshift = redshift
         self.source_bucket = source_bucket
         self.dest_bucket = dest_bucket
         self.s3 = S3(self.source_bucket, self.dest_bucket, encryption_key) if s3 is None else s3
         self.db_conn = DataBaseConnection(self.s3, redshift)
         self.parsers = (EventParser(), PageViewParser()) if parsers is None else parsers
-        self.logger = logger
+        if not logger:
+            import logging
+            logging.basicConfig(level=logging.INFO)
+            self.logger = logging.getLogger('uploader')
+        else:   
+            self.logger = logger
         self.trigger_file = trigger_file
         self.lookback_period = 20 if lookback_period is None else lookback_period
 

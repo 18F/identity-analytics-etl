@@ -56,7 +56,7 @@ class Queries:
                           active_profile BOOLEAN,
                           errors VARCHAR(4096));"""
 
-        self.drop_events = """DROP TABLE IF EXISTS events;"""
+        self.drop_events = """DROP TABLE IF EXISTS events CASCADE;"""
 
         self.lock_uploaded_files = """LOCK TABLE uploaded_files;"""
 
@@ -67,7 +67,7 @@ class Queries:
 
                                         PRIMARY KEY(s3filename, destination));"""
 
-        self.drop_uploaded_files = """DROP TABLE IF EXISTS uploaded_files;"""
+        self.drop_uploaded_files = """DROP TABLE IF EXISTS uploaded_files CASCADE;"""
 
         self.create_pageviews = """CREATE TABLE pageviews (
                                     method VARCHAR(10) NOT NULL,
@@ -102,7 +102,7 @@ class Queries:
                                     uuid VARCHAR(64) NOT NULL
                                     );"""
 
-        self.drop_pageviews = """DROP TABLE IF EXISTS pageviews;"""
+        self.drop_pageviews = """DROP TABLE IF EXISTS pageviews CASCADE;"""
 
         self.create_user_agents = """CREATE TABLE user_agents (
                                         user_agent VARCHAR(255) NOT NULL,
@@ -113,7 +113,7 @@ class Queries:
                                         PRIMARY KEY(user_agent)
                                       );"""
 
-        self.drop_user_agents = """DROP TABLE IF EXISTS user_agents;"""
+        self.drop_user_agents = """DROP TABLE IF EXISTS user_agents CASCADE;"""
 
         self.get_uploaded_files = """SELECT s3filename
                                      FROM uploaded_files;"""
