@@ -14,6 +14,7 @@ class EventParser(Parser):
                'method', 'authn_context', 'service_provider', 'loa3',
                'active_profile', 'errors']
     uuids = set()
+    service_provider_index = 6
 
     def stream_csv(self, in_io):
         return Parser.stream_csv(self, in_io)
@@ -33,6 +34,11 @@ class EventParser(Parser):
     def get_uuid(self, data):
         return data.get('id')
 
+    def get_default_extension(self, sp):
+        res = [None] * 10
+        res[self.service_provider_index] = sp
+        return res
+
     def json_to_csv(self, data):
         """
         Use .get to access the JSON as it is Null safe
@@ -41,6 +47,8 @@ class EventParser(Parser):
         """
 
         uuid = self.get_uuid(data)
+        sp = data.get('properties').get('service_provider')
+
         result = [
             data.get('id'),
             data.get('name'),
@@ -63,15 +71,14 @@ class EventParser(Parser):
                     data['properties']['event_properties'].get('context'),
                     data['properties']['event_properties'].get('method'),
                     data['properties']['event_properties'].get('authn_context'),
-                    data['properties']['event_properties'].get('service_provider'),
+                    sp,
                     data['properties']['event_properties'].get('loa3'),
                     data['properties']['event_properties'].get('active_profile'),
                     json.dumps(data['properties']['event_properties'].get('errors'))
                 ]
             )
         else:
-            result.extend(
-                [None] * 10
-            )
+            extra = self.get_default_extension(sp)
+            result.extend(extra)
 
         return result, uuid
