@@ -46,11 +46,10 @@ class Uploader:
             for parser in self.parsers:
                 try:
                     self.etl(parser, f)
-                except Exception as e:
+                except:
                     self.logger.error("An Error occurred parsing {}".format(f))
                     print("An Error occurred parsing {}".format(f))
-                    print(e)
-                    pass
+                    raise
                 
 
     def etl(self, parser, logfile):
