@@ -25,7 +25,7 @@ class PageViewParser(Parser):
         return Parser.has_valid_json(self, line)
 
     def format_check(self, line):
-        if ('{' not in line) or ('controller' not in line) or (not self.has_valid_json(line)):
+        if ('{' not in line) or ('path' not in line and 'controller' not in line) or (not self.has_valid_json(line)):
             return True
         else:
             return False
