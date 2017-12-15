@@ -30,7 +30,7 @@ class Queries:
                                   loa3 BOOLEAN,
                                   active_profile BOOLEAN,
                                   errors VARCHAR(4096))
-                                  DISTKEY(time), SORTKEY(time);"""
+                                  SORTKEY(time);"""
 
         # Postgres compatible 
         self.create_events_dev = """CREATE TABLE events (
@@ -84,7 +84,7 @@ class Queries:
                                     timestamp TIMESTAMP,
                                     uuid VARCHAR(64) NOT NULL
                                     )
-                                    DISTKEY(timestamp), SORTKEY(timestamp);"""
+                                    SORTKEY(timestamp);"""
         # Postgres compatible 
         self.create_pageviews_dev = """CREATE TABLE pageviews (
                                     method VARCHAR(10) NOT NULL,
