@@ -32,7 +32,7 @@ class Queries:
                                   errors VARCHAR(4096))
                                   DISTKEY(time), SORTKEY(time);"""
 
-        # Postgres compatible 
+        # Postgres compatible
         self.create_events_dev = """CREATE TABLE events (
                           id VARCHAR(40) NOT NULL,
                           name VARCHAR(255) NOT NULL,
@@ -55,6 +55,21 @@ class Queries:
                           loa3 BOOLEAN,
                           active_profile BOOLEAN,
                           errors VARCHAR(4096));"""
+
+        self.create_events_devices = """CREATE TABLE events_devices (
+                                            id VARCHAR(40) NOT NULL,
+                                            name VARCHAR(255) NOT NULL,
+                                            user_agent VARCHAR(4096),
+                                            browser_name VARCHAR(255),
+                                            browser_version VARCHAR(255),
+                                            browser_platform_name VARCHAR(255),
+                                            browser_platform_version VARCHAR(255),
+                                            browser_device_name VARCHAR(255),
+                                            browser_device_type VARCHAR(255),
+                                            browser_bot BOOLEAN,
+                                            time TIMESTAMP
+                                        ); """
+        self.drop_events_devices = """DROP TABLE IF EXISTS events_devices;"""
 
         self.drop_events = """DROP TABLE IF EXISTS events CASCADE;"""
 
@@ -85,7 +100,7 @@ class Queries:
                                     uuid VARCHAR(64) NOT NULL
                                     )
                                     DISTKEY(timestamp), SORTKEY(timestamp);"""
-        # Postgres compatible 
+        # Postgres compatible
         self.create_pageviews_dev = """CREATE TABLE pageviews (
                                     method VARCHAR(10) NOT NULL,
                                     path VARCHAR(1024),
@@ -199,8 +214,8 @@ class Queries:
         create_uploaded_files = self.create_uploaded_files
 
         if not redshift:
-            create_events = self.create_events_dev 
-            create_pageviews = self.create_pageviews_dev 
+            create_events = self.create_events_dev
+            create_pageviews = self.create_pageviews_dev
 
 
         return BuildQueries._make([
