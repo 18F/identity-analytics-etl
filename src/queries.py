@@ -203,12 +203,14 @@ class Queries:
     def get_build_queries(self, redshift=True):
         BuildQueries = namedtuple('BuildQueries', [
             'create_events',
+            'create_events_devices',
             'create_uploaded_files',
             'create_pageviews',
             'create_user_agents'
         ])
 
-        create_user_agents = self.create_user_agents
+        create_events = self.create_events
+        create_events_devices = self.create_events_devices
         create_pageviews = self.create_pageviews
         create_user_agents = self.create_user_agents
         create_uploaded_files = self.create_uploaded_files
@@ -217,9 +219,9 @@ class Queries:
             create_events = self.create_events_dev
             create_pageviews = self.create_pageviews_dev
 
-
         return BuildQueries._make([
             create_events,
+            create_events_devices,
             create_uploaded_files,
             create_pageviews,
             create_user_agents
@@ -228,6 +230,7 @@ class Queries:
     def get_drop_queries(self):
         DropQueries = namedtuple('DropQueries', [
             'drop_events',
+            'drop_events_devices',
             'drop_uploaded_files',
             'drop_pageviews',
             'drop_user_agents'
@@ -235,6 +238,7 @@ class Queries:
 
         return DropQueries._make([
             self.drop_events,
+            self.drop_events_devices,
             self.drop_uploaded_files,
             self.drop_pageviews,
             self.drop_user_agents
