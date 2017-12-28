@@ -30,7 +30,7 @@ class Queries:
                                   loa3 BOOLEAN,
                                   active_profile BOOLEAN,
                                   errors VARCHAR(4096))
-                                  DISTKEY(time), SORTKEY(time);"""
+                                  SORTKEY(time);"""
 
         # Postgres compatible
         self.create_events_dev = """CREATE TABLE events (
@@ -69,6 +69,7 @@ class Queries:
                                             browser_bot BOOLEAN,
                                             time TIMESTAMP
                                         ); """
+
         self.drop_events_devices = """DROP TABLE IF EXISTS events_devices;"""
 
         self.drop_events = """DROP TABLE IF EXISTS events CASCADE;"""
@@ -98,8 +99,7 @@ class Queries:
                                     host VARCHAR(255),
                                     timestamp TIMESTAMP,
                                     uuid VARCHAR(64) NOT NULL
-                                    )
-                                    DISTKEY(timestamp), SORTKEY(timestamp);"""
+                                    ) SORTKEY(timestamp);"""
         # Postgres compatible
         self.create_pageviews_dev = """CREATE TABLE pageviews (
                                     method VARCHAR(10) NOT NULL,
