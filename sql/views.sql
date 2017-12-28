@@ -1,3 +1,14 @@
+-- Postgres alias for Redshift GETDATE() 
+CREATE OR REPLACE FUNCTION GETDATE() 
+RETURNS timestamp AS $$
+DECLARE
+  dt timestamp;  
+BEGIN
+  SELECT NOW() at time zone 'UTC' INTO dt;
+  RETURN dt;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE VIEW password_success_rate
 as (
       SELECT SUM(success::integer)/COUNT(*)::float as success_rate,
@@ -110,7 +121,7 @@ CREATE VIEW daily_active_users AS
 (
   SELECT count(DISTINCT events.user_id) AS count, events."time"::date AS "time"
   FROM events
-  WHERE events."time"::date >= (NOW() at time zone 'UTC' - interval '30' day)
+  WHERE events."time"::date >= (GETDATE() - interval '30' day) 
   GROUP BY events."time"::date
 );
 
@@ -118,6 +129,6 @@ CREATE VIEW hourly_active_users AS
 (
   SELECT count(DISTINCT events.user_id) AS count, events."time"::date AS "day", date_part('hour', events."time")::text AS hr
   FROM events
-  WHERE events."time"::date >= (NOW() at time zone 'UTC' - interval '30' day)
+  WHERE events."time"::date >= (GETDATE() - interval '30' day) 
   GROUP BY events."time"::date, date_part('hour', events."time")::text
 );

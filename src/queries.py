@@ -100,6 +100,7 @@ class Queries:
                                     timestamp TIMESTAMP,
                                     uuid VARCHAR(64) NOT NULL
                                     ) SORTKEY(timestamp);"""
+        
         # Postgres compatible
         self.create_pageviews_dev = """CREATE TABLE pageviews (
                                     method VARCHAR(10) NOT NULL,
