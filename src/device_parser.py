@@ -20,6 +20,9 @@ class DeviceParser(Parser):
     def has_valid_json(self, line):
         return Parser.has_valid_json(self, line)
 
+    def get_uuid(self, data):
+        return data.get('id')
+
     def format_check(self, line):
         if 'event_properties' not in line or 'browser' not in line or not self.has_valid_json(line):
             return True
