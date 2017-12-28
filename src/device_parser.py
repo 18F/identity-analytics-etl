@@ -38,7 +38,7 @@ class DeviceParser(Parser):
             data.get('properties').get('browser_platform_version'),
             data.get('properties').get('browser_device_name'),
             data.get('properties').get('browser_device_type'),
-            data.get('properties').get('browser_bot')
+            data.get('properties').get('browser_bot'),
             re.sub(r"\.\d+Z$", '', data.get('time').replace('T', ' ')),
         ]
 
