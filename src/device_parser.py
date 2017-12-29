@@ -7,6 +7,7 @@ from .log_parser import Parser
 
 class DeviceParser(Parser):
     table = 'events_devices'
+    uuids = set()
     headers = ['id', 'name', 'user_agent', 'browser_name', 'browser_version',
                'browser_platform_name', 'browser_platform_version',
                'browser_device_name', 'browser_device_type', 'browser_bot', 'time']
