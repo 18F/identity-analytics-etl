@@ -25,7 +25,7 @@ class DeviceParser(Parser):
         return data.get('id')
 
     def format_check(self, line):
-        if 'event_properties' not in line or 'browser' not in line or not self.has_valid_json(line):
+        if ('event_properties' not in line) or ('browser' not in line) or (not self.has_valid_json(line)):
             return True
         else:
             return False
@@ -36,6 +36,7 @@ class DeviceParser(Parser):
         result = [
             data.get('id'),
             data.get('name'),
+            data.get('user_agent'),
             data.get('properties').get('browser_name'),
             data.get('properties').get('browser_version'),
             data.get('properties').get('browser_platform_name'),
