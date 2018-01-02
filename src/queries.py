@@ -32,7 +32,7 @@ class Queries:
                                   errors VARCHAR(4096))
                                   SORTKEY(time);"""
 
-        # Postgres compatible 
+        # Postgres compatible
         self.create_events_dev = """CREATE TABLE events (
                           id VARCHAR(40) NOT NULL,
                           name VARCHAR(255) NOT NULL,
@@ -55,6 +55,22 @@ class Queries:
                           loa3 BOOLEAN,
                           active_profile BOOLEAN,
                           errors VARCHAR(4096));"""
+
+        self.create_events_devices = """CREATE TABLE events_devices (
+                                            id VARCHAR(40) NOT NULL,
+                                            name VARCHAR(255) NOT NULL,
+                                            user_agent VARCHAR(4096),
+                                            browser_name VARCHAR(255),
+                                            browser_version VARCHAR(255),
+                                            browser_platform_name VARCHAR(255),
+                                            browser_platform_version VARCHAR(255),
+                                            browser_device_name VARCHAR(255),
+                                            browser_device_type VARCHAR(255),
+                                            browser_bot BOOLEAN,
+                                            time TIMESTAMP
+                                        ); """
+
+        self.drop_events_devices = """DROP TABLE IF EXISTS events_devices;"""
 
         self.drop_events = """DROP TABLE IF EXISTS events CASCADE;"""
 
@@ -83,9 +99,9 @@ class Queries:
                                     host VARCHAR(255),
                                     timestamp TIMESTAMP,
                                     uuid VARCHAR(64) NOT NULL
-                                    )
-                                    SORTKEY(timestamp);"""
-        # Postgres compatible 
+                                    ) SORTKEY(timestamp);"""
+        
+        # Postgres compatible
         self.create_pageviews_dev = """CREATE TABLE pageviews (
                                     method VARCHAR(10) NOT NULL,
                                     path VARCHAR(1024),
@@ -188,23 +204,25 @@ class Queries:
     def get_build_queries(self, redshift=True):
         BuildQueries = namedtuple('BuildQueries', [
             'create_events',
+            'create_events_devices',
             'create_uploaded_files',
             'create_pageviews',
             'create_user_agents'
         ])
 
-        create_user_agents = self.create_user_agents
+        create_events = self.create_events
+        create_events_devices = self.create_events_devices
         create_pageviews = self.create_pageviews
         create_user_agents = self.create_user_agents
         create_uploaded_files = self.create_uploaded_files
 
         if not redshift:
-            create_events = self.create_events_dev 
-            create_pageviews = self.create_pageviews_dev 
-
+            create_events = self.create_events_dev
+            create_pageviews = self.create_pageviews_dev
 
         return BuildQueries._make([
             create_events,
+            create_events_devices,
             create_uploaded_files,
             create_pageviews,
             create_user_agents
@@ -213,6 +231,7 @@ class Queries:
     def get_drop_queries(self):
         DropQueries = namedtuple('DropQueries', [
             'drop_events',
+            'drop_events_devices',
             'drop_uploaded_files',
             'drop_pageviews',
             'drop_user_agents'
@@ -220,6 +239,7 @@ class Queries:
 
         return DropQueries._make([
             self.drop_events,
+            self.drop_events_devices,
             self.drop_uploaded_files,
             self.drop_pageviews,
             self.drop_user_agents
