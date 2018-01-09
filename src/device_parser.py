@@ -36,7 +36,7 @@ class DeviceParser(Parser):
         result = [
             data.get('id'),
             data.get('name'),
-            data.get('user_agent'),
+            data.get('properties').get('user_agent'),
             data.get('properties').get('browser_name'),
             data.get('properties').get('browser_version'),
             data.get('properties').get('browser_platform_name'),
