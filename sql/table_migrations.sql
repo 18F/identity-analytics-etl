@@ -128,7 +128,7 @@ CREATE VIEW daily_active_users AS
 (
   SELECT count(DISTINCT events.user_id) AS count, events."time"::date AS "time"
   FROM events
-  WHERE events."time"::date >= (NOW() at time zone 'UTC' - interval '30' day)
+  WHERE events."time"::date >= (GETDATE() at time zone 'UTC' - interval '30' day)
   GROUP BY events."time"::date
 );
 
@@ -136,7 +136,7 @@ CREATE VIEW hourly_active_users AS
 (
   SELECT count(DISTINCT events.user_id) AS count, events."time"::date AS "day", date_part('hour', events."time")::text AS hr
   FROM events
-  WHERE events."time"::date >= (NOW() at time zone 'UTC' - interval '30' day)
+  WHERE events."time"::date >= (GETDATE() at time zone 'UTC' - interval '30' day)
   GROUP BY events."time"::date, date_part('hour', events."time")::text
 );
 
