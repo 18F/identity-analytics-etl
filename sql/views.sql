@@ -43,6 +43,8 @@ CREATE VIEW experience_durations AS (
     AND
       t1.visit_id = t2.visit_id
     WHERE EXTRACT(epoch FROM (t2.time - t1.time)) > 0
+    AND t1.time::date >= (DATEADD(month, -1, GETDATE()) at time zone 'UTC') 
+    AND t2.time::date >= (DATEADD(month, -1, GETDATE()) at time zone 'UTC') 
   )
   SELECT q.exp_name,q.duration,q.time FROM
   (
@@ -87,7 +89,9 @@ CREATE VIEW experience_durations_visitor_id AS (
       t1.user_id = t2.user_id
     AND
       t1.visitor_id = t2.visitor_id
-    WHERE EXTRACT(epoch FROM (t2.time - t1.time)) > 0
+    WHERE EXTRACT(epoch FROM (t2.time - t1.time)) > 0 
+    AND t1.time::date >= (DATEADD(month, -1, GETDATE()) at time zone 'UTC')  
+    AND t2.time::date >= (DATEADD(month, -1, GETDATE()) at time zone 'UTC')
   )
   SELECT q.exp_name,q.duration,q.time FROM
   (
