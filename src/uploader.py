@@ -12,11 +12,12 @@ from .s3 import S3
 
 class Uploader:
 
-    def __init__(self, source_bucket, dest_bucket, logger=None, s3=None, parsers=None, redshift=False, encryption_key="dc12706b-50ea-40b7-8d0e-206962aaa8f7", trigger_file=None, lookback_period=None):
+    def __init__(self, source_bucket, dest_bucket, dest_bucket_parquet, logger=None, s3=None, parsers=None, redshift=False, encryption_key="dc12706b-50ea-40b7-8d0e-206962aaa8f7", trigger_file=None, lookback_period=None):
         self.redshift = redshift
         self.source_bucket = source_bucket
         self.dest_bucket = dest_bucket
-        self.s3 = S3(self.source_bucket, self.dest_bucket, encryption_key) if s3 is None else s3
+        self.dest_bucket_parquet = dest_bucket_parquet
+        self.s3 = S3(self.source_bucket, self.dest_bucket, self.dest_bucket_parquet, encryption_key) if s3 is None else s3
         self.db_conn = DataBaseConnection(self.s3, redshift)
         self.parsers = (EventParser(), PageViewParser(), DeviceParser()) if parsers is None else parsers
         if not logger:
@@ -55,11 +56,14 @@ class Uploader:
 
     def etl(self, parser, logfile):
         csv_name = "{}.{}.csv".format(logfile.replace('.txt', ''), parser.table)
+        parquet_name = "{}.{}.parquet".format(logfile.replace('.txt', ''), parser.table)
         in_file = self.s3.get_logfile(logfile)
 
-        processed_rows, out = parser.stream_csv(in_file.read())
+        processed_rows, out, out_parquet = parser.stream_csv(in_file.read())
+
         if processed_rows > 0:
             self.s3.new_file(out, csv_name)
+            self.s3.new_file_parquet(out_parquet, csv_name)
             self.db_conn.load_csv(parser.table,
                                   logfile,
                                   self.s3.get_path(csv_name),
