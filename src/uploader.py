@@ -63,7 +63,7 @@ class Uploader:
 
         if processed_rows > 0:
             self.s3.new_file(out, csv_name)
-            self.s3.new_file_parquet(out_parquet, csv_name)
+            self.s3.new_file_parquet(out_parquet, parquet_name)
             self.db_conn.load_csv(parser.table,
                                   logfile,
                                   self.s3.get_path(csv_name),
