@@ -8,7 +8,7 @@ from botocore.config import Config
 
 class S3:
 
-    def __init__(self, source_bucket, dest_bucket, encryption_key):
+    def __init__(self, source_bucket, dest_bucket, dest_bucket_parquet, encryption_key):
         self.conn = boto3.resource(
             's3',
             config=Config(signature_version='s3v4')
@@ -16,6 +16,7 @@ class S3:
 
         self.source_bucket = self.conn.Bucket(source_bucket)
         self.dest_bucket = self.conn.Bucket(dest_bucket)
+        self.dest_bucket_parquet = self.conn.Bucket(dest_bucket_parquet)
         self.encryption_key = encryption_key
         self.key_check = lambda key: ('.txt' in key) and ('cloud' not in key)
 
@@ -60,6 +61,16 @@ class S3:
         res = io.BytesIO(out.getvalue().encode('utf-8'))
         self.dest_bucket.upload_fileobj(
             res,
+            filename,
+            ExtraArgs={
+                "SSEKMSKeyId": self.encryption_key,
+                "ServerSideEncryption": 'aws:kms'
+            }
+        )
+
+    def new_file_parquet(self, out, filename):
+        self.dest_bucket.upload_fileobj(
+            out,
             filename,
             ExtraArgs={
                 "SSEKMSKeyId": self.encryption_key,

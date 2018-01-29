@@ -19,9 +19,11 @@ if __name__ == '__main__':
     os.environ['S3_USE_SIGV4'] = 'True'
     if 'env' in os.environ.keys():
         bucket = "login-gov-{}-analytics".format(os.environ['env'])
+        bucket_parquet = "login-gov-{}-analytics".format(os.environ['env'])
     else:
         bucket = 'login-gov-int-analytics'
+        bucket_parquet = 'login-gov-int-analytics-parquet'
 
     set_redshift_configs('int')
-    uploader = src.Uploader('login-gov-int-logs', bucket, redshift=True)
+    uploader = src.Uploader('login-gov-int-logs', bucket, bucket_parquet, redshift=True)
     uploader.run()

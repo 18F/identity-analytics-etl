@@ -3,7 +3,10 @@ import csv
 import re
 import io
 import hashlib
-
+import numpy as np
+import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
 
 class Parser(object):
     headers = []
@@ -11,6 +14,7 @@ class Parser(object):
     def stream_csv(self, in_io):
         rows = 0
         out = io.StringIO()
+        out_parquet = io.BytesIO()
         writer = csv.writer(out, delimiter=',')
         writer.writerow(self.headers)
 
@@ -27,7 +31,21 @@ class Parser(object):
             rows += 1
 
         out.seek(0)
-        return rows, out
+
+        # Read CSV into pandas DataFrame
+        df = pd.read_csv(out)
+
+        # Convert pandas.DataFrame -> pyarrow.Table (Parquet)
+        out_parquet = pa.Table.from_pandas(df)
+
+        # Write parquet table.
+        pq.write_table(table, out_parquet)
+
+        # Reset all FP's
+        out_parquet.seek(0)
+        out.seek(0)
+
+        return rows, out, out_parquet
 
     def extract_json(self, line):
         json_part = line[line.index('{'):]
@@ -56,3 +74,6 @@ class Parser(object):
         uuid = self.get_uuid(data)
         result = [data.get(header) for header in self.headers]
         return result, uuid
+
+
+
