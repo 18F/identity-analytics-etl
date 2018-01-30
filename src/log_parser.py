@@ -36,7 +36,7 @@ class Parser(object):
         df = pd.read_csv(out)
 
         # Convert pandas.DataFrame -> pyarrow.Table (Parquet)
-        out_parquet = pa.Table.from_pandas(df)
+        table = pa.Table.from_pandas(df)
 
         # Write parquet table.
         pq.write_table(table, out_parquet)
