@@ -69,7 +69,7 @@ class S3:
         )
 
     def new_file_parquet(self, out, filename):
-        self.dest_bucket.upload_fileobj(
+        self.dest_bucket_parquet.upload_fileobj(
             out,
             filename,
             ExtraArgs={

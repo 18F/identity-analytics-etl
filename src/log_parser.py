@@ -15,6 +15,7 @@ class Parser(object):
         rows = 0
         out = io.StringIO()
         out_parquet = io.BytesIO()
+        df = pd.DataFrame(columns=self.headers)
         writer = csv.writer(out, delimiter=',')
         writer.writerow(self.headers)
 
@@ -28,12 +29,8 @@ class Parser(object):
 
             self.uuids.add(uuid)
             writer.writerow(result)
+            df.loc[len(df)] = result
             rows += 1
-
-        out.seek(0)
-
-        # Read CSV into pandas DataFrame
-        df = pd.read_csv(out)
 
         # Convert pandas.DataFrame -> pyarrow.Table (Parquet)
         table = pa.Table.from_pandas(df)
@@ -74,6 +71,3 @@ class Parser(object):
         uuid = self.get_uuid(data)
         result = [data.get(header) for header in self.headers]
         return result, uuid
-
-
-
