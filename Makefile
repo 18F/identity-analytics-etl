@@ -26,19 +26,9 @@ lambda_buckets:
 	aws s3 cp redshift_secrets.yml s3://login-gov-$(ENVIRONMENT)-redshift-secrets/redshift_secrets.yml
 
 lambda_build: lambda_cleanup
+	docker run -v /Users/colincraig/identity-analytics-etl:/build-analytics -it --rm ubuntu bash build-analytics/build.sh $(TAG)
 	git tag -a $(TAG) -m "Deployed from Makefile"
 	git push origin --tags
-	mkdir lambda_$(TAG)_deploy
-	chmod u=rwx,go=r function.py
-	cp -R src lambda_$(TAG)_deploy && cp function.py lambda_$(TAG)_deploy
-	pip install -Ur requirements.txt -t ./lambda_$(TAG)_deploy
-	rm -rf lambda_$(TAG)_deploy/psycopg2
-	mv psycopg2-3.6/ psycopg2/
-	cp -R psycopg2 lambda_$(TAG)_deploy/
-	mv psycopg2/ psycopg2-3.6/
-	cd lambda_$(TAG)_deploy && zip -r -q lambda_$(TAG)_deploy.zip .
-	cd ..
-	mv lambda_$(TAG)_deploy/lambda_$(TAG)_deploy.zip .
 
 lambda_release: clean lambda_build
 
