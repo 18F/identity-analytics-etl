@@ -1,8 +1,14 @@
 cd build-analytics \
+&& export MAIN_DIR=$(pwd) \
 && apt-get update \
-&& apt-get install python-pip \
-&& apt-get install zip \
-&& apt-get install git \
+&& apt-get install -y python-pip \
+&& apt-get install -y python3-pip python3-dev \
+&& cd /usr/local/bin \
+&& ln -s /usr/bin/python3 python \
+&& pip3 install --upgrade pip \
+&& cd $MAIN_DIR \
+&& apt-get install -y zip \
+&& apt-get install -y git \
 && chmod u=rwx,go=r function.py \
 && mkdir lambda_$1_deploy \
 && cp -R src lambda_$1_deploy && cp function.py lambda_$1_deploy \
