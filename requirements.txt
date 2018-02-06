@@ -9,3 +9,4 @@ s3transfer==0.1.10
 six==1.10.0
 pyYAML==3.12
 pytz==2017.2
+psycopg2==2.7.3.2
