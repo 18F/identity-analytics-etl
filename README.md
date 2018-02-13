@@ -8,8 +8,13 @@ for login.gov
 
 ## Developing
 
-The repository uses `python3` and `virtualenv`
+The repository uses `python3`, `virtualenv`, and `docker`
 
+To install Docker:  
+(MacOSX) https://docs.docker.com/docker-for-mac/install/#install-and-run-docker-for-mac
+(Debian) https://docs.docker.com/install/linux/docker-ce/debian/ 
+(Ubuntu) https://docs.docker.com/install/linux/docker-ce/ubuntu/#os-requirements
+  
 To install requirements:
 
 ```
