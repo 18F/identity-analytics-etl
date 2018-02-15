@@ -13,3 +13,5 @@ awslambda-psycopg2/
 redshift_secrets.yml
 data.txt
 test/
+.coverage
+.pytest_cache/*
