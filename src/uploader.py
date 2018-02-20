@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from .event_parser import EventParser
 from .pageview_parser import PageViewParser
 from .device_parser import DeviceParser
+from .email_parser import EmailParser
 from .database_connection import DataBaseConnection
 from .s3 import S3
 
@@ -18,7 +19,7 @@ class Uploader:
         self.dest_bucket = dest_bucket
         self.s3 = S3(self.source_bucket, self.dest_bucket, encryption_key) if s3 is None else s3
         self.db_conn = DataBaseConnection(self.s3, redshift)
-        self.parsers = (EventParser(), PageViewParser(), DeviceParser()) if parsers is None else parsers
+        self.parsers = (EventParser(), PageViewParser(), DeviceParser(), EmailParser()) if parsers is None else parsers
         if not logger:
             logging.basicConfig(level=logging.INFO)
             self.logger = logging.getLogger('uploader')
