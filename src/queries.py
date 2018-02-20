@@ -74,6 +74,15 @@ class Queries:
 
         self.drop_events = """DROP TABLE IF EXISTS events CASCADE;"""
 
+        self.create_events_email = """CREATE TABLE events_email (
+                                            id VARCHAR(40) NOT NULL,
+                                            name VARCHAR(255) NOT NULL,
+                                            domain_name VARCHAR(255),
+                                            time TIMESTAMP
+                                        ); """
+
+        self.drop_events_email = """DROP TABLE IF EXISTS events_email;"""
+
         self.lock_uploaded_files = """LOCK TABLE uploaded_files;"""
 
         self.create_uploaded_files = """CREATE TABLE uploaded_files (
@@ -205,6 +214,7 @@ class Queries:
         BuildQueries = namedtuple('BuildQueries', [
             'create_events',
             'create_events_devices',
+            'create_events_email',
             'create_uploaded_files',
             'create_pageviews',
             'create_user_agents'
@@ -212,6 +222,7 @@ class Queries:
 
         create_events = self.create_events
         create_events_devices = self.create_events_devices
+        create_events_email = self.create_events_email
         create_pageviews = self.create_pageviews
         create_user_agents = self.create_user_agents
         create_uploaded_files = self.create_uploaded_files
@@ -223,6 +234,7 @@ class Queries:
         return BuildQueries._make([
             create_events,
             create_events_devices,
+            create_events_email,
             create_uploaded_files,
             create_pageviews,
             create_user_agents
@@ -232,6 +244,7 @@ class Queries:
         DropQueries = namedtuple('DropQueries', [
             'drop_events',
             'drop_events_devices',
+            'drop_events_email',
             'drop_uploaded_files',
             'drop_pageviews',
             'drop_user_agents'
@@ -240,6 +253,7 @@ class Queries:
         return DropQueries._make([
             self.drop_events,
             self.drop_events_devices,
+            self.drop_events_email,
             self.drop_uploaded_files,
             self.drop_pageviews,
             self.drop_user_agents
