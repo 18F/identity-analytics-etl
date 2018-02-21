@@ -15,6 +15,19 @@ def set_redshift_configs(env):
     )
     os.environ['env'] = env
 
+def load_additional_deps():
+    import sys
+    import zipfile
+    filename = 'dependencies.zip'
+    zip_file_path = "/tmp/{}".format(filename)
+    sys.path.append('/')
+    bucket = boto3.resource('s3').Bucket("lambda-dependencies")
+    # download addl deps from s3, and put them into /tmp
+    bucket.download_file(filename, zip_file_path)
+    zip_ref = zipfile.ZipFile(zip_file_path, 'r')
+    zip_ref.extractall('/tmp')
+    zip_ref.close()
+
 if __name__ == '__main__':
     os.environ['S3_USE_SIGV4'] = 'True'
     if 'env' in os.environ.keys():
@@ -24,6 +37,10 @@ if __name__ == '__main__':
         bucket = 'login-gov-int-analytics'
         bucket_parquet = 'login-gov-int-analytics-parquet'
 
-    set_redshift_configs('int')
+    set_redshift_configs(os.environ['env'])
+
+    # Load additional dependencies for parquet file output.
+    if env == 'int' or env == 'prod':
+        load_additional_deps()
     uploader = src.Uploader('login-gov-int-logs', bucket, bucket_parquet, redshift=True)
     uploader.run()

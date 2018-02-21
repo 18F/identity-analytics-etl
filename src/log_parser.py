@@ -4,8 +4,14 @@ import re
 import io
 import hashlib
 import numpy as np
+
+# Try loading additional dependencies from tmp.
+import sys
+sys.path.append('/tmp')
+import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
+
 
 class Parser(object):
     headers = []
@@ -28,11 +34,14 @@ class Parser(object):
 
             self.uuids.add(uuid)
             writer.writerow(result)
+            df.loc[len(df)] = result
             rows += 1
-        
-        out.seek(0)
-        # Convert CSV -> Parquet table + Write parquet table.
-        pq.write_table(pa.Table.from_csv(out), out_parquet)
+
+        # Convert pandas.DataFrame -> pyarrow.Table (Parquet)
+        table = pa.Table.from_pandas(df)
+
+        # Write parquet table.
+        pq.write_table(table, out_parquet)
 
         # Reset all FP's
         out_parquet.seek(0)
