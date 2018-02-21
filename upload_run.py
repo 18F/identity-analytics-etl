@@ -40,7 +40,7 @@ if __name__ == '__main__':
     set_redshift_configs(os.environ['env'])
 
     # Load additional dependencies for parquet file output.
-    if env == 'int' or env == 'prod':
+    if os.environ['env'] == 'int' or os.environ['env'] == 'prod':
         load_additional_deps()
     uploader = src.Uploader('login-gov-int-logs', bucket, bucket_parquet, redshift=True)
     uploader.run()
