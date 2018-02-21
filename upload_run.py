@@ -21,7 +21,7 @@ def load_additional_deps():
     filename = 'dependencies.zip'
     zip_file_path = "/tmp/{}".format(filename)
     sys.path.append('/')
-    bucket = boto3.resource('s3').Bucket("lambda-dependencies")
+    bucket = boto3.resource('s3').Bucket("login-gov-analytics-dependencies")
     # download addl deps from s3, and put them into /tmp
     bucket.download_file(filename, zip_file_path)
     zip_ref = zipfile.ZipFile(zip_file_path, 'r')
