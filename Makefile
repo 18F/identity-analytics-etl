@@ -1,7 +1,7 @@
 venv: venv/bin/activate
 venv/bin/activate: requirements.txt
 	test -d venv || python3 -m venv venv
-	venv/bin/pip install -Ur requirements.txt
+	venv/bin/pip install -Ur requirements_dev.txt
 	touch venv/bin/activate
 
 test: venv
@@ -26,7 +26,7 @@ lambda_buckets:
 	aws s3 cp redshift_secrets.yml s3://login-gov-$(ENVIRONMENT)-redshift-secrets/redshift_secrets.yml
 
 lambda_build: lambda_cleanup
-	docker run -v /Users/colincraig/identity-analytics-etl:/build-analytics -it --rm ubuntu bash build-analytics/build.sh $(TAG)
+	docker run -v $(PWD):/build-analytics -it --rm ubuntu:artful bash build-analytics/build.sh $(TAG)
 	git tag -a $(TAG) -m "Deployed from Makefile"
 	git push origin --tags
 
