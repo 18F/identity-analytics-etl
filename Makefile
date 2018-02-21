@@ -34,4 +34,5 @@ lambda_release: clean lambda_build
 
 lambda_deploy: lambda_release
 	aws s3 cp lambda_$(TAG)_deploy.zip s3://tf-redshift-bucket-deployments/
+	aws s3 cp $(PWD)/additional_dependencies/dependencies.zip s3://login-gov-analytics-dependencies/
 	make lambda_cleanup
