@@ -3,7 +3,7 @@ import os
 import sys
 import boto3
 import src
-
+import logging
 
 def set_redshift_configs():
     # The bucket name and filename
@@ -16,6 +16,8 @@ def set_redshift_configs():
     )
 
 def lambda_handler(event, context):
+    logging.basicConfig(level=logging.INFO)
+    uploader_logger = logging.getLogger('uploader')
     set_redshift_configs()
     trigger_file = event["Records"][0]["s3"]["object"]["key"]
     dest_bucket = "login-gov-{}-analytics".format(os.environ.get('env'))
@@ -24,6 +26,7 @@ def lambda_handler(event, context):
     uploader = src.Uploader(
         source_bucket,
         dest_bucket,
+        uploader_logger,
         redshift=True,
         encryption_key=os.environ.get('encryption_key'),
         trigger_file=trigger_file

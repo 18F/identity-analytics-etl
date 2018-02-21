@@ -30,9 +30,51 @@ class Queries:
                                   loa3 BOOLEAN,
                                   active_profile BOOLEAN,
                                   errors VARCHAR(4096))
-                                  DISTKEY(time), SORTKEY(time);"""
+                                  SORTKEY(time);"""
 
-        self.drop_events = """DROP TABLE IF EXISTS events;"""
+        # Postgres compatible
+        self.create_events_dev = """CREATE TABLE events (
+                          id VARCHAR(40) NOT NULL,
+                          name VARCHAR(255) NOT NULL,
+                          user_agent VARCHAR(4096),
+                          user_id VARCHAR(40),
+                          user_ip VARCHAR(50),
+                          host VARCHAR(255),
+                          visit_id VARCHAR(40),
+                          visitor_id VARCHAR(40),
+                          time TIMESTAMP,
+                          event_properties VARCHAR(4096),
+
+                          success BOOLEAN,
+                          existing_user BOOLEAN,
+                          otp_method VARCHAR(20),
+                          context VARCHAR(20),
+                          method VARCHAR(20),
+                          authn_context VARCHAR(50),
+                          service_provider VARCHAR(255),
+                          loa3 BOOLEAN,
+                          active_profile BOOLEAN,
+                          errors VARCHAR(4096));"""
+
+        self.create_events_devices = """CREATE TABLE events_devices (
+                                            id VARCHAR(40) NOT NULL,
+                                            name VARCHAR(255) NOT NULL,
+                                            user_agent VARCHAR(4096),
+                                            browser_name VARCHAR(255),
+                                            browser_version VARCHAR(255),
+                                            browser_platform_name VARCHAR(255),
+                                            browser_platform_version VARCHAR(255),
+                                            browser_device_name VARCHAR(255),
+                                            browser_device_type VARCHAR(255),
+                                            browser_bot BOOLEAN,
+                                            time TIMESTAMP
+                                        ); """
+
+        self.drop_events_devices = """DROP TABLE IF EXISTS events_devices;"""
+
+        self.drop_events = """DROP TABLE IF EXISTS events CASCADE;"""
+
+        self.lock_uploaded_files = """LOCK TABLE uploaded_files;"""
 
         self.create_uploaded_files = """CREATE TABLE uploaded_files (
                                         s3filename VARCHAR(100) NOT NULL,
@@ -41,7 +83,7 @@ class Queries:
 
                                         PRIMARY KEY(s3filename, destination));"""
 
-        self.drop_uploaded_files = """DROP TABLE IF EXISTS uploaded_files;"""
+        self.drop_uploaded_files = """DROP TABLE IF EXISTS uploaded_files CASCADE;"""
 
         self.create_pageviews = """CREATE TABLE pageviews (
                                     method VARCHAR(10) NOT NULL,
@@ -57,10 +99,26 @@ class Queries:
                                     host VARCHAR(255),
                                     timestamp TIMESTAMP,
                                     uuid VARCHAR(64) NOT NULL
-                                    )
-                                    DISTKEY(timestamp), SORTKEY(timestamp);"""
+                                    ) SORTKEY(timestamp);"""
+        
+        # Postgres compatible
+        self.create_pageviews_dev = """CREATE TABLE pageviews (
+                                    method VARCHAR(10) NOT NULL,
+                                    path VARCHAR(1024),
+                                    format VARCHAR(255),
+                                    controller VARCHAR(100),
+                                    action VARCHAR(15),
+                                    status SMALLINT,
+                                    duration FLOAT,
+                                    user_id VARCHAR(40),
+                                    user_agent VARCHAR(4096),
+                                    ip VARCHAR(50),
+                                    host VARCHAR(255),
+                                    timestamp TIMESTAMP,
+                                    uuid VARCHAR(64) NOT NULL
+                                    );"""
 
-        self.drop_pageviews = """DROP TABLE IF EXISTS pageviews;"""
+        self.drop_pageviews = """DROP TABLE IF EXISTS pageviews CASCADE;"""
 
         self.create_user_agents = """CREATE TABLE user_agents (
                                         user_agent VARCHAR(255) NOT NULL,
@@ -71,7 +129,7 @@ class Queries:
                                         PRIMARY KEY(user_agent)
                                       );"""
 
-        self.drop_user_agents = """DROP TABLE IF EXISTS user_agents;"""
+        self.drop_user_agents = """DROP TABLE IF EXISTS user_agents CASCADE;"""
 
         self.get_uploaded_files = """SELECT s3filename
                                      FROM uploaded_files;"""
@@ -90,6 +148,9 @@ class Queries:
         self.load_csv = """COPY {table_name} ({columns})
                             FROM :filepath
                             CSV HEADER;"""
+
+    def get_uploaded_files_lock(self):
+        return self.lock_uploaded_files
 
     def get_load_csv(self, table, columns, filepath):
         columns =  ', '.join(
@@ -140,24 +201,37 @@ class Queries:
         query = sql.text(q).bindparams(*bindparams)
         return query
 
-    def get_build_queries(self):
+    def get_build_queries(self, redshift=True):
         BuildQueries = namedtuple('BuildQueries', [
             'create_events',
+            'create_events_devices',
             'create_uploaded_files',
             'create_pageviews',
             'create_user_agents'
         ])
 
+        create_events = self.create_events
+        create_events_devices = self.create_events_devices
+        create_pageviews = self.create_pageviews
+        create_user_agents = self.create_user_agents
+        create_uploaded_files = self.create_uploaded_files
+
+        if not redshift:
+            create_events = self.create_events_dev
+            create_pageviews = self.create_pageviews_dev
+
         return BuildQueries._make([
-            self.create_events,
-            self.create_uploaded_files,
-            self.create_pageviews,
-            self.create_user_agents
+            create_events,
+            create_events_devices,
+            create_uploaded_files,
+            create_pageviews,
+            create_user_agents
         ])
 
     def get_drop_queries(self):
         DropQueries = namedtuple('DropQueries', [
             'drop_events',
+            'drop_events_devices',
             'drop_uploaded_files',
             'drop_pageviews',
             'drop_user_agents'
@@ -165,6 +239,7 @@ class Queries:
 
         return DropQueries._make([
             self.drop_events,
+            self.drop_events_devices,
             self.drop_uploaded_files,
             self.drop_pageviews,
             self.drop_user_agents

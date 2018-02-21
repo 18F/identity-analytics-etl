@@ -49,6 +49,9 @@ class Parser(object):
     def get_uuid(self, data):
         raise NotImplementedError()
 
+    def get_default_extension(self, sp):
+        raise NotImplementedError()
+
     def json_to_csv(self, data):
         uuid = self.get_uuid(data)
         result = [data.get(header) for header in self.headers]
