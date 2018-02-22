@@ -10,3 +10,6 @@ s3transfer==0.1.10
 SQLAlchemy==1.1.9
 sqlalchemy-redshift==0.6.0
 numpy==1.14.0
+pandas==0.22.0
+pyarrow==0.8.0
+
