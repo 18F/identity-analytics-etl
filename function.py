@@ -3,26 +3,6 @@ import os
 import sys
 import boto3
 import logging
-
-def load_additional_deps():
-    import zipfile
-    print('Loading from zip:')
-    cwd = os.getcwd()
-    os.chdir('/tmp')
-    filename = 'dependencies.zip'
-    zip_file_path = filename
-    bucket = boto3.resource('s3').Bucket("login-gov-analytics-dependencies")
-    # download addl deps from s3, and put them into /tmp
-    bucket.download_file(filename, zip_file_path)
-    zip_ref = zipfile.ZipFile(zip_file_path, 'r')
-    zip_ref.extractall()
-    zip_ref.close()
-    print('Result: ')
-    print(os.listdir(os.getcwd()))
-    os.chdir(cwd)
-
-load_additional_deps()
-
 import src
 
 def set_redshift_configs():
