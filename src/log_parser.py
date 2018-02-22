@@ -4,14 +4,27 @@ import re
 import io
 import hashlib
 import numpy as np
+import os
 
 # Try loading additional dependencies from tmp.
-import sys
-sys.path.append('/tmp')
-import pandas as pd
-import pyarrow as pa
-import pyarrow.parquet as pq
-
+print("Initializing...")
+if 'env' in os.environ:
+    import sys
+    cwd = os.getcwd()
+    os.chdir('/tmp')
+    temp_path = cwd +'/tmp'
+    print("Loading from TEMP")
+    print(os.listdir(os.getcwd()))
+    sys.path.append(cwd + '/tmp')
+    print(sys.path)
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+    import pandas as pd
+    os.chdir(cwd)
+else:
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+    import pandas as pd
 
 class Parser(object):
     headers = []
