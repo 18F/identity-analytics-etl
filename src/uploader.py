@@ -56,7 +56,7 @@ class Uploader:
 
     def etl(self, parser, logfile):
         csv_name = "{}.{}.csv".format(logfile.replace('.txt', ''), parser.table)
-        parquet_name = "{}.{}.parquet".format(logfile.replace('.txt', ''), parser.table)
+        parquet_name = "{}/{}.parquet".format(parser.table, logfile.replace('.txt', ''))
         in_file = self.s3.get_logfile(logfile)
 
         processed_rows, out, out_parquet = parser.stream_csv(in_file.read())
