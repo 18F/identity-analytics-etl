@@ -53,7 +53,6 @@ class Uploader:
                     print("An Error occurred parsing {}".format(f))
                     raise
 
-
     def etl(self, parser, logfile):
         csv_name = "{}.{}.csv".format(logfile.replace('.txt', ''), parser.table)
         parquet_name = "{}/{}.parquet.gz".format(parser.table, logfile.replace('.txt', ''))
