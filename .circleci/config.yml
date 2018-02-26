@@ -2,6 +2,7 @@ version: 2
 jobs:
   machine:
     pre:
+      - sudo service postgres start
       # Add a password to the `ubuntu` user, since Postgres is configured to
       # always ask for a password without sudo, and fails without one.
       # https://discuss.circleci.com/t/how-do-you-use-postgres-9-6-x-or-9-x-x/9855/3
