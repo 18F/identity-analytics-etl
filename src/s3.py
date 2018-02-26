@@ -1,5 +1,6 @@
 import boto3
 import io
+import gzip
 import pytz
 
 from datetime import datetime, timedelta
@@ -69,8 +70,9 @@ class S3:
         )
 
     def new_file_parquet(self, out, filename):
+        out_gzip = gzip.compress(out.getvalue())
         self.dest_bucket_parquet.upload_fileobj(
-            out,
+            out_gzip,
             filename,
             ExtraArgs={
                 "SSEKMSKeyId": self.encryption_key,
