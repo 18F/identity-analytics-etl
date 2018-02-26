@@ -27,6 +27,12 @@ To run tests:
 make clean
 ```
 
+To check code coverage locally:
+
+```
+make coverage
+```
+
 to deploy a new lambda function to the deployments s3 bucket:
 if running for the first time:
 ```

@@ -5,7 +5,10 @@ venv/bin/activate: requirements.txt
 	touch venv/bin/activate
 
 test: venv
-	venv/bin/python tests/test.py
+	venv/bin/python tests/test.py 
+
+coverage: test
+	venv/bin/py.test --cov=src tests/ 
 
 destroy_db:
 	venv/bin/python destroy_db.py
