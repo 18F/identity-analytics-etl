@@ -1,25 +1,21 @@
 version: 2
-machine:
-  pre:
-    - sudo service postgres start
-    # Add a password to the `ubuntu` user, since Postgres is configured to
-    # always ask for a password without sudo, and fails without one.
-    # https://discuss.circleci.com/t/how-do-you-use-postgres-9-6-x-or-9-x-x/9855/3
-    - sudo -u postgres psql -p 5432 -c "create user ubuntu with password 'ubuntu';"
-    - sudo -u postgres psql -p 5432 -c "alter user ubuntu with superuser;"
-
-    # Create a new test database.
-    - sudo -u postgres psql -p 5432 -c "create database circle_test;"
 jobs:
   build:
+    working_directory: ~/identity-analytics-etl
     docker:
       # Specify the Python version you desire here
-      - image: circleci/python:3.6.4-node-browsers
-      # Specify service dependencies here if necessary
+      # TODO: figure out a better way to setup postgres see below 
+      # https://discuss.circleci.com/t/rails-app-cant-connect-to-postgres-server/13059/3
+      - image: circleci/python:3.6.4
         environment:
-          DATABASE_URL: postgres://ubuntu:@127.0.0.1:5432/circle_test
+          PGHOST: 127.0.0.1
+          PGUSER: circle
+      - image: circleci/postgres:9.5-alpine
+        environment:
+          POSTGRES_USER: circle
+          POSTGRES_DB: dev
+          POSTGRES_PASSWORD: ""
 
-    working_directory: ~/identity-analytics-etl
 
     steps:
       - checkout
