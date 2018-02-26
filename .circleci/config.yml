@@ -10,8 +10,9 @@ jobs:
       - image: circleci/postgres:9.5-alpine
         environment:
           POSTGRES_USER: circleci
-          
-          
+          POSTGRES_DB: dev
+
+
     working_directory: ~/identity-analytics-etl
 
     steps:
