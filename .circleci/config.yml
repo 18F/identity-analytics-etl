@@ -16,9 +16,10 @@ jobs:
 
     steps:
       - checkout
+
       - restore_cache:
-        keys:
-          - v1-dependencies-{{ checksum "requirements.txt" }}
+         keys:
+           - identity-analytics-etl-{{ checksum "requirements.txt" }}
 
       - run:
          name: create virtualenv and install python dependencies
