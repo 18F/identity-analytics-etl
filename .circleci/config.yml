@@ -5,12 +5,9 @@ jobs:
       # Specify the Python version you desire here
       - image: circleci/python:3.6.4-node-browsers
       # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      - image: circleci/postgres:9.5-alpine
         environment:
-          POSTGRES_USER: circleci
-          POSTGRES_DB: circle_test
+          PG_HOST: localhost
+          PG_USER: ubuntu
 
 
     working_directory: ~/identity-analytics-etl
