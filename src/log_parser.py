@@ -3,7 +3,14 @@ import csv
 import re
 import io
 import hashlib
+import numpy as np
+import os
 
+# Try loading additional dependencies from tmp.
+
+import pyarrow as pa
+import pyarrow.parquet as pq
+import pandas as pd
 
 class Parser(object):
     headers = []
@@ -11,6 +18,8 @@ class Parser(object):
     def stream_csv(self, in_io):
         rows = 0
         out = io.StringIO()
+        out_parquet = io.BytesIO()
+        df = pd.DataFrame(columns=self.headers)
         writer = csv.writer(out, delimiter=',')
         writer.writerow(self.headers)
 
@@ -24,10 +33,20 @@ class Parser(object):
 
             self.uuids.add(uuid)
             writer.writerow(result)
+            df.loc[len(df)] = result
             rows += 1
 
+        # Convert pandas.DataFrame -> pyarrow.Table (Parquet)
+        table = pa.Table.from_pandas(df)
+
+        # Write parquet table.
+        pq.write_table(table, out_parquet)
+
+        # Reset all FP's
+        out_parquet.seek(0)
         out.seek(0)
-        return rows, out
+
+        return rows, out, out_parquet
 
     def extract_json(self, line):
         json_part = line[line.index('{'):]

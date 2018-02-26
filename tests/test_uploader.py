@@ -9,7 +9,7 @@ class UploaderTestCases(unittest.TestCase):
 
     def test_uploader(self):
         _s3 = FakeS3('source', 'dest')
-        uploader = Uploader('source', 'dest', s3=_s3)
+        uploader = Uploader('source', 'dest', 'dest-parquet', s3=_s3)
         uploader.db_conn.drop_tables()
         uploader.run()
 

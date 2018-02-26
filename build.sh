@@ -13,6 +13,7 @@ mkdir lambda_$1_deploy
 cp -R src lambda_$1_deploy && cp function.py lambda_$1_deploy
 pip3 install -Ur requirements.txt -t ./lambda_$1_deploy
 cd lambda_$1_deploy
+find * -type d -name tests -exec rm -rf {} \;
 zip -r -q lambda_$1_deploy.zip .
 cd ..
 mv lambda_$1_deploy/lambda_$1_deploy.zip .
