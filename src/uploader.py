@@ -19,7 +19,7 @@ class Uploader:
         self.dest_bucket = dest_bucket
         self.dest_bucket_parquet = dest_bucket_parquet
         self.s3 = S3(self.source_bucket, self.dest_bucket, self.dest_bucket_parquet, encryption_key) if s3 is None else s3
-        self.db_conn = DataBaseConnection(self.s3, redshift)
+        #self.db_conn = DataBaseConnection(self.s3, redshift)
         self.parsers = (EventParser(), PageViewParser(), DeviceParser(), EmailParser()) if parsers is None else parsers
         if not logger:
             logging.basicConfig(level=logging.INFO)
@@ -30,9 +30,9 @@ class Uploader:
         self.lookback_period = 20 if lookback_period is None else lookback_period
 
     def run(self):
-        self.db_conn.build_db_if_needed()
+        #self.db_conn.build_db_if_needed()
 
-        uploaded_files = self.db_conn.uploaded_files()
+        #uploaded_files = self.db_conn.uploaded_files()
 
         if self.trigger_file:
             logfiles = [self.trigger_file]
@@ -42,8 +42,8 @@ class Uploader:
         self.logger.info("Total Files: {}".format(len(logfiles)))
         self.logger.info(logfiles)
         for f in logfiles:
-            if f in uploaded_files:
-                continue
+            # if f in uploaded_files:
+            #     continue
 
             self.logger.info("parsing {}".format(f))
             for parser in self.parsers:
@@ -64,17 +64,17 @@ class Uploader:
         if processed_rows > 0:
             self.s3.new_file(out, csv_name)
             self.s3.new_file_parquet(out_parquet, parquet_name)
-            self.db_conn.load_csv(parser.table,
-                                  logfile,
-                                  self.s3.get_path(csv_name),
-                                  parser.headers,
-                                  'us-west-2',
-                                  'arn:aws:iam::555546682965:role/tf-redshift-{}-iam-role'.format(
-                                    os.environ.get('env')
-                                  ))
+            # self.db_conn.load_csv(parser.table,
+            #                       logfile,
+            #                       self.s3.get_path(csv_name),
+            #                       parser.headers,
+            #                       'us-west-2',
+            #                       'arn:aws:iam::555546682965:role/tf-redshift-{}-iam-role'.format(
+            #                         os.environ.get('env')
+            #                       ))
 
-        else:
-            self.db_conn.mark_uploaded(logfile, parser.table)
+        # else:
+            #self.db_conn.mark_uploaded(logfile, parser.table)
 
         in_file.close()
         out.close()
