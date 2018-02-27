@@ -72,8 +72,8 @@ class S3:
     def new_file_parquet(self, out, filename):
         out_gzip = io.BytesIO()
 
-        with gzip.GzipFile(fileobj=out_gzip, mode='w') as fo:
-            fo.write(gzip.compress(out.getvalue()).encode())
+        with gzip.GzipFile(fileobj=out_gzip, mode='wb') as fo:
+            fo.write(gzip.compress(out.getvalue()))
 
         self.dest_bucket_parquet.upload_fileobj(
             out_gzip,
