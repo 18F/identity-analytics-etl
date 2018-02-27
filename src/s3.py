@@ -74,6 +74,8 @@ class S3:
 
         with gzip.GzipFile(fileobj=out_gzip, mode='wb') as fo:
             fo.write(gzip.compress(out.getvalue()))
+        # Reset FP.
+        out_gzip.seek(0)
 
         self.dest_bucket_parquet.upload_fileobj(
             out_gzip,
