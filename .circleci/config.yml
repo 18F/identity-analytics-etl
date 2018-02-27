@@ -24,8 +24,9 @@ jobs:
          keys:
            - identity-analytics-etl-{{ checksum "requirements.txt" }}
       - run: 
-        name: install postgres-client(psql)
-        command: apt-get install -y postgresql-client
+         name: install postgres-client(psql)
+         command: apt-get install -y postgresql-client
+
       - run:
          name: create virtualenv and install python dependencies
          command: |
