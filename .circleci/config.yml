@@ -24,7 +24,8 @@ jobs:
     steps:
       - checkout
 
-      - attach_workspace: ~/identity-analytics-etl
+      - attach_workspace: 
+            at: ~/identity-analytics-etl
 
       - run:
          name: Wait for DB
