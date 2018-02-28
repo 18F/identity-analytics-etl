@@ -40,7 +40,7 @@ class Parser(object):
         table = pa.Table.from_pandas(df)
 
         # Write parquet table.
-        pq.write_table(table, out_parquet)
+        pq.write_table(table, out_parquet, compression='snappy')
 
         # Reset all FP's
         out_parquet.seek(0)
