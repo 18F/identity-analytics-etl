@@ -1,4 +1,8 @@
 version: 2
+machine:
+  services:
+    - postgres
+
 jobs:
   build:
     working_directory: ~/identity-analytics-etl
@@ -17,6 +21,9 @@ jobs:
           POSTGRES_DB: dev
           POSTGRES_PASSWORD: ""
 
+    test:
+      override:
+        - docker run --net=host -p 8080:8080 --env POSTGRES_HOST=localhost circleci/postgres:9.5-alpine
 
     steps:
       - checkout
