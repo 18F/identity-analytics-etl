@@ -14,19 +14,19 @@ jobs:
         environment:
           PGHOST: 127.0.0.1
           PGUSER: circle
-          TEST_DATABASE_URL: postgresql://ubuntu@localhost/dev?sslmode=disable
+          TEST_DATABASE_URL: postgresql://circle@localhost/dev?sslmode=disable
       - image: circleci/postgres:9.5-alpine
         environment:
           POSTGRES_USER: circle
           POSTGRES_DB: dev
           POSTGRES_PASSWORD: ""
 
-    test:
-      override:
-        - docker run --net=host -p 8080:8080 --env POSTGRES_HOST=localhost circleci/postgres:9.5-alpine
-
     steps:
       - checkout
+
+      - run:
+         name: Wait for DB
+         command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
       - restore_cache:
          keys:
@@ -34,10 +34,6 @@ jobs:
       - run: 
          name: install postgres-client(psql)
          command: sudo apt-get install -y postgresql-client
-
-      - run:
-         name: Wait for DB
-         command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
       - run:
          name: create virtualenv and install python dependencies
