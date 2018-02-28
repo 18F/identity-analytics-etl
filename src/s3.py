@@ -71,7 +71,7 @@ class S3:
 
     def new_file_parquet(self, out, filename):
         self.dest_bucket_parquet.upload_fileobj(
-            out_gzip,
+            out,
             filename,
             ExtraArgs={
                 "SSEKMSKeyId": self.encryption_key,
