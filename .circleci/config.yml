@@ -15,11 +15,6 @@ jobs:
           PGHOST: 127.0.0.1
           PGUSER: circle
           TEST_DATABASE_URL: postgresql://ubuntu@localhost/dev?sslmode=disable
-      - image: circleci/postgres:9.5-alpine
-        environment:
-          POSTGRES_USER: circle
-          POSTGRES_DB: dev
-          POSTGRES_PASSWORD: ""
 
     test:
       override:
