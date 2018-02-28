@@ -38,7 +38,9 @@ jobs:
           name: tests
           command: |
             . venv/bin/activate
-            python tests/test.py
+            python tests/test_event_parser.py
+            python tests/test_pageview_parser.py
+            python tests/test_uploader.py
 
       - run:
          name: coverage report
