@@ -24,16 +24,11 @@ jobs:
     steps:
       - checkout
 
-      - attach_workspace: 
-            at: ~/identity-analytics-etl
 
       - run:
          name: Wait for DB
          command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
-      - restore_cache:
-         keys:
-           - identity-analytics-etl-{{ checksum "requirements.txt" }}
       - run: 
          name: install postgres-client(psql)
          command: sudo apt-get install -y postgresql-client
