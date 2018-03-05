@@ -13,13 +13,13 @@ import pyarrow.parquet as pq
 import pandas as pd
 
 class Parser(object):
-    header_fields = []
+    header_fields = {}
 
     def stream_csv(self, in_io):
         rows = 0
         out = io.StringIO()
         out_parquet = io.BytesIO()
-        header_rows = [header for header in self.header_fields]
+        header_rows = self.header_fields.keys()
         df = pd.DataFrame(columns=header_rows)
         writer = csv.writer(out, delimiter=',')
         writer.writerow(header_rows)
@@ -45,7 +45,7 @@ class Parser(object):
         table = pa.Table.from_pandas(df)
 
         # Write parquet table.
-        pq.write_table(table, out_parquet)
+        pq.write_table(table, out_parquet, compression='snappy')
 
         # Reset all FP's
         out_parquet.seek(0)
@@ -78,21 +78,12 @@ class Parser(object):
 
     def json_to_csv(self, data):
         uuid = self.get_uuid(data)
-        result = [data.get(header) for header in self.headers]
+        result = [data.get(header) for header in self.header_fields.keys()]
         return result, uuid
 
     def apply_df_types(self, df):
-        header_items = self.header_fields.items()
-        int_fields = [k for k,v in header_items if v == int]
-        str_fields = [k for k,v in header_items if v == str]
-        bool_fields = [k for k,v in header_items if v == bool]
-        float_fields = [k for k,v in header_items if v == float]
-
-        df[float_fields] = df[float_fields].astype(float)
-        df[int_fields] = df[int_fields].astype(int)
-        df[bool_fields] = df[bool_fields].astype(bool)
-        df[str_fields] = df[str_fields].astype(str)
-
+        for k, v in self.header_fields.items():
+            df[k] = df[k].astype(v)
         return df
 
 
