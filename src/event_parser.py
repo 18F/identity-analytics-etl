@@ -12,7 +12,7 @@ class EventParser(Parser):
         'id': str,
         'name': str, 
         'user_agent': str, 
-        'user_id': int, 
+        'user_id': str, 
         'user_ip':str,
         'host':str, 
         'visit_id':str, 
