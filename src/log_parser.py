@@ -39,8 +39,7 @@ class Parser(object):
 
         # Pyarrow tries to infer types by default.
         # Explicitly set the types to prevent mis-typing.
-        if not df.empty:
-            df = self.apply_df_types(df)
+        df = self.apply_df_types(df)
 
         # Convert pandas.DataFrame -> pyarrow.Table (Parquet)
         table = pa.Table.from_pandas(df)
