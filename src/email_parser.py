@@ -8,7 +8,12 @@ from .log_parser import Parser
 class EmailParser(Parser):
     table = 'events_email'
     uuids = set()
-    headers = ['id', 'name', 'domain_name', 'time']
+    header_fields = {
+        'id': str,
+        'name': str, 
+        'domain_name': str, 
+        'time': str
+    }
 
     def stream_csv(self, in_io):
         return Parser.stream_csv(self, in_io)
