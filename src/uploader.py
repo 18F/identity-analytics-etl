@@ -67,7 +67,7 @@ class Uploader:
             # self.db_conn.load_csv(parser.table,
             #                       logfile,
             #                       self.s3.get_path(csv_name),
-            #                       parser.headers,
+            #                       parser.header_fields.keys(),
             #                       'us-west-2',
             #                       'arn:aws:iam::555546682965:role/tf-redshift-{}-iam-role'.format(
             #                         os.environ.get('env')
