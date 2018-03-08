@@ -19,7 +19,11 @@ jobs:
       - restore_cache:
         keys:
           - v1-dependencies-{{ checksum "requirements.txt" }}
-
+      - run:
+         name: find where I am
+         command: |
+           pwd
+           ls -alh
       - run:
          name: create virtualenv and install python dependencies
          command: |
