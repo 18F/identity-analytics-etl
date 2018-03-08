@@ -34,6 +34,12 @@ jobs:
          command: sudo apt-get install -y postgresql-client
 
       - run:
+          name: find where I am
+          command: |
+             pwd
+             ls -alh
+
+      - run:
          name: create virtualenv and install python dependencies
          command: |
            python3 -m venv venv
