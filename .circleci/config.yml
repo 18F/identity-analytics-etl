@@ -24,6 +24,12 @@ jobs:
     steps:
       - checkout
 
+      - run:
+         name: create virtualenv and install python dependencies
+         command: |
+           python3 -m venv venv
+           . venv/bin/activate
+           pip install -r requirements.txt
 
       - run:
          name: Wait for DB
@@ -42,14 +48,6 @@ jobs:
              ls
              cd fixtures/
              ls
-
-      - run:
-         name: create virtualenv and install python dependencies
-         command: |
-           python3 -m venv venv
-           . venv/bin/activate
-           pip install -r requirements.txt
-
       - run:
           name: tests
           command: |
