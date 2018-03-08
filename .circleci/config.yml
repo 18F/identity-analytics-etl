@@ -37,7 +37,8 @@ jobs:
           name: find where I am
           command: |
              pwd
-             ls -alh
+             ls 
+             cd tests/
 
       - run:
          name: create virtualenv and install python dependencies
