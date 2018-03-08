@@ -39,6 +39,9 @@ jobs:
              pwd
              ls 
              cd tests/
+             ls
+             cd fixtures/
+             ls
 
       - run:
          name: create virtualenv and install python dependencies
