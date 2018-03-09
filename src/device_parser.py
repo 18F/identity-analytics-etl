@@ -8,9 +8,19 @@ from .log_parser import Parser
 class DeviceParser(Parser):
     table = 'events_devices'
     uuids = set()
-    headers = ['id', 'name', 'user_agent', 'browser_name', 'browser_version',
-               'browser_platform_name', 'browser_platform_version',
-               'browser_device_name', 'browser_device_type', 'browser_bot', 'time']
+    header_fields = {
+        'id': str, 
+        'name': str, 
+        'user_agent': str, 
+        'browser_name': str, 
+        'browser_version': str, 
+        'browser_platform_name': str, 
+        'browser_platform_version': str, 
+        'browser_device_name': str, 
+        'browser_device_type': str, 
+        'browser_bot': bool, 
+        'time': str
+    }
 
     def stream_csv(self, in_io):
         return Parser.stream_csv(self, in_io)

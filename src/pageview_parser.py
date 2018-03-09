@@ -9,9 +9,21 @@ from .log_parser import Parser
 
 class PageViewParser(Parser):
     table = 'pageviews'
-    headers = ['method', 'path', 'format', 'controller', 'action',
-               'status', 'duration', 'user_id', 'user_agent', 'ip',
-               'host', 'uuid', 'timestamp']
+    header_fields = {
+        'method': str, 
+        'path': str, 
+        'format': str, 
+        'controller': str, 
+        'action': str, 
+        'status': int, 
+        'duration': float, 
+        'user_id': str, 
+        'user_agent': str, 
+        'ip': str,
+        'host': str, 
+        'uuid': str, 
+        'timestamp': str
+    }
 
     uuids = set()
 

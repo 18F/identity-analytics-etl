@@ -8,11 +8,29 @@ from .log_parser import Parser
 
 class EventParser(Parser):
     table = 'events'
-    headers = ['id', 'name', 'user_agent', 'user_id', 'user_ip',
-               'host', 'visit_id', 'visitor_id', 'time', 'event_properties',
-               'success', 'existing_user', 'otp_method', 'context',
-               'method', 'authn_context', 'service_provider', 'loa3',
-               'active_profile', 'errors']
+    header_fields = {
+        'id': str,
+        'name': str, 
+        'user_agent': str, 
+        'user_id': str, 
+        'user_ip':str,
+        'host':str, 
+        'visit_id':str, 
+        'visitor_id':str, 
+        'time':str, 
+        'event_properties':str,
+        'success':bool,
+        'existing_user':bool, 
+        'otp_method':str, 
+        'context':str,
+        'method':str, 
+        'authn_context':str, 
+        'service_provider':str, 
+        'loa3':bool,
+        'active_profile':bool, 
+        'errors':str
+    }
+
     uuids = set()
     service_provider_index = 6
 
