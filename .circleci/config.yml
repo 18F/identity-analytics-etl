@@ -44,4 +44,4 @@ jobs:
             . venv/bin/activate
             python tests/test_event_parser.py
             python tests/test_pageview_parser.py
-            pyton  tests/test_uploader.py
+            python  tests/test_uploader.py
