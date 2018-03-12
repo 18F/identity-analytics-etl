@@ -6,10 +6,13 @@ import os
 
 from context import DataBaseConnection
 from context import Queries
+from unittest.mock import patch, mock_open
+from textwrap import dedent
 
 
 class DataBaseTestCases(unittest.TestCase):
     columns = ['method', 'path', 'ip', 'timestamp', 'uuid']
+    TEST_CSV = dedent("Hello World").strip()
 
     def setup(self):
         db_conn = DataBaseConnection()
