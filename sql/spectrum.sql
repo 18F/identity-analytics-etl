@@ -1,6 +1,11 @@
 -- Schema for Spectrum tables.
 -- NOTE: TIMESTAMP fields are stored as VARCHAR. 
 
+create external schema spectrum from data catalog 
+database 'spectrum_db' 
+iam_role 'arn:aws:iam::555546682965:role/tf-redshift-prod-iam-role'
+create external database if not exists;
+
 drop table spectrum.events;
 create external table spectrum.events(
     id VARCHAR(40),
