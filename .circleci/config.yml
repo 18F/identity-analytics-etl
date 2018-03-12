@@ -42,9 +42,6 @@ jobs:
           name: tests
           command: |
             . venv/bin/activate
-            python tests/test.py
-      - run:
-         name: coverage report
-         command: |
-          . venv/bin/activate
-          py.test --cov=src tests/
+            python tests/test_event_parser.py
+            python tests/test_pageview_parser.py
+            pyton  tests/test_uploader.py
