@@ -24,7 +24,6 @@ create external table spectrum.events(
     active_profile BOOLEAN,
     errors VARCHAR(4096)
 )
-database 'spectrumdb' 
 stored as parquet
 location 's3://login-gov-prod-analytics-parquet/events';
 
@@ -44,23 +43,21 @@ CREATE EXTERNAL TABLE spectrum.pageviews (
     uuid VARCHAR(64),
     timestamp VARCHAR(64)
 )
-database 'spectrumdb' 
 stored as parquet
 location 's3://login-gov-prod-analytics-parquet/pageviews';
 
 DROP TABLE IF EXISTS spectrum.events_email;
-CREATE TABLE spectrum.events_email (
+create external table spectrum.events_email (
     id VARCHAR(40),
     name VARCHAR(255),
     domain_name VARCHAR(255),
     time VARCHAR(64)
-)
-database 'spectrumdb' 
+) 
 stored as parquet
 location 's3://login-gov-prod-analytics-parquet/events_email';
 
 DROP TABLE IF EXISTS spectrum.events_devices;
-CREATE TABLE spectrum.events_devices (
+create external table spectrum.events_devices (
     id VARCHAR(40),
     name VARCHAR(255),
     user_agent VARCHAR(4096),
@@ -73,6 +70,5 @@ CREATE TABLE spectrum.events_devices (
     browser_bot BOOLEAN,
     time VARCHAR(64)
 )
-database 'spectrumdb' 
 stored as parquet
 location 's3://login-gov-prod-analytics-parquet/events_devices';
