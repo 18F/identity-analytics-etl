@@ -41,7 +41,7 @@ class FakeS3:
         return self.get_s3_logfiles()
 
     def get_logfile(self, filename):
-        return self.content.get(filename).read()
+        return self.content.get(filename)
 
     def new_file(self, filename):
         self.output[filename] = self.content.get(filename).getvalue()
