@@ -28,6 +28,7 @@ class DataBaseTestCases(unittest.TestCase):
                           'da76b7beeff3142b8343f4e4281ded230f9c1c9c0092c4278769f1ec16e70423'
                             ])
 
+        # TODO: use StringIO in load_csv instead of relative path to fixtures
         db_conn.load_csv('pageviews',
                          'test_csv.csv',
                          "{}/fixtures/test_csv.csv".format(os.path.dirname(os.path.realpath(__file__))),
