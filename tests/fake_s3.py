@@ -4,7 +4,10 @@ import os
 
 class FakeS3:
 
-    TEST_EVENT_LOG_TXT = io.BytesIO(b"""
+    def __init__(self, source_bucket, dest_bucket):
+        self.source_bucket = source_bucket
+        self.dest_bucket = dest_bucket
+        self.content = {'c.txt': io.BytesIO(b"""
      2017-04-10T17:45:24.621Z idp 172.16.33.245 - - [10/Apr/2017:17:45:21 +0000] "GET / HTTP/1.1" 401 188 "-" "ELB-HealthChecker/2.0"
      2017-04-10T17:45:24.621Z idp 172.16.33.245 - - [10/Apr/2017:17:45:23 +0000] "GET /manifest.json HTTP/1.1" 304 0 "https://idp.staging.login.gov/?issuer=" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36"
      2017-04-10T17:45:28.382Z idp Apr 10 17:45:22 idp ossec: Alert Level: 5; Rule: 31101 - Web server 400 error code.; Location: idp->/opt/nginx/logs/access.log; srcip: 172.16.33.245; 172.16.33.245 - - [10/Apr/2017:17:45:21 +0000] "GET / HTTP/1.1" 401 188 "-" "ELB-HealthChecker/2.0"
@@ -12,9 +15,8 @@ class FakeS3:
      2017-04-10T17:45:29.022Z idp Apr 10 17:45:21 idp ossec: Alert Level: 5; Rule: 31101 - Web server 400 error code.; Location: idp->/opt/nginx/logs/access.log; srcip: 172.16.33.245; 172.16.33.245 - - [10/Apr/2017:17:45:21 +0000] "GET / HTTP/1.1" 401 188 "-" "ELB-HealthChecker/2.0"
      2017-04-10T17:45:43.383Z idp Apr 10 17:45:40 idp ossec: Alert Level: 5; Rule: 31101 - Web server 400 error code.; Location: idp->/opt/nginx/logs/access.log; srcip: 172.16.33.233; 172.16.33.233 - - [10/Apr/2017:17:45:39 +0000] "GET / HTTP/1.1" 401 188 "-" "ELB-HealthChecker/2.0"
      2017-04-10T17:45:44.023Z idp Apr 10 17:45:41 idp ossec: Alert Level: 5; Rule: 31101 - Web server 400 error code.; Location: idp->/opt/nginx/logs/access.log; srcip: 172.16.33.233; 172.16.33.233 - - [10/Apr/2017:17:45:39 +0000] "GET / HTTP/1.1" 401 188 "-" "ELB-HealthChecker/2.0"
-    """)
-
-    TEST_PAGEVIEW_LOG_TXT = io.BytesIO(b"""
+    """),
+                        'd.txt': io.BytesIO(b"""
     2017-04-10T17:45:22.600Z idp 172.16.33.245 - - [10/Apr/2017:17:45:21 +0000] "GET / HTTP/1.1" 401 188 "-" "ELB-HealthChecker/2.0"
     2017-04-10T17:45:23.600Z idp 172.16.33.245 - 18f [10/Apr/2017:17:45:22 +0000] "GET /?issuer=&timeout=true HTTP/1.1" 302 115 "https://idp.staging.login.gov/?issuer=" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36"
     2017-04-10T17:45:23.600Z idp 172.16.33.245 - 18f [10/Apr/2017:17:45:22 +0000] "GET /?issuer= HTTP/1.1" 200 9087 "https://idp.staging.login.gov/?issuer=" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36"
@@ -23,12 +25,7 @@ class FakeS3:
     2017-03-31T19:38:48.835Z elk type=PATH msg=audit(1490935667.633:579960): item=0 name="/usr/src/linux-headers-3.13.0-107/include/dt-bindings/interrupt-controller/" inode=22764 dev=ca:01 mode=040755 ouid=0 ogid=0 rdev=00:00 nametype=PARENT
     2017-03-31T19:38:48.835Z elk type=PATH msg=audit(1490935667.633:579960): item=1 name="/usr/src/linux-headers-3.13.0-107/include/dt-bindings/interrupt-controller/arm-gic.h" inode=23233 dev=ca:01 mode=0100644 ouid=0 ogid=0 rdev=00:00 nametype=DELETE
     2017-04-06T06:57:09.449Z jenkins f++++++++++++++++: /var/chef/cache/identity-idp/spec/support/controller_helper.rb
-    """)
-    def __init__(self, source_bucket, dest_bucket):
-        self.source_bucket = source_bucket
-        self.dest_bucket = dest_bucket
-        self.content = {'c.txt': "TEST_EVENT_LOG_TXT",
-                        'd.txt': "TEST_PAGE_VIEW_LOG_TXT"}
+    """)}
         self.output = {}
 
     def get_s3_logfiles(self):
@@ -44,7 +41,8 @@ class FakeS3:
         return self.content.get(filename)
 
     def new_file(self, filename):
-        self.output[filename] = self.content.get(filename).getvalue()
+        self.output[filename] = self.content.get(filename).getValue()
+        print(self.output[filename])
 
     def create_dest_bucket_if_not_exists(self):
         pass
