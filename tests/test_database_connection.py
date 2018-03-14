@@ -6,11 +6,10 @@ import os
 
 from context import DataBaseConnection
 from context import Queries
-
+from io import StringIO
 
 class DataBaseTestCases(unittest.TestCase):
     columns = ['method', 'path', 'ip', 'timestamp', 'uuid']
-
     def setup(self):
         db_conn = DataBaseConnection()
         db_conn.drop_tables()
@@ -19,16 +18,17 @@ class DataBaseTestCases(unittest.TestCase):
 
     def csv_upload(self):
         db_conn = self.setup()
-        with open("{}/fixtures/test_csv.csv".format(os.path.dirname(os.path.realpath(__file__))), 'w') as out:
-            writer = csv.writer(out, delimiter=',')
-            writer.writerow(self.columns)
-            writer.writerow(['GET',
-                             '/',
-                             '127.0.0.1',
-                             '2017-04-10 17:45:22',
-                             'da76b7beeff3142b8343f4e4281ded230f9c1c9c0092c4278769f1ec16e70423'
+        str_io = StringIO()
+        writer = csv.writer(str_io, delimiter=',')
+        writer.writerow(self.columns)
+        writer.writerow(['GET',
+                          '/',
+                          '127.0.0.1',
+                          '2017-04-10 17:45:22',
+                          'da76b7beeff3142b8343f4e4281ded230f9c1c9c0092c4278769f1ec16e70423'
                             ])
 
+        # TODO: use StringIO in load_csv instead of relative path to fixtures
         db_conn.load_csv('pageviews',
                          'test_csv.csv',
                          "{}/fixtures/test_csv.csv".format(os.path.dirname(os.path.realpath(__file__))),
