@@ -2,6 +2,7 @@ import unittest
 import sys
 import csv
 import os
+import subprocess
 
 
 from context import DataBaseConnection
@@ -19,7 +20,10 @@ class DataBaseTestCases(unittest.TestCase):
 
     def csv_upload(self):
         db_conn = self.setup()
-        with open("{}/fixtures/test_csv.csv".format(os.path.dirname(os.path.realpath(__file__))), 'w') as out:
+        s = subprocess.Popen(["ls", "-R", "/home/circleci/identity-analytics-etl/tests/fixtures/"], stdout=subprocess.PIPE)
+        print(s.communicate()[0])
+        path_to_csv = os.path.abspath(os.path.dirname(__file__))
+        with open(os.path.join(path_to_csv,"fixtures/test_csv.csv"), 'w') as out:
             writer = csv.writer(out, delimiter=',')
             writer.writerow(self.columns)
             writer.writerow(['GET',

@@ -3,7 +3,6 @@ pg2/*
 __pycache__/
 *.swp
 .cache
-*.csv
 *.pyc
 *.zip
 venv

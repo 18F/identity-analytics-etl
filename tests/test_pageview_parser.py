@@ -9,7 +9,8 @@ from context import PageViewParser
 class PageViewParserTestCases(unittest.TestCase):
     pageview_json = '{"method":"GET","path":"/?issuer=&timeout=true","format":"html","controller":"Users::SessionsController","action":"new","status":302,"duration":4.84,"location":"https://idp.staging.login.gov/?issuer=","user_id":"anonymous-uuid","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36","ip":"24.124.56.64","host":"idp.staging.login.gov","timestamp":"2017-04-10 17:45:22 +0000","uuid":"58d753fe-4542-437f-a812-1f0f146cb4ec"}'
     pageview_json_no_id = '{"method":"GET","path":"/?issuer=&timeout=true","format":"html","controller":"Users::SessionsController","action":"new","status":302,"duration":4.84,"location":"https://idp.staging.login.gov/?issuer=","user_id":"anonymous-uuid","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36","ip":"24.124.56.64","host":"idp.staging.login.gov","timestamp":"2017-04-10 17:45:22 +0000"}'
-    in_io = open("{}/fixtures/test_pageview_log.txt".format(os.path.dirname(os.path.realpath(__file__))), 'rb').read()
+    path_to_txt = os.path.abspath(os.path.dirname(__file__))
+    in_io = open(os.path.join(path_to_txt,"fixtures/test_pageview_log.txt"), 'rb').read()
 
     def test_stream_csv(self):
         parser = PageViewParser()
