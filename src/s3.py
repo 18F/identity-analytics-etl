@@ -88,3 +88,6 @@ class S3:
 
     def download_file(self, filename):
         self.dest_bucket.download_file(filename, "/tmp/{}".format(filename))
+
+    def delete_from_bucket(self, bucket, filename):
+        bucket.Object(filename).delete()
