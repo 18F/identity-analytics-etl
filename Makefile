@@ -5,10 +5,10 @@ venv/bin/activate: requirements.txt
 	touch venv/bin/activate
 
 test: venv
-	venv/bin/python tests/test.py 
+	venv/bin/python tests/test.py
 
 coverage: test
-	venv/bin/py.test --cov=src tests/ 
+	venv/bin/py.test --cov=src tests/
 
 destroy_db:
 	venv/bin/python destroy_db.py
@@ -22,6 +22,8 @@ run: venv
 lambda_cleanup:
 	rm -f lambda_$(TAG)_deploy.zip
 	rm -rf lambda_$(TAG)_deploy/
+	rm -f lambda_$(TAG)_deploy_hot.zip
+	rm -rf lambda_$(TAG)_deploy_hot/
 
 lambda_buckets:
 	# TODO: Can We automate bucket logging here as well?
@@ -37,4 +39,5 @@ lambda_release: clean lambda_build
 
 lambda_deploy: lambda_release
 	aws s3 cp lambda_$(TAG)_deploy.zip s3://tf-redshift-bucket-deployments/
+	aws s3 cp lambda_$(TAG)_deploy_hot.zip s3://tf-redshift-bucket-deployments_hot/
 	make lambda_cleanup
