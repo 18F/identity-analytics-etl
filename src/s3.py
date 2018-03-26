@@ -9,7 +9,7 @@ from botocore.config import Config
 
 class S3:
 
-    def __init__(self, source_bucket, dest_bucket, dest_bucket_parquet, encryption_key):
+    def __init__(self, source_bucket, dest_bucket, dest_bucket_parquet, hot_bucket, encryption_key):
         self.conn = boto3.resource(
             's3',
             config=Config(signature_version='s3v4')
@@ -18,8 +18,10 @@ class S3:
         self.source_bucket = self.conn.Bucket(source_bucket)
         self.dest_bucket = self.conn.Bucket(dest_bucket)
         self.dest_bucket_parquet = self.conn.Bucket(dest_bucket_parquet)
+        self.hot_bucket = self.conn.Bucket(hot_bucket)
         self.encryption_key = encryption_key
         self.key_check = lambda key: ('.txt' in key) and ('cloud' not in key)
+        self.csv_check = lambda key: ('.csv' in key) and ('cloud' not in key)
 
     def get_n_s3_logfiles(self, n):
         get_last_modified = lambda x: int(x.last_modified.strftime('%s'))
@@ -55,12 +57,29 @@ class S3:
     def get_all_s3_logfiles(self):
         return [f.key for f in self.source_bucket.objects.all() if self.key_check(f.key)]
 
+    def get_all_csv(self):
+        get_last_modified = lambda x: int(x.last_modified.strftime('%s'))
+        files = [f for f in self.hot_bucket.objects.all() if self.csv_check(f.key)]
+        sorted_files = sorted(files, key=get_last_modified, reverse=True)
+        return [f.key for f in sorted_files]
+
     def get_logfile(self, filename):
         return self.source_bucket.Object(filename).get()['Body']
 
     def new_file(self, out, filename):
         res = io.BytesIO(out.getvalue().encode('utf-8'))
         self.dest_bucket.upload_fileobj(
+            res,
+            filename,
+            ExtraArgs={
+                "SSEKMSKeyId": self.encryption_key,
+                "ServerSideEncryption": 'aws:kms'
+            }
+        )
+
+    def new_file_hot(self, out, filename):
+        res = io.BytesIO(out.getvalue().encode('utf-8'))
+        self.hot_bucket.upload_fileobj(
             res,
             filename,
             ExtraArgs={
@@ -89,5 +108,5 @@ class S3:
     def download_file(self, filename):
         self.dest_bucket.download_file(filename, "/tmp/{}".format(filename))
 
-    def delete_from_bucket(self, bucket, filename):
-        bucket.Object(filename).delete()
+    def delete_from_bucket(self, filename):
+        self.hot_bucket.Object(filename).delete()

@@ -23,15 +23,16 @@ def lambda_handler(event, context):
     dest_bucket = "login-gov-{}-analytics".format(os.environ.get('env'))
     source_bucket = "login-gov-{}-logs".format(os.environ.get('env'))
     bucket_parquet = "login-gov-{}-analytics-parquet".format(os.environ['env'])
+    hot_bucket = "login-gov-{}-analytics-hot".format(os.environ['env'])
 
     uploader = src.Uploader(
         source_bucket,
         dest_bucket,
         bucket_parquet,
+        hot_bucket,
         logger=uploader_logger,
         redshift=True,
         encryption_key=os.environ.get('encryption_key'),
-        trigger_file=trigger_file
     )
 
-    uploader.run()
+    uploader.run(trigger_file=trigger_file)

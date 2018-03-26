@@ -9,8 +9,7 @@ from .queries import Queries
 
 class DataBaseConnection:
     q = Queries()
-    # TODO: use a seperate DB for tests? add test DB?
-
+    
     def __init__(self, s3=None, redshift=False):
         """
         Connects by default to local postgresql.
