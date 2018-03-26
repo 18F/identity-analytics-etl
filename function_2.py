@@ -28,6 +28,7 @@ def lambda_handler(event, context):
                                    'browser_version', 'browser_platform_name',
                                    'browser_platform_version', 'browser_device_name',
                                    'browser_device_type', 'browser_bot', 'time'],
+                'events_email': ['id', 'name', 'domain_name', 'time']
                }
     s3 = src.S3(bucket, bucket, bucket, bucket, 'dc12706b-50ea-40b7-8d0e-206962aaa8f7')
 
