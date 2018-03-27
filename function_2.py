@@ -39,6 +39,7 @@ def lambda_handler(event, context):
 
     for f in files:
         if context.get_remaining_time_in_millis() < 1000:
+            db.close_connection()
             break
 
         pth = "{}.txt".format('.'.join(f.split('.')[:-2]))
@@ -54,3 +55,5 @@ def lambda_handler(event, context):
                     'arn:aws:iam::555546682965:role/tf-redshift-{}-iam-role'.format(
                      os.environ.get('env')))
         s3.delete_from_bucket(f)
+
+    db.close_connection()
