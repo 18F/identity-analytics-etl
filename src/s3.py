@@ -60,7 +60,7 @@ class S3:
     def get_all_csv(self):
         get_last_modified = lambda x: int(x.last_modified.strftime('%s'))
         files = [f for f in self.hot_bucket.objects.all() if self.csv_check(f.key)]
-        sorted_files = sorted(files, key=get_last_modified, reverse=True)
+        sorted_files = sorted(files, key=get_last_modified, reverse=False)
         return [f.key for f in sorted_files]
 
     def get_logfile(self, filename):
