@@ -109,7 +109,7 @@ class Queries:
                                     timestamp TIMESTAMP,
                                     uuid VARCHAR(64) NOT NULL
                                     ) SORTKEY(timestamp);"""
-        
+
         # Postgres compatible
         self.create_pageviews_dev = """CREATE TABLE pageviews (
                                     method VARCHAR(10) NOT NULL,
@@ -140,7 +140,7 @@ class Queries:
 
         self.drop_user_agents = """DROP TABLE IF EXISTS user_agents CASCADE;"""
 
-        self.get_uploaded_files = """SELECT s3filename
+        self.get_uploaded_files = """SELECT s3filename, destination
                                      FROM uploaded_files;"""
 
         self.mark_uploaded = """INSERT INTO uploaded_files (s3filename, destination, uploaded_at)
