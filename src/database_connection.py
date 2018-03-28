@@ -9,7 +9,7 @@ from .queries import Queries
 
 class DataBaseConnection:
     q = Queries()
-    
+
     def __init__(self, s3=None, redshift=False):
         """
         Connects by default to local postgresql.
@@ -36,7 +36,7 @@ class DataBaseConnection:
 
     def uploaded_files(self):
         result = self.safe_query(self.q.get_uploaded_files)
-        return [row['s3filename'] for row in result]
+        return [(row['s3filename'], row['destination']) for row in result]
 
     def mark_uploaded(self, filename, destination):
         uploaded_at = datetime.now()
