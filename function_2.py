@@ -39,12 +39,12 @@ def lambda_handler(event, context):
 
     for f in files:
         if context.get_remaining_time_in_millis() < 1000:
-            db.close_connection()
             break
 
         pth = "{}.txt".format('.'.join(f.split('.')[:-2]))
         table = f.split('.')[-2]
-        if pth in uploaded_files:
+        if (pth, table) in uploaded_files:
+            s3.delete_from_bucket(f)
             continue
 
         db.load_csv(table,
