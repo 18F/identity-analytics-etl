@@ -155,4 +155,3 @@ CREATE VIEW monthly_signups AS (
     WHERE i.uid_ranked = 1 
   ) e group by e.month ORDER BY e.month asc
 );
-
