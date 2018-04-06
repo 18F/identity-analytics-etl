@@ -170,5 +170,3 @@ BEGIN;
     DROP TABLE pageviews;
     ALTER TABLE pageviews_tt RENAME TO pageviews;
 END;
-
-
