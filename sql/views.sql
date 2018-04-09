@@ -136,3 +136,22 @@ CREATE VIEW hourly_active_users AS
   WHERE events."time"::date >= (GETDATE() - interval '30' day) 
   GROUP BY events."time"::date, date_part('hour', events."time")::text
 );
+
+CREATE VIEW monthly_signups AS (
+  SELECT 
+    e.month,
+    count(e.c_uid) AS count 
+    FROM (
+    SELECT 
+    date_trunc(('month'), i.time) as month, 
+    i.user_id AS c_uid  
+    FROM 
+    (
+       SELECT events.user_id as user_id, 
+       events.time as time, 
+       ROW_NUMBER() OVER (PARTITION BY events.user_id ORDER BY events.time ASC) AS uid_ranked
+       FROM events
+    ) i 
+    WHERE i.uid_ranked = 1 
+  ) e group by e.month ORDER BY e.month asc
+);
