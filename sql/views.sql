@@ -155,3 +155,32 @@ CREATE VIEW monthly_signups AS (
     WHERE i.uid_ranked = 1 
   ) e group by e.month ORDER BY e.month asc
 );
+
+
+CREATE VIEW avg_daily_signups_by_month AS (
+  SELECT 
+  ed.month as month, 
+  avg(ed.d_count) avg_daily_signups 
+  FROM (
+    SELECT 
+      e.day,
+      date_trunc(('month'), e.day) as month,
+      count(e.c_uid) AS d_count 
+      FROM (
+      SELECT 
+      date_trunc(('day'), i.time) as day, 
+      i.user_id AS c_uid  
+      FROM 
+      (
+         SELECT events.user_id as user_id, 
+         events.time as time, 
+         ROW_NUMBER() OVER (PARTITION BY events.user_id ORDER BY events.time ASC) AS uid_ranked
+         FROM events
+      ) i 
+      WHERE i.uid_ranked = 1 
+    ) e group by e.day ORDER BY e.day asc 
+  ) ed group by ed.month ORDER BY ed.month asc
+);
+
+
+
