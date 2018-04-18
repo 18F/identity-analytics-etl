@@ -2,6 +2,8 @@ import src
 import os
 import yaml
 import boto3
+import logging
+
 
 def set_redshift_configs(env):
     bucket = boto3.resource('s3').Bucket("login-gov-{}-redshift-secrets".format(env))
@@ -38,22 +40,26 @@ def lambda_handler(event, context):
     uploaded_files = db.uploaded_files()
 
     for f in files:
-        if context.get_remaining_time_in_millis() < 1000:
-            break
+        try: 
+            if context.get_remaining_time_in_millis() < 1000:
+                break
 
-        pth = "{}.txt".format('.'.join(f.split('.')[:-2]))
-        table = f.split('.')[-2]
-        if (pth, table) in uploaded_files:
+            pth = "{}.txt".format('.'.join(f.split('.')[:-2]))
+            table = f.split('.')[-2]
+            if (pth, table) in uploaded_files:
+                s3.delete_from_bucket(f)
+                continue
+
+            db.load_csv(table,
+                        pth,
+                        s3.get_path(f),
+                        headers[table],
+                        'us-west-2',
+                        'arn:aws:iam::555546682965:role/tf-redshift-{}-iam-role'.format(
+                        os.environ.get('env')))
             s3.delete_from_bucket(f)
-            continue
-
-        db.load_csv(table,
-                    pth,
-                    s3.get_path(f),
-                    headers[table],
-                    'us-west-2',
-                    'arn:aws:iam::555546682965:role/tf-redshift-{}-iam-role'.format(
-                     os.environ.get('env')))
-        s3.delete_from_bucket(f)
+        except Exception as e:
+            logging.exception("Error while processing CSV file")
+            s3.delete_from_bucket(f)
 
     db.close_connection()
