@@ -40,10 +40,9 @@ def lambda_handler(event, context):
     uploaded_files = db.uploaded_files()
 
     for f in files:
-        try: 
-            if context.get_remaining_time_in_millis() < 1000:
-                break
-
+        if context.get_remaining_time_in_millis() < 10000:
+            break
+        try:
             pth = "{}.txt".format('.'.join(f.split('.')[:-2]))
             table = f.split('.')[-2]
             if (pth, table) in uploaded_files:
