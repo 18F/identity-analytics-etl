@@ -180,3 +180,84 @@ CREATE VIEW avg_daily_signups_by_month AS (
     ) e group by e.day ORDER BY e.day asc 
   ) ed group by ed.month ORDER BY ed.month asc
 );
+
+
+-- Return Rate?
+-- Get Distinct visit count by month with successful MFA, 
+-- divided total visit count by month.
+CREATE VIEW return_rate_by_day AS (
+  SELECT 
+      mfav.day,
+      mfav.sp as service_provider,
+      (mfav.daily_handoff_visit_success::float / vs.total_visits::float)::float as return_rate,
+      mfav.daily_handoff_visit_success,
+      vs.total_visits 
+       FROM ( 
+  SELECT 
+    e.day as day,
+    e.sp as sp,
+    count(e.v_id) AS monthly_handoff_visit_success 
+    FROM (
+    SELECT 
+    date_trunc(('day'), i.time) as day, 
+    i.visit_id AS v_id,
+    coalesce(service_providers.service_provider,'None') as sp 
+    FROM 
+    (
+       SELECT events.visit_id as visit_id, 
+       events.time as time, 
+       events.service_provider as sp, 
+       ROW_NUMBER() OVER (PARTITION BY events.visit_id ORDER BY events.time ASC) AS vid_ranked
+       FROM events 
+       WHERE events.name = 'User registration: agency handoff complete'
+    ) i 
+    LEFT JOIN service_providers ON (service_providers.events_sp = i.sp)
+    WHERE i.vid_ranked = 1 
+  ) e group by e.day, e.sp ORDER BY e.day asc
+    ) mfav
+    LEFT JOIN (
+        select date_trunc(('day'), events.time) as day,
+        coalesce(service_providers.service_provider,'None') as sp,
+        count(distinct visit_id) as total_visits 
+        from events 
+        LEFT JOIN service_providers ON (service_providers.events_sp = events.service_provider)
+        WHERE events.name IN ('User Registration: enter email visited')
+        GROUP BY date_trunc(('day'), events.time), service_providers.service_provider
+    ) vs ON (mfav.day = vs.day AND mfav.sp = vs.sp) ORDER BY mfav.day asc, mfav.sp desc
+);
+
+
+CREATE VIEW return_rate_by_provider AS (
+  SELECT 
+      mfav.sp as service_provider,
+      (mfav.handoff_visit_success::float / vs.visits::float)::float as return_rate,
+      mfav.handoff_visit_success,
+      vs.visits as enter_email_visits 
+       FROM ( 
+  SELECT 
+    e.sp as sp,
+    count(DISTINCT e.v_id) AS handoff_visit_success 
+    FROM (
+    SELECT 
+    events.visit_id AS v_id,
+    coalesce(service_providers.service_provider,'None') as sp 
+    FROM 
+    events
+    LEFT JOIN service_providers ON (service_providers.events_sp = events.service_provider)
+    WHERE events.name = 'User registration: agency handoff complete'
+  ) e group by e.sp 
+    ) mfav
+    LEFT JOIN (
+      SELECT mt.service_provider as sp, sum(mt.total_visits) as visits from (
+        select
+        coalesce(service_providers.service_provider,'None') as service_provider,
+        count(distinct visit_id) as total_visits 
+        from events 
+        LEFT JOIN service_providers ON (service_providers.events_sp = events.service_provider)
+        WHERE events.name IN ('User Registration: enter email visited')
+        GROUP BY service_providers.service_provider
+      ) mt GROUP BY mt.service_provider
+    ) vs ON ( mfav.sp = vs.sp) ORDER BY mfav.sp desc
+);
+
+
