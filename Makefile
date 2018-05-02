@@ -31,7 +31,8 @@ lambda_buckets:
 	aws s3 cp redshift_secrets.yml s3://login-gov-$(ENVIRONMENT)-redshift-secrets/redshift_secrets.yml
 
 lambda_build: lambda_cleanup
-	docker run -v $(PWD):/build-analytics -it --rm ubuntu:artful bash build-analytics/build.sh $(TAG)
+	docker pull cacraig/analytics-dev
+	docker run -v $(PWD):/build-analytics -it --rm cacraig/analytics-dev:latest bash build-analytics/build.sh $(TAG)
 	git tag -a $(TAG) -m "Deployed from Makefile"
 	git push origin --tags
 
