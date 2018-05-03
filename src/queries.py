@@ -152,10 +152,14 @@ class Queries:
                             FROM :filepath
                             IAM_ROLE :iam_role
                             REGION :region
+                            ACCEPTINVCHARS
+                            TRUNCATECOLUMNS
                             FORMAT AS CSV IGNOREHEADER 1;"""
 
         self.load_csv = """COPY {table_name} ({columns})
                             FROM :filepath
+                            ACCEPTINVCHARS
+                            TRUNCATECOLUMNS
                             CSV HEADER;"""
 
     def get_uploaded_files_lock(self):
