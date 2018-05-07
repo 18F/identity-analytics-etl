@@ -28,9 +28,9 @@ RUN echo "host all  all    0.0.0.0/0  trust" >> $PG_CONFIG_DIR/pg_hba.conf \
       && echo "host all  all    ::/0  trust" >> $PG_CONFIG_DIR/pg_hba.conf \
       && echo "listen_addresses='*'" >> $PG_CONFIG_FILE
 
-#COPY docker-entrypoint.sh /usr/local/bin/
-#RUN ln -s usr/local/bin/docker-entrypoint.sh /
-#RUN ["chmod", "u+x", "/usr/local/bin/docker-entrypoint.sh"]
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN ln -s usr/local/bin/docker-entrypoint.sh /
+RUN ["chmod", "u+x", "/usr/local/bin/docker-entrypoint.sh"]
 USER postgres
 
 # Not sure whats going on here - Ran into some strange docker error - maybe Mac specific?
