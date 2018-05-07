@@ -33,7 +33,9 @@ class EventParser(Parser):
 
     uuids = set()
     service_provider_index = 6
-    MAX_UUID_SIZE = 36
+    
+    # max size for both visitor_id and visit_id.
+    MAX_V_ID_SIZE = 36
 
     def stream_csv(self, in_io):
         return Parser.stream_csv(self, in_io)
@@ -51,11 +53,12 @@ class EventParser(Parser):
             return False
 
     def get_uuid(self, data):
-        uuid = data.get('id')
-        # MAX UUID size is 36 characters, truncate if > 36
-        if len(uuid) > self.MAX_UUID_SIZE:
-            uuid = uuid[:37]
-        return uuid
+       return data.get('id')
+
+    def truncate_id(self, data):
+        if len(data) > self.MAX_V_ID_SIZE:
+            return data[:self.MAX_V_ID_SIZE]
+        return data
 
     def get_default_extension(self, sp):
         res = [None] * 10
@@ -79,8 +82,8 @@ class EventParser(Parser):
             data.get('properties').get('user_id'),
             data.get('properties').get('user_ip'),
             data.get('properties').get('host'),
-            data.get('visit_id'),
-            data.get('visitor_id'),
+            self.truncate_id(data.get('visit_id')),
+            self.truncate_id(data.get('visitor_id')),
             re.sub(r"\.\d+Z$", '', data.get('time').replace('T', ' ')),
             json.dumps(data.get('properties').get('event_properties'))
         ]

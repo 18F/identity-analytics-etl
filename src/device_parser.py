@@ -21,8 +21,6 @@ class DeviceParser(Parser):
         'browser_bot': bool, 
         'time': str
     }
-   
-    MAX_UUID_SIZE = 36
 
     def stream_csv(self, in_io):
         return Parser.stream_csv(self, in_io)
@@ -34,11 +32,7 @@ class DeviceParser(Parser):
         return Parser.has_valid_json(self, line)
 
     def get_uuid(self, data):
-       uuid = data.get('id')
-        # MAX UUID size is 36 characters, truncate if > 36
-       if len(uuid) > self.MAX_UUID_SIZE:
-            uuid = uuid[:37]
-       return uuid
+        return data.get('id')
 
     def format_check(self, line):
         if ('event_properties' not in line) or ('browser' not in line) or (not self.has_valid_json(line)):

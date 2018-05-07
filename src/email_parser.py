@@ -25,12 +25,7 @@ class EmailParser(Parser):
         return Parser.has_valid_json(self, line)
 
     def get_uuid(self, data):
-        uuid = data.get('id')
-        # MAX UUID size is 36 characters, truncate if otherwise
-        if len(uuid) > 36:
-            uuid = uuid[:37]
-        
-        return uuid
+        return data.get('id')
 
     def format_check(self, line):
         if ('event_properties' not in line) or ('domain_name' not in line) or (not self.has_valid_json(line)):
