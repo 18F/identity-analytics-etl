@@ -33,6 +33,7 @@ class EventParser(Parser):
 
     uuids = set()
     service_provider_index = 6
+    MAX_UUID_SIZE = 36
 
     def stream_csv(self, in_io):
         return Parser.stream_csv(self, in_io)
@@ -50,7 +51,11 @@ class EventParser(Parser):
             return False
 
     def get_uuid(self, data):
-        return data.get('id')
+        uuid = data.get('id')
+        # MAX UUID size is 36 characters, truncate if > 36
+        if len(uuid) > self.MAX_UUID_SIZE:
+            uuid = uuid[:37]
+        return uuid
 
     def get_default_extension(self, sp):
         res = [None] * 10
