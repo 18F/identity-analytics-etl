@@ -3,7 +3,9 @@ import csv
 import re
 import io
 
-from src.log_parser import Parser
+from .log_parser import Parser
 
 class AreaCodeParser(Parser):
-    pass
+    
+    def __init__(self):
+        pass
