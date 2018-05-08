@@ -45,6 +45,6 @@ jobs:
             python tests/test_event_parser.py
             python tests/test_pageview_parser.py
             python tests/test_uploader.py
-            python tests/test_area_code_parser.py
+            python tests/test_phone_parser.py
             
             

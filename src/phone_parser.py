@@ -5,7 +5,7 @@ import io
 
 from .log_parser import Parser
 
-class AreaCodeParser(Parser):
+class PhoneParser(Parser):
     
     def __init__(self):
         pass

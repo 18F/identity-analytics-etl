@@ -4,10 +4,10 @@ import os
 import json
 
 
-from context import AreaCodeParser
+from context import PhoneParser
 from io import BytesIO
 
-class AreaCodeParserTestCases(unittest.TestCase):
+class PhoneParserTestCases(unittest.TestCase):
     area_code_event_json = '{"id":"b17wpieoqf35-525a-44oeodb-c904d4ac0b1e","name":"OTP: Delivery Selection","properties":{"event_properties":{"success":true,"errors":{},"otp_delivery_preference":"sms","resend":null,"country_code":"1","area_code":"805","context":"confirmation"},"user_id":"06a2f306-0f89-4f53-ab20-ddf1a3e9edde","user_ip":"204.14.239.105","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36","host":"secure.login.gov","pid":18484},"visit_id":"7e05fd69-69bf-4d5e-882c-873488ac4f9a","visitor_id":"0a2d3b0a-c866-46ff-a6af-174455135a8a","time":"2017-10-22T19:44:13.775Z"}'
     
     test_event_log_txt = BytesIO(b"""
@@ -18,14 +18,14 @@ class AreaCodeParserTestCases(unittest.TestCase):
     in_io = test_event_log_txt.read()
 
     def test_extract_json(self):
-      parser = AreaCodeParser()
+      parser = PhoneParser()
       res = parser.extract_json(self.area_code_event_json)
       self.assertEqual(res['id'], 'b17wpieoqf35-525a-44oeodb-c904d4ac0b1e')
       self.assertEqual(res['properties']['event_properties']['area_code'], '805')
       self.assertEqual(res.keys(), json.loads(self.area_code_event_json).keys())
 
     def test_json_to_csv(self):
-      parser = AreaCodeParser()
+      parser = PhoneParser()
       data = json.loads(self.area_code_event_json)
       res = parser.json_to_csv(data)[0]
       self.assertEqual(len(res), 20)
@@ -33,7 +33,7 @@ class AreaCodeParserTestCases(unittest.TestCase):
       self.assertFalse(res[-1])
     
     def test_has_valid_json(self):
-      parser = AreaCodeParser()
+      parser = PhoneParser()
       self.assertTrue(parser.has_valid_json(self.area_code_event_json))
 
 if __name__ == '__main__':
