@@ -17,17 +17,11 @@ class AreaCodeParserTestCases(unittest.TestCase):
 
     in_io = test_event_log_txt.read()
 
-    def test_stream_csv(self):
-      parser = AreaCodeParser()
-      rows, out, out_parquet = parser.stream_csv(self.in_io)
-      self.assertEqual(rows, 1)
-      self.assertTrue(len(out_parquet.read()) > 0)
-
     def test_extract_json(self):
       parser = AreaCodeParser()
       res = parser.extract_json(self.area_code_event_json)
       self.assertEqual(res['id'], 'b17wpieoqf35-525a-44oeodb-c904d4ac0b1e')
-      self.assertEqual(res['properties']['area_code'], '805')
+      self.assertEqual(res['properties']['event_properties']['area_code'], '805')
       self.assertEqual(res.keys(), json.loads(self.area_code_event_json).keys())
 
     def test_json_to_csv(self):
@@ -37,6 +31,10 @@ class AreaCodeParserTestCases(unittest.TestCase):
       self.assertEqual(len(res), 20)
       self.assertEqual(res[8], '2017-10-22T19:45:24.349Z')
       self.assertFalse(res[-1])
+    
+    def test_has_valid_json(self):
+      parser = AreaCodeParser()
+      self.assertTrue(parser.has_valid_json(self.area_code_event_json))
 
 if __name__ == '__main__':
    unittest.main()
