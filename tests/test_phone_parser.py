@@ -22,6 +22,7 @@ class PhoneParserTestCases(unittest.TestCase):
       res = parser.extract_json(self.area_code_event_json)
       self.assertEqual(res['id'], 'b17wpieoqf35-525a-44oeodb-c904d4ac0b1e')
       self.assertEqual(res['properties']['event_properties']['area_code'], '805')
+      self.assertEqual(res['properties']['event_properties']['country_code'], '1')
       self.assertEqual(res.keys(), json.loads(self.area_code_event_json).keys())
 
     def test_json_to_csv(self):
