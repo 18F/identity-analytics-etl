@@ -7,7 +7,7 @@ venv/bin/activate: requirements.txt
 test: venv
 	set +e
 	docker stop analytics || true && docker rm analytics || true
-	docker pull cacraig/analytics-dev && docker run --name analytics -p 5431:5432 -v $(PWD):$(PWD) -d -t cacraig/analytics-dev-pg:latest || true 
+	docker pull cacraig/analytics-dev && docker run --name analytics -p 5431:5432 -v $(PWD):$(PWD) -d -t cacraig/analytics-dev:latest || true 
 	docker exec -it analytics createdb dev || true
 	venv/bin/python tests/test.py
 
