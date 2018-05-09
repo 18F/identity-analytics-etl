@@ -1,4 +1,3 @@
 #!/bin/bash
-set -e
-service postgresql start
+service postgresql start 
 bash
