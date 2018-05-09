@@ -21,6 +21,8 @@ class PhoneParserTestCases(unittest.TestCase):
       parser = PhoneParser()
       res = parser.extract_json(self.area_code_event_json)
       self.assertEqual(res['id'], 'b17wpieoqf35-525a-44oeodb-c904d4ac0b1e')
+      self.assertEqual(res['visit_id'], '7e05fd69-69bf-4d5e-882c-873488ac4f9a')
+      self.assertEqual(res['visitor_id'],'0a2d3b0a-c866-46ff-a6af-174455135a8a')
       self.assertEqual(res['properties']['event_properties']['area_code'], '805')
       self.assertEqual(res['properties']['event_properties']['country_code'], '1')
       self.assertEqual(res.keys(), json.loads(self.area_code_event_json).keys())
@@ -29,9 +31,8 @@ class PhoneParserTestCases(unittest.TestCase):
       parser = PhoneParser()
       data = json.loads(self.area_code_event_json)
       res = parser.json_to_csv(data)[0]
-      self.assertEqual(len(res), 20)
-      self.assertEqual(res[8], '2017-10-22T19:45:24.349Z')
-      self.assertFalse(res[-1])
+      self.assertEqual(len(res), 6)
+      self.assertEqual(res[5], '2017-10-22 19:44:13')
     
     def test_has_valid_json(self):
       parser = PhoneParser()
