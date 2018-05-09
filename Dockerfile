@@ -13,6 +13,7 @@ RUN python3.6 -m pip install --upgrade pip==9.0.3
 RUN python3.6 -m pip install wheel virtualenv
 RUN cd /usr/local/bin && ln -s /usr/bin/python3 python
 
+
 # Install Postgres 9.X
 
 ENV PG_VERSION 9.6
@@ -33,7 +34,7 @@ RUN ln -s usr/local/bin/docker-entrypoint.sh /
 RUN ["chmod", "u+x", "/usr/local/bin/docker-entrypoint.sh"]
 USER postgres
 
-# Not sure whats going on here - Ran into some strange docker error - maybe Mac specific?
-# ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 5432
+
