@@ -20,10 +20,10 @@ def lambda_handler(event, context):
     uploader_logger = logging.getLogger('uploader')
     set_redshift_configs()
     trigger_file = event["Records"][0]["s3"]["object"]["key"]
-    dest_bucket = "login-gov-{}-{}-analytics".format(os.environ.get('acct_id'), os.environ.get('env'))
-    source_bucket = "login-gov-{}-{}-logs".format(os.environ.get('acct_id'), os.environ.get('env'))
-    bucket_parquet = "login-gov-{}-{}-analytics-parquet".format(os.environ.get('acct_id'), os.environ.get('env'))
-    hot_bucket = "login-gov-{}-{}analytics-hot".format(os.environ.get('acct_id'), os.environ.get('env'))
+    dest_bucket = os.environ.get('dest_bucket')
+    source_bucket = os.environ.get('source_bucket')
+    bucket_parquet = os.environ.get('bucket_parquet')
+    hot_bucket = os.environ.get('hot_bucket')
 
     uploader = src.Uploader(
         source_bucket,
