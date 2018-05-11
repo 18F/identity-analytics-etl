@@ -55,7 +55,7 @@ def lambda_handler(event, context):
                         headers[table],
                         'us-west-2',
                         'arn:aws:iam::{}:role/tf-redshift-{}-iam-role'.format(
-                        os.environ.get('acct_id'), os.environ.get('env')))
+                        os.environ.get('account_id'), os.environ.get('env')))
             s3.delete_from_bucket(f)
         except Exception as e:
             logging.exception("Error while processing CSV file")
