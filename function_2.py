@@ -10,13 +10,13 @@ def set_redshift_configs(env):
     data = yaml.load(bucket.Object('redshift_secrets.yml').get()['Body'])
     os.environ['REDSHIFT_URI'] = "redshift+psycopg2://awsuser:{redshift_password}@{redshift_host}/analytics".format(
         redshift_password=data['redshift_password'],
-        redshift_host='tf-{}-redshift-cluster.ca6vppcizuju.us-west-2.redshift.amazonaws.com:5439'.format(env)
+        redshift_host="{}:5439".format(os.environ.get('redshift_host'))
     )
     os.environ['env'] = env
 
 def lambda_handler(event, context):
     os.environ['S3_USE_SIGV4'] = 'True'
-    bucket = 'login-gov-{}-analytics-hot'.format(os.environ.get('env'))
+    bucket = os.environ['bucket']
     set_redshift_configs(os.environ.get('env'))
     headers = {'events': ['id', 'name', 'user_agent', 'user_id', 'user_ip',
                            'host', 'visit_id', 'visitor_id', 'time', 'event_properties',
@@ -32,7 +32,7 @@ def lambda_handler(event, context):
                                    'browser_device_type', 'browser_bot', 'time'],
                 'events_email': ['id', 'name', 'domain_name', 'time']
                }
-    s3 = src.S3(bucket, bucket, bucket, bucket, 'dc12706b-50ea-40b7-8d0e-206962aaa8f7')
+    s3 = src.S3(bucket, bucket, bucket, bucket, os.environ.get('encryption_key'))
 
     files = s3.get_all_csv()
     db = src.DataBaseConnection(redshift=True)
@@ -54,8 +54,8 @@ def lambda_handler(event, context):
                         s3.get_path(f),
                         headers[table],
                         'us-west-2',
-                        'arn:aws:iam::555546682965:role/tf-redshift-{}-iam-role'.format(
-                        os.environ.get('env')))
+                        'arn:aws:iam::{}:role/tf-redshift-{}-iam-role'.format(
+                        os.environ.get('acct_id'), os.environ.get('env')))
             s3.delete_from_bucket(f)
         except Exception as e:
             logging.exception("Error while processing CSV file")
