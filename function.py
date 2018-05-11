@@ -8,7 +8,7 @@ import src
 def set_redshift_configs():
     # The bucket name and filename
     # could all be defined inside of the lambda resource in terraform.
-    bucket = boto3.resource('s3').Bucket("login-gov-{}-redshift-secrets".format(os.environ.get('env')))
+    bucket = boto3.resource('s3').Bucket("login-gov-{}-{}-redshift-secrets".format(os.environ.get('env'), os.environ.get('acct_id')))
     data = yaml.load(bucket.Object('redshift_secrets.yml').get()['Body'])
     os.environ['REDSHIFT_URI'] = "redshift+psycopg2://awsuser:{redshift_password}@{redshift_host}/analytics".format(
         redshift_password=data['redshift_password'],
@@ -20,10 +20,10 @@ def lambda_handler(event, context):
     uploader_logger = logging.getLogger('uploader')
     set_redshift_configs()
     trigger_file = event["Records"][0]["s3"]["object"]["key"]
-    dest_bucket = "login-gov-{}-analytics".format(os.environ.get('env'))
-    source_bucket = "login-gov-{}-logs".format(os.environ.get('env'))
-    bucket_parquet = "login-gov-{}-analytics-parquet".format(os.environ['env'])
-    hot_bucket = "login-gov-{}-analytics-hot".format(os.environ['env'])
+    dest_bucket = "login-gov-{}-{}-analytics".format(os.environ.get('acct_id'), os.environ.get('env'))
+    source_bucket = "login-gov-{}-{}-logs".format(os.environ.get('acct_id'), os.environ.get('env'))
+    bucket_parquet = "login-gov-{}-{}-analytics-parquet".format(os.environ.get('acct_id'), os.environ.get('env'))
+    hot_bucket = "login-gov-{}-{}analytics-hot".format(os.environ.get('acct_id'), os.environ.get('env'))
 
     uploader = src.Uploader(
         source_bucket,
