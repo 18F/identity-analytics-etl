@@ -35,7 +35,7 @@ lambda_build: lambda_cleanup
 	git tag -a $(TAG) -m "Deployed from Makefile"
 	git push origin --tags
 
-lambda_release: clean lambda_build
+lambda_release: lambda_build
 
 lambda_deploy: lambda_release
 	aws s3 cp lambda_$(TAG)_deploy.zip s3://tf-redshift-bucket-deployments/
