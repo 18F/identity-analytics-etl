@@ -27,8 +27,8 @@ lambda_cleanup:
 
 lambda_buckets:
 	# TODO: Can We automate bucket logging here as well?
-	aws s3 mb s3://login-gov-$(ENVIRONMENT)-redshift-secrets
-	aws s3 cp redshift_secrets.yml s3://login-gov-$(ENVIRONMENT)-redshift-secrets/redshift_secrets.yml
+	aws s3 mb s3://login-gov-$(ENVIRONMENT)-$(ACCT_ID)-redshift-secrets
+	aws s3 cp redshift_secrets.yml s3://login-gov-$(ENVIRONMENT)-$(ACCT_ID)-redshift-secrets/redshift_secrets.yml
 
 lambda_build: lambda_cleanup
 	docker run -v $(PWD):/build-analytics -it --rm ubuntu:artful bash build-analytics/build.sh $(TAG)

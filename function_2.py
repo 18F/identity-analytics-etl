@@ -5,8 +5,8 @@ import boto3
 import logging
 
 
-def set_redshift_configs(env):
-    bucket = boto3.resource('s3').Bucket("login-gov-{}-redshift-secrets".format(env))
+def set_redshift_configs(env, acct_id):
+    bucket = boto3.resource('s3').Bucket("login-gov-{}-{}-redshift-secrets".format(env, acct_id))
     data = yaml.load(bucket.Object('redshift_secrets.yml').get()['Body'])
     os.environ['REDSHIFT_URI'] = "redshift+psycopg2://awsuser:{redshift_password}@{redshift_host}/analytics".format(
         redshift_password=data['redshift_password'],
@@ -17,7 +17,7 @@ def set_redshift_configs(env):
 def lambda_handler(event, context):
     os.environ['S3_USE_SIGV4'] = 'True'
     bucket = os.environ['bucket']
-    set_redshift_configs(os.environ.get('env'))
+    set_redshift_configs(os.environ.get('env'), os.environ.get('acct_id'))
     headers = {'events': ['id', 'name', 'user_agent', 'user_id', 'user_ip',
                            'host', 'visit_id', 'visitor_id', 'time', 'event_properties',
                            'success', 'existing_user', 'otp_method', 'context',
