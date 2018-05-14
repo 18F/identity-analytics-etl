@@ -147,15 +147,19 @@ class Queries:
                                 VALUES ('{}', '{}', '{}');"""
 
         # TODO: Switch to SQLAlchemy ORM in #3
-
+        # ACCEPTINVCHARS replaces invalid UTF-8 characters with '? by default
+        # Use ACCEPTINVCHARS as <your_replacement_char> if you want to override 
+        # the default '?'
         self.load_csv_redshift = """COPY {table_name} ({columns})
                             FROM :filepath
                             IAM_ROLE :iam_role
                             REGION :region
+                            ACCEPTINVCHARS
                             FORMAT AS CSV IGNOREHEADER 1;"""
-
+        
         self.load_csv = """COPY {table_name} ({columns})
                             FROM :filepath
+                            ACCEPTINVCHARS
                             CSV HEADER;"""
 
     def get_uploaded_files_lock(self):
