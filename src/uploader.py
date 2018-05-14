@@ -7,6 +7,7 @@ from .event_parser import EventParser
 from .pageview_parser import PageViewParser
 from .device_parser import DeviceParser
 from .email_parser import EmailParser
+from .phone_parser import PhoneParser
 from .database_connection import DataBaseConnection
 from .s3 import S3
 
@@ -20,7 +21,7 @@ class Uploader:
         self.dest_bucket_parquet = dest_bucket_parquet
         self.hot_bucket = hot_bucket
         self.s3 = S3(self.source_bucket, self.dest_bucket, self.dest_bucket_parquet, self.hot_bucket, encryption_key) if s3 is None else s3
-        self.parsers = (EventParser(), PageViewParser(), DeviceParser(), EmailParser()) if parsers is None else parsers
+        self.parsers = (EventParser(), PageViewParser(), DeviceParser(), EmailParser(), PhoneParser()) if parsers is None else parsers
         if not logger:
             logging.basicConfig(level=logging.INFO)
             self.logger = logging.getLogger('uploader')
