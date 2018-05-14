@@ -83,6 +83,17 @@ class Queries:
 
         self.drop_events_email = """DROP TABLE IF EXISTS events_email;"""
 
+        self.create_events_phone = """CREATE TABLE events_phone (
+                                            id VARCHAR(40) NOT NULL,
+                                            visit_id VARCHAR(40),
+                                            visitor_id VARCHAR(40),
+                                            area_code VARCHAR(10) NOT NULL,
+                                            country_code VARCHAR(10) NOT NULL,
+                                            time TIMESTAMP
+                                        ); """
+        
+        self.drop_events_phone = """DROP TABLE IF EXISTS events_phone;"""
+
         self.lock_uploaded_files = """LOCK TABLE uploaded_files;"""
 
         self.create_uploaded_files = """CREATE TABLE uploaded_files (
@@ -147,15 +158,19 @@ class Queries:
                                 VALUES ('{}', '{}', '{}');"""
 
         # TODO: Switch to SQLAlchemy ORM in #3
-
+        # ACCEPTINVCHARS replaces invalid UTF-8 characters with '? by default
+        # Use ACCEPTINVCHARS as <your_replacement_char> if you want to override 
+        # the default '?'
         self.load_csv_redshift = """COPY {table_name} ({columns})
                             FROM :filepath
                             IAM_ROLE :iam_role
                             REGION :region
+                            ACCEPTINVCHARS
                             FORMAT AS CSV IGNOREHEADER 1;"""
-
+        
         self.load_csv = """COPY {table_name} ({columns})
                             FROM :filepath
+                            ACCEPTINVCHARS
                             CSV HEADER;"""
 
     def get_uploaded_files_lock(self):
@@ -215,6 +230,7 @@ class Queries:
             'create_events',
             'create_events_devices',
             'create_events_email',
+            'create_events_phone',
             'create_uploaded_files',
             'create_pageviews',
             'create_user_agents'
@@ -223,6 +239,7 @@ class Queries:
         create_events = self.create_events
         create_events_devices = self.create_events_devices
         create_events_email = self.create_events_email
+        create_events_phone = self.create_events_phone
         create_pageviews = self.create_pageviews
         create_user_agents = self.create_user_agents
         create_uploaded_files = self.create_uploaded_files
@@ -235,6 +252,7 @@ class Queries:
             create_events,
             create_events_devices,
             create_events_email,
+            create_events_phone,
             create_uploaded_files,
             create_pageviews,
             create_user_agents
@@ -245,6 +263,7 @@ class Queries:
             'drop_events',
             'drop_events_devices',
             'drop_events_email',
+            'drop_events_phone',
             'drop_uploaded_files',
             'drop_pageviews',
             'drop_user_agents'
@@ -254,6 +273,7 @@ class Queries:
             self.drop_events,
             self.drop_events_devices,
             self.drop_events_email,
+            self.drop_events_phone,
             self.drop_uploaded_files,
             self.drop_pageviews,
             self.drop_user_agents
