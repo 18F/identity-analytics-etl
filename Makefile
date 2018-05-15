@@ -4,8 +4,10 @@ venv/bin/activate: requirements.txt
 	venv/bin/pip install -Ur requirements.txt
 	touch venv/bin/activate
 
-test: venv
-	docker run --name analytics -p 5431:5432 -v $(PWD):$(PWD) -d -t cacraig/analytics-dev:latest
+docker_start: docker pull cacraig/analytics-dev 
+	docker image inspect cacraig/analytics-dev:latest >/dev/null 2>&1 && echo "Docker container running" || docker run --name analytics -p 5431:5432 -v $(PWD):$(PWD) -d -t cacraig/analytics-dev:latest 
+
+test: venv docker_start
 	bash test.sh
 
 coverage: test
@@ -14,7 +16,7 @@ coverage: test
 destroy_db:
 	venv/bin/python destroy_db.py
 
-clean: venv destroy_db test
+clean: venv test destroy_db
 	rm -rf venv
 
 run: venv
@@ -32,8 +34,8 @@ lambda_buckets:
 	aws s3 cp redshift_secrets.yml s3://login-gov-$(ENVIRONMENT)-redshift-secrets/redshift_secrets.yml
 
 lambda_build: lambda_cleanup
-	docker pull cacraig/analytics-dev
-	docker run -v $(PWD):/build-analytics -it --rm cacraig/analytics-dev:latest bash build-analytics/build.sh $(TAG)
+	echo "Running build."
+	docker exec --user root -it analytics bash -c "cd $(PWD) && bash build.sh $(TAG)"
 	git tag -a $(TAG) -m "Deployed from Makefile"
 	git push origin --tags
 
