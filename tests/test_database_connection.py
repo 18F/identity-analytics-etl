@@ -10,6 +10,7 @@ from io import StringIO
 
 class DataBaseTestCases(unittest.TestCase):
     columns = ['method', 'path', 'ip', 'timestamp', 'uuid']
+
     def setup(self):
         db_conn = DataBaseConnection()
         db_conn.drop_tables()
