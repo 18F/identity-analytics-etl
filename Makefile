@@ -4,8 +4,9 @@ venv/bin/activate: requirements.txt
 	venv/bin/pip install -Ur requirements.txt
 	touch venv/bin/activate
 
-docker_start: docker pull cacraig/analytics-dev 
-	docker image inspect cacraig/analytics-dev:latest >/dev/null 2>&1 && echo "Docker container running" || docker run --name analytics -p 5431:5432 -v $(PWD):$(PWD) -d -t cacraig/analytics-dev:latest 
+docker_start: 
+	docker pull cacraig/analytics-dev 
+	docker inspect analytics >/dev/null 2>&1 && echo "Docker container running" || docker run --name analytics -p 5431:5432 -v $(PWD):$(PWD) -d -t cacraig/analytics-dev:latest 
 
 test: venv docker_start
 	bash test.sh
