@@ -16,8 +16,8 @@ def set_redshift_configs(env, acct_id):
 
 def lambda_handler(event, context):
     os.environ['S3_USE_SIGV4'] = 'True'
-    bucket = os.environ['bucket']
-    set_redshift_configs(os.environ.get('env'), os.environ.get('acct_id'))
+    bucket = os.environ['hot_bucket']
+    set_redshift_configs(os.environ['env'], os.environ['acct_id'])
     headers = {'events': ['id', 'name', 'user_agent', 'user_id', 'user_ip',
                            'host', 'visit_id', 'visitor_id', 'time', 'event_properties',
                            'success', 'existing_user', 'otp_method', 'context',
@@ -32,7 +32,7 @@ def lambda_handler(event, context):
                                    'browser_device_type', 'browser_bot', 'time'],
                 'events_email': ['id', 'name', 'domain_name', 'time']
                }
-    s3 = src.S3(bucket, bucket, bucket, bucket, os.environ.get('encryption_key'))
+    s3 = src.S3(bucket, bucket, bucket, bucket, os.environ['encryption_key'])
 
     files = s3.get_all_csv()
     db = src.DataBaseConnection(redshift=True)
@@ -55,7 +55,7 @@ def lambda_handler(event, context):
                         headers[table],
                         'us-west-2',
                         'arn:aws:iam::{}:role/tf-redshift-{}-iam-role'.format(
-                        os.environ.get('account_id'), os.environ.get('env')))
+                        os.environ['account_id'], os.environ['env']))
             s3.delete_from_bucket(f)
         except Exception as e:
             logging.exception("Error while processing CSV file")
