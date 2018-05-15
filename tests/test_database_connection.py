@@ -10,7 +10,6 @@ from io import StringIO
 
 class DataBaseTestCases(unittest.TestCase):
     columns = ['method', 'path', 'ip', 'timestamp', 'uuid']
-
     def setup(self):
         db_conn = DataBaseConnection()
         db_conn.drop_tables()
@@ -31,8 +30,8 @@ class DataBaseTestCases(unittest.TestCase):
 
         # TODO: use StringIO in load_csv instead of relative path to fixtures
         db_conn.load_csv('pageviews',
-                         'test_csv.csv',
-                         "{}/fixtures/test_csv.csv".format(os.path.dirname(os.path.realpath(__file__))),
+                         'test_csv.dat',
+                         "{}/fixtures/test_csv.dat".format(os.path.dirname(os.path.realpath(__file__))),
                          self.columns,
                          'us-west-2',
                          'arn:aws:iam::555546682965:role/tf-redshift-iam-role')
@@ -51,7 +50,7 @@ class DataBaseTestCases(unittest.TestCase):
 
     def test_csv_upload(self):
         db_conn = self.csv_upload()
-        self.assertTrue(('test_csv.csv', 'pageviews') in db_conn.uploaded_files())
+        self.assertTrue(('test_csv.dat', 'pageviews') in db_conn.uploaded_files())
 
     def test_csv_upload_values(self):
         db_conn = self.csv_upload()
