@@ -10,7 +10,7 @@ def set_redshift_configs(env, acct_id):
     data = yaml.load(bucket.Object('redshift_secrets.yml').get()['Body'])
     os.environ['REDSHIFT_URI'] = "redshift+psycopg2://awsuser:{redshift_password}@{redshift_host}/analytics".format(
         redshift_password=data['redshift_password'],
-        redshift_host="{}:5439".format(os.environ.get('redshift_host'))
+        redshift_host=os.environ['redshift_host']
     )
     os.environ['env'] = env
 
