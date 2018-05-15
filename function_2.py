@@ -30,7 +30,8 @@ def lambda_handler(event, context):
                                    'browser_version', 'browser_platform_name',
                                    'browser_platform_version', 'browser_device_name',
                                    'browser_device_type', 'browser_bot', 'time'],
-                'events_email': ['id', 'name', 'domain_name', 'time']
+                'events_email': ['id', 'name', 'domain_name', 'time'],
+                'events_phone': ['id', 'visit_id', 'visitor_id', 'area_code','country_code','time']
                }
     s3 = src.S3(bucket, bucket, bucket, bucket, os.environ['encryption_key'])
 
