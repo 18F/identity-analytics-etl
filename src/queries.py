@@ -170,7 +170,6 @@ class Queries:
         
         self.load_csv = """COPY {table_name} ({columns})
                             FROM :filepath
-                            ACCEPTINVCHARS
                             CSV HEADER;"""
 
     def get_uploaded_files_lock(self):
