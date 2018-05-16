@@ -5,8 +5,8 @@ venv/bin/activate: requirements.txt
 	touch venv/bin/activate
 
 docker_start: 
-	docker pull cacraig/analytics-dev 
-	docker inspect analytics >/dev/null 2>&1 && echo "Docker container running" || docker run --name analytics -p 5431:5432 -v $(PWD):$(PWD) -d -t cacraig/analytics-dev:latest 
+	docker pull 18fgsa/login-analytics 
+	docker inspect analytics >/dev/null 2>&1 && echo "Docker container running" || docker run --name analytics -p 5431:5432 -v $(PWD):$(PWD) -d -t 18fgsa/login-analytics:latest 
 
 test: venv docker_start
 	bash test.sh
