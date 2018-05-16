@@ -54,7 +54,7 @@ def lambda_handler(event, context):
                         pth,
                         s3.get_path(f),
                         headers[table],
-                        'us-west-2',
+                        os.environ['region'],
                         'arn:aws:iam::{}:role/tf-redshift-{}-iam-role'.format(
                         os.environ['acct_id'], os.environ['env']))
             s3.delete_from_bucket(f)

@@ -14,7 +14,7 @@ from .s3 import S3
 
 class Uploader:
 
-    def __init__(self, source_bucket, dest_bucket, dest_bucket_parquet, hot_bucket, logger=None, s3=None, parsers=None, redshift=False, encryption_key="5d2d42ec-6b7f-4705-a1bb-7f4021a0df4d", lookback_period=None):
+    def __init__(self, source_bucket, dest_bucket, dest_bucket_parquet, hot_bucket, logger=None, s3=None, parsers=None, redshift=False, encryption_key="5d2d42ec-6b7f-4705-a1bb-7f4021a0df4d",region='us-west-2', lookback_period=None):
         self.redshift = redshift
         self.source_bucket = source_bucket
         self.dest_bucket = dest_bucket
@@ -22,6 +22,7 @@ class Uploader:
         self.hot_bucket = hot_bucket
         self.s3 = S3(self.source_bucket, self.dest_bucket, self.dest_bucket_parquet, self.hot_bucket, encryption_key) if s3 is None else s3
         self.parsers = (EventParser(), PageViewParser(), DeviceParser(), EmailParser(), PhoneParser()) if parsers is None else parsers
+        self.region = region
         if not logger:
             logging.basicConfig(level=logging.INFO)
             self.logger = logging.getLogger('uploader')

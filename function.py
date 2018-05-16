@@ -32,7 +32,8 @@ def lambda_handler(event, context):
         hot_bucket,
         logger=uploader_logger,
         redshift=True,
-        encryption_key=os.environ['encryption_key']
+        encryption_key=os.environ['encryption_key'],
+        region=os.environ['region']
     )
 
     uploader.run(trigger_file=trigger_file)
