@@ -18,7 +18,7 @@ class DataBaseConnection:
         self.redshift = redshift
         self.s3 = s3
         if not redshift:
-            self.engine = sql.create_engine('postgresql://localhost/dev')
+            self.engine = sql.create_engine('postgresql://postgres@localhost:5431/dev')
         else:
             ssl_bundle = os.path.abspath("{}/redshift-ca-bundle.crt".format(os.path.dirname(__file__)))
             self.engine = sql.create_engine(
