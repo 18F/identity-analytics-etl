@@ -4,8 +4,12 @@ venv/bin/activate: requirements.txt
 	venv/bin/pip install -Ur requirements.txt
 	touch venv/bin/activate
 
-test: venv
-	venv/bin/python tests/test.py
+docker_start: 
+	docker pull 18fgsa/login-analytics 
+	docker inspect analytics >/dev/null 2>&1 && echo "Docker container running" || docker run --name analytics -p 5431:5432 -v $(PWD):$(PWD) -d -t 18fgsa/login-analytics:latest 
+
+test: venv docker_start
+	bash test.sh
 
 coverage: test
 	venv/bin/py.test --cov=src tests/
@@ -13,7 +17,7 @@ coverage: test
 destroy_db:
 	venv/bin/python destroy_db.py
 
-clean: venv destroy_db test
+clean: venv test destroy_db
 	rm -rf venv
 
 run: venv
@@ -31,10 +35,11 @@ lambda_buckets:
 	aws s3 cp redshift_secrets.yml s3://login-gov-$(ENVIRONMENT)-redshift-secrets/redshift_secrets.yml
 
 lambda_build: lambda_cleanup
-	docker run -v $(PWD):/build-analytics -it --rm ubuntu:artful bash build-analytics/build.sh $(TAG)
+	echo "Running build."
 	git tag -a $(TAG) -m "Deployed from Makefile"
 	git push origin --tags
-
+	docker exec --user root -it analytics bash -c "cd $(PWD) && bash build.sh $(TAG)"
+	
 lambda_release: clean lambda_build
 
 lambda_deploy: lambda_release
