@@ -36,10 +36,10 @@ lambda_buckets:
 
 lambda_build: lambda_cleanup
 	echo "Running build."
-	docker exec --user root -it analytics bash -c "cd $(PWD) && bash build.sh $(TAG)"
 	git tag -a $(TAG) -m "Deployed from Makefile"
 	git push origin --tags
-
+	docker exec --user root -it analytics bash -c "cd $(PWD) && bash build.sh $(TAG)"
+	
 lambda_release: clean lambda_build
 
 lambda_deploy: lambda_release
