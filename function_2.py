@@ -5,19 +5,19 @@ import boto3
 import logging
 
 
-def set_redshift_configs(env):
-    bucket = boto3.resource('s3').Bucket("login-gov-{}-redshift-secrets".format(env))
+def set_redshift_configs(env, acct_id):
+    bucket = boto3.resource('s3').Bucket("login-gov-{}-{}-redshift-secrets".format(env, acct_id))
     data = yaml.load(bucket.Object('redshift_secrets.yml').get()['Body'])
     os.environ['REDSHIFT_URI'] = "redshift+psycopg2://awsuser:{redshift_password}@{redshift_host}/analytics".format(
         redshift_password=data['redshift_password'],
-        redshift_host='tf-{}-redshift-cluster.ca6vppcizuju.us-west-2.redshift.amazonaws.com:5439'.format(env)
+        redshift_host=os.environ['redshift_host']
     )
     os.environ['env'] = env
 
 def lambda_handler(event, context):
     os.environ['S3_USE_SIGV4'] = 'True'
-    bucket = 'login-gov-{}-analytics-hot'.format(os.environ.get('env'))
-    set_redshift_configs(os.environ.get('env'))
+    bucket = os.environ['hot_bucket']
+    set_redshift_configs(os.environ['env'], os.environ['acct_id'])
     headers = {'events': ['id', 'name', 'user_agent', 'user_id', 'user_ip',
                            'host', 'visit_id', 'visitor_id', 'time', 'event_properties',
                            'success', 'existing_user', 'otp_method', 'context',
@@ -30,9 +30,10 @@ def lambda_handler(event, context):
                                    'browser_version', 'browser_platform_name',
                                    'browser_platform_version', 'browser_device_name',
                                    'browser_device_type', 'browser_bot', 'time'],
-                'events_email': ['id', 'name', 'domain_name', 'time']
+                'events_email': ['id', 'name', 'domain_name', 'time'],
+                'events_phone': ['id', 'visit_id', 'visitor_id', 'area_code','country_code','time']
                }
-    s3 = src.S3(bucket, bucket, bucket, bucket, 'dc12706b-50ea-40b7-8d0e-206962aaa8f7')
+    s3 = src.S3(bucket, bucket, bucket, bucket, os.environ['encryption_key'])
 
     files = s3.get_all_csv()
     db = src.DataBaseConnection(redshift=True)
@@ -53,9 +54,9 @@ def lambda_handler(event, context):
                         pth,
                         s3.get_path(f),
                         headers[table],
-                        'us-west-2',
-                        'arn:aws:iam::555546682965:role/tf-redshift-{}-iam-role'.format(
-                        os.environ.get('env')))
+                        os.environ['region'],
+                        'arn:aws:iam::{}:role/tf-redshift-{}-iam-role'.format(
+                        os.environ['acct_id'], os.environ['env']))
             s3.delete_from_bucket(f)
         except Exception as e:
             logging.exception("Error while processing CSV file")
