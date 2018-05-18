@@ -40,20 +40,12 @@ make lambda_buckets ENVIRONMENT="{$ENVIRONMENT_NAME}"
 ```
 
 ```
-make lambda_deploy ENVIRONMENT="{$ENVIRONMENT_NAME}" TAG="{TAG_NUMBER}"
+make lambda_deploy TAG="{TAG_NUMBER}"
 ```
 
 Then in identity-devops repository:
 ```
-./deploy-analytics env apply
+./deploy-analytics {env} apply
 ```
 
 Afterwards, be sure to locate the kms key you are using and add all of the roles and user created by terraform to that key. 
-
-### Notes
-
-Previously, this repository was written in [Ruby](https://github.com/18F/identity-redshift).
-The motivation for rewriting is that Python can be run on Lambda while Ruby cannot.
-This should run locally, so long as the postgresql server is running.
-There is an open PR (#299) in identity-devops providing the terraform plans for
-creating the infrastructure needed for this.
