@@ -180,3 +180,4 @@ CREATE VIEW avg_daily_signups_by_month AS (
     ) e group by e.day ORDER BY e.day asc 
   ) ed group by ed.month ORDER BY ed.month asc
 );
+

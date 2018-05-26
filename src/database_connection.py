@@ -34,8 +34,14 @@ class DataBaseConnection:
             for query in self.q.get_build_queries(self.redshift)._asdict().values():
                 self.connection.execute(query)
 
-    def uploaded_files(self):
-        result = self.safe_query(self.q.get_uploaded_files)
+    def uploaded_files(self, check_historical_files = False):
+        if not check_historical_files:
+            # If this is not a historical run, 
+            # check the last 15 days uploaded files only.
+            # Keeps this check from growing exponentially over time.
+            result = self.safe_query(self.q.get_uploaded_files_l15)
+        else:
+            result = self.safe_query(self.q.get_uploaded_files)
         return [(row['s3filename'], row['destination']) for row in result]
 
     def mark_uploaded(self, filename, destination):
