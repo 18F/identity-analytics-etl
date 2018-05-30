@@ -181,3 +181,104 @@ CREATE VIEW avg_daily_signups_by_month AS (
   ) ed group by ed.month ORDER BY ed.month asc
 );
 
+
+CREATE VIEW email_domain_return_rate AS
+SELECT ( (count(DISTINCT t.u2))::double precision / (count(DISTINCT t.u1))::double precision) AS return_rate,
+       count(*) AS raw_count,
+       (t.time1)::date AS time1,
+       t.domain_name
+FROM
+  ( SELECT e2.user_id AS u2,
+           e.user_id AS u1,
+           e2.name,
+           ee.name,
+           e."time" AS time1,
+           e2."time" AS time2,
+           ee.domain_name
+   FROM ( (events_email ee
+           JOIN EVENTS e ON (((e.id)::text = (ee.id)::text)))
+         LEFT JOIN
+           ( SELECT events.id,
+                    events.name,
+                    events.user_agent,
+                    events.user_id,
+                    events.user_ip,
+                    events."host",
+                    events.visit_id,
+                    events.visitor_id,
+                    events."time",
+                    events.event_properties,
+                    events.success,
+                    events.existing_user,
+                    events.otp_method,
+                    events.context,
+                    events.method,
+                    events.authn_context,
+                    events.service_provider,
+                    events.loa3,
+                    events.active_profile,
+                    events.errors
+            FROM EVENTS
+            WHERE ( (events.name)::text = 'Email Confirmation'::text) ) e2 ON (((e2.user_id)::text = (e.user_id)::text)))
+   WHERE (((((date_diff('days'::text, ((e2."time")::date)::TIMESTAMP WITHOUT TIME ZONE, ((e."time")::date)::TIMESTAMP WITHOUT TIME ZONE) < 2)
+             OR (e2."time" IS NULL))
+            AND ((e.user_id)::text <> 'anonymous-uuid'::text))
+           AND ((e."time")::date > '2018-01-01'::date))
+          AND (((((((ee.domain_name)::text = 'gmail.com'::text)
+                   OR ((ee.domain_name)::text = 'yahoo.com'::text))
+                  OR ((ee.domain_name)::text = 'aol.com'::text))
+                 OR ((ee.domain_name)::text = 'hotmail.com'::text))
+                OR ((ee.domain_name)::text = 'comcast.net'::text))
+               OR ((ee.domain_name)::text = 'verizon.net'::text)))) t
+GROUP BY t.domain_name,
+         (t.time1)::date
+ORDER BY (t.time1)::date DESC;
+
+
+
+CREATE VIEW return_rate AS
+SELECT ( (count(DISTINCT derived_table1.v2))::double precision / (count(DISTINCT derived_table1.v1))::double precision) AS return_rate,
+       count(*) AS raw_count,
+       derived_table1.time1,
+       derived_table1.service_provider
+FROM
+  ( SELECT e2.user_id AS v2,
+           e.user_id AS v1,
+           e2.name,
+           e.name,
+           (e."time")::date AS time1,
+           (e2."time")::date AS time2,
+           sp.service_provider
+   FROM ( (EVENTS e
+           LEFT JOIN
+             (SELECT events.id,
+                     events.name,
+                     events.user_agent,
+                     events.user_id,
+                     events.user_ip,
+                     events."host",
+                     events.visit_id,
+                     events.visitor_id,
+                     events."time",
+                     events.event_properties,
+                     events.success,
+                     events.existing_user,
+                     events.otp_method,
+                     events.context,
+                     events.method,
+                     events.authn_context,
+                     events.service_provider,
+                     events.loa3,
+                     events.active_profile,
+                     events.errors
+              FROM EVENTS
+              WHERE ((events.name)::text = 'User registration: agency handoff complete'::text)) e2 ON (((e.user_id)::text = (e2.user_id)::text)))
+         LEFT JOIN service_providers sp ON (((e.service_provider)::text = (sp.events_sp)::text)))
+   WHERE ((((e.name)::text = 'User Registration: Email Submitted'::text)
+           AND ((e.user_id)::text <> 'anonymous-uuid'::text))
+          AND ((date_diff('hours'::text, e2."time", e."time") < 2)
+               OR (e2."time" IS NULL)))) derived_table1
+GROUP BY derived_table1.service_provider,
+         derived_table1.time1
+ORDER BY derived_table1.time1 DESC;
+
