@@ -33,22 +33,24 @@ def lambda_handler(event, context):
                 'events_email': ['id', 'name', 'domain_name', 'time'],
                 'events_phone': ['id', 'visit_id', 'visitor_id', 'area_code','country_code','time']
                }
+    partitions = {
+        'part_a': ['events'],
+        'part_b': ['pageviews', 'events_devices', 'events_email','events_phone']
+    }
+    
     s3 = src.S3(bucket, bucket, bucket, bucket, os.environ['encryption_key'])
 
     files = s3.get_all_csv()
     db = src.DataBaseConnection(redshift=True)
     db.build_db_if_needed()
     uploaded_files = db.uploaded_files()
-    partition_tables = headers.keys()
 
-    partitions = {
-        'part_a': ['events'],
-        'part_b': ['pageviews', 'events_devices', 'events_email','events_phone']
-    }
-
+    # If a partition is specified, process only data for tables from within that
+    # partition, otherwise, process all tables.
     if 'partition' in os.environ:
         partition_tables = partitions[os.environ['partition']]
-
+    else:
+        partition_tables = headers.keys()
 
     for f in files:
         if context.get_remaining_time_in_millis() < 10000:
