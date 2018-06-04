@@ -39,6 +39,16 @@ def lambda_handler(event, context):
     db = src.DataBaseConnection(redshift=True)
     db.build_db_if_needed()
     uploaded_files = db.uploaded_files()
+    partition_tables = headers.keys()
+
+    partitions = {
+        'part_a': ['events'],
+        'part_b': ['pageviews', 'events_devices', 'events_email','events_phone']
+    }
+
+    if 'partition' in os.environ:
+        partition_tables = partitions[os.environ['partition']]
+
 
     for f in files:
         if context.get_remaining_time_in_millis() < 10000:
@@ -46,6 +56,10 @@ def lambda_handler(event, context):
         try:
             pth = "{}.txt".format('.'.join(f.split('.')[:-2]))
             table = f.split('.')[-2]
+
+            if table not in partition_tables:
+                continue
+
             if (pth, table) in uploaded_files:
                 s3.delete_from_bucket(f)
                 continue
