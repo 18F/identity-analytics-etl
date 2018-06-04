@@ -278,3 +278,4 @@ FROM
 GROUP BY derived_table1.service_provider,
          derived_table1.time1
 ORDER BY derived_table1.time1 DESC;
+
