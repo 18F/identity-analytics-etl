@@ -154,8 +154,8 @@ class Queries:
         self.get_uploaded_files = """SELECT s3filename, destination
                                      FROM uploaded_files;"""
 
-        self.get_uploaded_files_l10 = """SELECT s3filename, destination
-                                     FROM uploaded_files where uploaded_at >= GETDATE() - interval '10 days';"""
+        self.get_uploaded_files_latest = """SELECT s3filename, destination
+                                     FROM uploaded_files where uploaded_at >= GETDATE() - interval '5 days';"""
 
         self.mark_uploaded = """INSERT INTO uploaded_files (s3filename, destination, uploaded_at)
                                 VALUES ('{}', '{}', '{}');"""

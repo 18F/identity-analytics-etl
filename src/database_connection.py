@@ -39,7 +39,7 @@ class DataBaseConnection:
             # If this is not a historical run, 
             # check the last 15 days uploaded files only.
             # Keeps this check from growing exponentially over time.
-            result = self.safe_query(self.q.get_uploaded_files_l10)
+            result = self.safe_query(self.q.get_uploaded_files_latest)
         else:
             result = self.safe_query(self.q.get_uploaded_files)
         return [(row['s3filename'], row['destination']) for row in result]
