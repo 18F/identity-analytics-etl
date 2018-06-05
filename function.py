@@ -4,6 +4,7 @@ import sys
 import boto3
 import logging
 import src
+import random
 
 def set_redshift_configs():
     # The bucket name and filename
@@ -24,7 +25,10 @@ def lambda_handler(event, context):
     source_bucket = os.environ['source_bucket']
     parquet_bucket = os.environ['parquet_bucket']
     hot_bucket = os.environ['hot_bucket']
-
+    
+    if os.environ['env'] == 'staging' and random.randint(1,10) > 1:
+        return
+    
     uploader = src.Uploader(
         source_bucket,
         dest_bucket,
