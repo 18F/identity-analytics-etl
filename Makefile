@@ -28,6 +28,7 @@ lambda_cleanup:
 	rm -rf lambda_$(TAG)_deploy/
 	rm -f lambda_$(TAG)_deploy_hot.zip
 	rm -rf lambda_$(TAG)_deploy_hot/
+	docker stop analytics && docker  rm analytics
 
 lambda_buckets:
 	# TODO: Can We automate bucket logging here as well?
@@ -38,7 +39,6 @@ lambda_build: lambda_cleanup
 	echo "Running build."
 	git tag -a $(TAG) -m "Deployed from Makefile"
 	git push origin --tags
-
 	docker exec --user root -it analytics bash -c "cd $(PWD) && bash build.sh $(TAG)"
 	
 lambda_release: clean lambda_build

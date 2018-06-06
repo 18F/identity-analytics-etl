@@ -20,3 +20,4 @@ cd lambda_$1_deploy_hot
 zip -r -q lambda_$1_deploy_hot.zip .
 cd ..
 mv lambda_$1_deploy_hot/lambda_$1_deploy_hot.zip .
+rm -rf deps
