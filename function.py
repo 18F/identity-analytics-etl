@@ -23,17 +23,16 @@ def lambda_handler(event, context):
     trigger_file = event['Records'][0]['s3']['object']['key']
     dest_bucket = os.environ['dest_bucket']
     source_bucket = os.environ['source_bucket']
+    staging_bucket = os.environ['staging_bucket']
     parquet_bucket = os.environ['parquet_bucket']
     hot_bucket = os.environ['hot_bucket']
-    
-    if os.environ['env'] == 'staging' and random.randint(1,10) > 1:
-        return
     
     uploader = src.Uploader(
         source_bucket,
         dest_bucket,
         parquet_bucket,
         hot_bucket,
+        staging_bucket,
         logger=uploader_logger,
         redshift=True,
         encryption_key=os.environ['encryption_key']
