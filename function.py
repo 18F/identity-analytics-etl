@@ -26,6 +26,9 @@ def lambda_handler(event, context):
     staging_bucket = os.environ['staging_bucket']
     parquet_bucket = os.environ['parquet_bucket']
     hot_bucket = os.environ['hot_bucket']
+
+    # Percentage of data live data that should be copied to staging bucket.
+    STAGING_STREAM_RATE = 10
     
     uploader = src.Uploader(
         source_bucket,
@@ -35,7 +38,8 @@ def lambda_handler(event, context):
         staging_bucket,
         logger=uploader_logger,
         redshift=True,
-        encryption_key=os.environ['encryption_key']
+        encryption_key=os.environ['encryption_key'],
+        staging_stream_rate=STAGING_STREAM_RATE
     )
 
     uploader.run(trigger_file=trigger_file)
