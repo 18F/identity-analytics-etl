@@ -46,6 +46,6 @@ lambda_build: lambda_cleanup
 lambda_release: clean lambda_build
 
 lambda_deploy: lambda_release
-	#aws s3 cp lambda_$(TAG)_deploy.zip s3://tf-redshift-bucket-deployments/
-	#aws s3 cp lambda_$(TAG)_deploy_hot.zip s3://tf-redshift-bucket-deployments-hot/
+	aws s3 cp lambda_$(TAG)_deploy.zip s3://tf-redshift-bucket-deployments/
+	aws s3 cp lambda_$(TAG)_deploy_hot.zip s3://tf-redshift-bucket-deployments-hot/
 	make lambda_cleanup
