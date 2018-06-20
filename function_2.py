@@ -38,7 +38,7 @@ def lambda_handler(event, context):
     files = s3.get_all_csv()
     db = src.DataBaseConnection(redshift=True)
     db.build_db_if_needed()
-    #uploaded_files = db.uploaded_files()
+    uploaded_files = db.uploaded_files()
 
     for f in files:
         if context.get_remaining_time_in_millis() < 10000:
