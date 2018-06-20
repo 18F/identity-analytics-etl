@@ -18,6 +18,15 @@ as (
       GROUP BY hour
     );
 
+CREATE VIEW password_success_rate_by_month
+as (
+  SELECT SUM(success::integer)/COUNT(*)::float as success_rate,
+  date_trunc('month', time) as month
+  FROM events
+  WHERE name = 'Email and Password Authentication'
+  GROUP BY month
+);
+
 CREATE VIEW mfa_success_rate
 as (
       SELECT SUM(success::integer)/COUNT(*)::float as success_rate,
