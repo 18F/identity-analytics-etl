@@ -182,7 +182,7 @@ CREATE VIEW avg_daily_signups_by_month AS (
 );
 
 
-CREATE VIEW email_domain_return_rate AS
+CREATE OR REPLACE VIEW email_domain_return_rate AS
 SELECT ( (count(DISTINCT t.u2))::double precision / (count(DISTINCT t.u1))::double precision) AS return_rate,
        count(*) AS raw_count,
        (t.time1)::date AS time1,
@@ -219,7 +219,7 @@ FROM
                     events.active_profile,
                     events.errors
             FROM EVENTS
-            WHERE ( (events.name)::text = 'Email Confirmation'::text) ) e2 ON (((e2.user_id)::text = (e.user_id)::text)))
+            WHERE ( (events.name)::text = 'Email Confirmation'::text OR (events.name)::text = 'User Registration: Email Confirmation'::text ) ) e2 ON (((e2.user_id)::text = (e.user_id)::text)))
    WHERE (((((date_diff('days'::text, ((e2."time")::date)::TIMESTAMP WITHOUT TIME ZONE, ((e."time")::date)::TIMESTAMP WITHOUT TIME ZONE) < 2)
              OR (e2."time" IS NULL))
             AND ((e.user_id)::text <> 'anonymous-uuid'::text))
@@ -236,7 +236,7 @@ ORDER BY (t.time1)::date DESC;
 
 
 
-CREATE VIEW return_rate AS
+CREATE OR REPLACE VIEW return_rate AS
 SELECT ( (count(DISTINCT derived_table1.v2))::double precision / (count(DISTINCT derived_table1.v1))::double precision) AS return_rate,
        count(*) AS raw_count,
        derived_table1.time1,
@@ -272,7 +272,7 @@ FROM
                      events.active_profile,
                      events.errors
               FROM EVENTS
-              WHERE ((events.name)::text = 'User registration: agency handoff complete'::text)) e2 ON (((e.user_id)::text = (e2.user_id)::text)))
+              WHERE ((events.name)::text = 'User registration: agency handoff complete'::text) OR (events.name)::text = 'User Registration: Email Confirmation'::text ) e2 ON (((e.user_id)::text = (e2.user_id)::text)))
          LEFT JOIN service_providers sp ON (((e.service_provider)::text = (sp.events_sp)::text)))
    WHERE ((((e.name)::text = 'User Registration: Email Submitted'::text)
            AND ((e.user_id)::text <> 'anonymous-uuid'::text))
