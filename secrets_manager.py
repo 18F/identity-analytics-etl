@@ -24,12 +24,13 @@ def get_redshift_secrets(env,region="us-west-2"):
             SecretId = secret_name
         )
     except ClientError as e:
-        if e.response["Error"]["Code"] == 'ResourceNotFoundException':
+        if e.response["Error"]["Code"] == "ResourceNotFoundException":
             logging.exception("The request secret profile {} was not found".format(secret_name))
         elif e.response["Error"]["Code"] == "InvalidRequestException":
             logging.exception("The Request was invalid due to {}".format(e))
         elif e.response["Error"]["Code"] == "InvalidParamentException":
             logging.exception("The request has invalid parameters {}".format(e))
+        raise
     
     else:
         # Decrypted secret using the associated KMS Key(Analytics-<env>-Key)
