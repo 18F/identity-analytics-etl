@@ -35,3 +35,4 @@ def get_redshift_secrets(env,region="us-west-2"):
         # Decrypted secret using the associated KMS Key(Analytics-<env>-Key)
         # The secret profile is a string, but can add logic for binary('SecretBinary') if needed
         return json.loads(get_secret_value_response['SecretString'])
+
