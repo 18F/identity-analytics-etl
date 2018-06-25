@@ -4,12 +4,13 @@ import yaml
 import boto3
 import logging
 
+from secrets_manager import get_redshift_secrets
+
 
 def set_redshift_configs(env, acct_id):
-    bucket = boto3.resource('s3').Bucket("login-gov-{}-{}-redshift-secrets".format(env, acct_id))
-    data = yaml.load(bucket.Object('redshift_secrets.yml').get()['Body'])
+    redshift_prod_password = get_redshift_secrets(os.environ['env'])["password"]
     os.environ['REDSHIFT_URI'] = "redshift+psycopg2://awsuser:{redshift_password}@{redshift_host}/analytics".format(
-        redshift_password=data['redshift_password'],
+        redshift_password=redshift_prod_password,
         redshift_host=os.environ['redshift_host']
     )
     os.environ['env'] = env
@@ -58,8 +59,9 @@ def lambda_handler(event, context):
                         'arn:aws:iam::{}:role/tf-redshift-{}-iam-role'.format(
                         os.environ['acct_id'], os.environ['env']))
             s3.delete_from_bucket(f)
+        # TO-DO: Add granular/specific exception handling
         except Exception as e:
-            logging.exception("Error while processing CSV file")
+            logging.exception("Error while processing CSV file {}".format(e))
             s3.delete_from_bucket(f)
 
     db.close_connection()
