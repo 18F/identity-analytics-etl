@@ -64,7 +64,7 @@ class Uploader:
 
         # Copy ~ X% files as-is to staging bucket.
         if random.randint(1,100) <= self.staging_stream_rate:
-            self.s3.new_file_staging(in_file.read(), logfile)
+            self.s3.new_file_staging(self.s3.get_logfile(logfile), logfile)
 
         in_file.close()
         out.close()
