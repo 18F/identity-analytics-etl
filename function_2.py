@@ -33,7 +33,7 @@ def lambda_handler(event, context):
                 'events_email': ['id', 'name', 'domain_name', 'time'],
                 'events_phone': ['id', 'visit_id', 'visitor_id', 'area_code','country_code','time']
                }
-    s3 = src.S3(bucket, bucket, bucket, bucket, os.environ['encryption_key'])
+    s3 = src.S3(bucket, bucket, bucket, bucket, bucket, os.environ['encryption_key'])
 
     files = s3.get_all_csv()
     db = src.DataBaseConnection(redshift=True)

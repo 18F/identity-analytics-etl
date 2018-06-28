@@ -8,6 +8,9 @@ docker_start:
 	docker pull 18fgsa/login-analytics 
 	docker inspect analytics >/dev/null 2>&1 && echo "Docker container running" || docker run --name analytics -p 5431:5432 -v $(PWD):$(PWD) -d -t 18fgsa/login-analytics:latest 
 
+docker_stop: 
+	docker stop analytics && docker rm analytics
+
 test: venv docker_start
 	bash test.sh
 
@@ -38,7 +41,6 @@ lambda_build: lambda_cleanup
 	echo "Running build."
 	git tag -a $(TAG) -m "Deployed from Makefile"
 	git push origin --tags
-
 	docker exec --user root -it analytics bash -c "cd $(PWD) && bash build.sh $(TAG)"
 	
 lambda_release: clean lambda_build
@@ -47,3 +49,4 @@ lambda_deploy: lambda_release
 	aws s3 cp lambda_$(TAG)_deploy.zip s3://tf-redshift-bucket-deployments/
 	aws s3 cp lambda_$(TAG)_deploy_hot.zip s3://tf-redshift-bucket-deployments-hot/
 	make lambda_cleanup
+	make docker_stop
