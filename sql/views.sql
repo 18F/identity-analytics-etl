@@ -27,6 +27,16 @@ as (
       GROUP BY hour
     );
 
+CREATE OR REPLACE VIEW personal_key_success_rate
+ as (
+      SELECT SUM(success::integer)/COUNT(*)::float as success_rate,
+      date_trunc('hour', time) as hour
+      FROM events
+      WHERE name = 'Multi-Factor Authentication' AND
+      event_properties ILIKE '%personal_key%'
+      GROUP BY hour
+    );
+
 CREATE VIEW experience_durations AS (
   WITH tj as (
     SELECT
