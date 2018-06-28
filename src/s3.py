@@ -90,8 +90,8 @@ class S3:
         )
 
     def new_file_staging(self, out, filename):
-        res = io.BytesIO(out.getvalue().encode('utf-8'))
-        self.hot_bucket.upload_fileobj(
+        res = out
+        self.staging_bucket.upload_fileobj(
             res,
             filename,
             ExtraArgs={
