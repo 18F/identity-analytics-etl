@@ -18,14 +18,23 @@ as (
       GROUP BY hour
     );
 
+CREATE VIEW password_success_rate_by_month
+as (
+  SELECT SUM(success::integer)/COUNT(*)::float as success_rate,
+  date_trunc('month', time) as month
+  FROM events
+  WHERE name = 'Email and Password Authentication'
+  GROUP BY month
+);
+
 CREATE VIEW mfa_success_rate
 as (
-      SELECT SUM(success::integer)/COUNT(*)::float as success_rate,
-      date_trunc('hour', time) as hour
-      FROM events
-      WHERE name = 'Multi-Factor Authentication: max attempts reached'
-      GROUP BY hour
-    );
+  SELECT SUM(success::integer)/COUNT(*)::float as success_rate,
+  date_trunc('hour', time) as hour
+  FROM events
+  WHERE name = 'Multi-Factor Authentication: max attempts reached'
+  GROUP BY hour
+);
 
 CREATE OR REPLACE VIEW personal_key_success_rate
  as (
@@ -164,6 +173,79 @@ CREATE VIEW monthly_signups AS (
     ) i 
     WHERE i.uid_ranked = 1 
   ) e group by e.month ORDER BY e.month asc
+);
+
+CREATE VIEW monthly_signups_with_first_logins AS (
+  SELECT 
+    e.month,
+    count(e.c_uid) AS count,
+    b.first_login_success AS first_login_success 
+    FROM (
+    SELECT 
+    date_trunc(('month'), i.time) as month, 
+    i.user_id AS c_uid  
+    FROM 
+    (
+       SELECT events.user_id as user_id, 
+       events.time as time, 
+       ROW_NUMBER() OVER (PARTITION BY events.user_id ORDER BY events.time ASC) AS uid_ranked
+       FROM events
+    ) i 
+    WHERE i.uid_ranked = 1 
+  ) e LEFT JOIN (
+    SELECT 
+    ji.month,
+    count(ji.cj_uid) AS first_login_success 
+    FROM (
+      SELECT 
+      j.month, 
+      j.user_id AS cj_uid  
+      FROM 
+      (
+        SELECT user_id,
+        date_trunc(('month'), events.time) as month,  
+        ROW_NUMBER() OVER (PARTITION BY events.user_id ORDER BY events.time ASC) AS uid_ranked
+        FROM events WHERE (events.name)::text = 'Email and Password Authentication' 
+      ) j WHERE j.uid_ranked = 1
+    ) ji GROUP BY ji.month 
+  ) b ON (b.month = e.month) group by e.month, b.first_login_success ORDER BY e.month asc
+);
+
+CREATE VIEW monthly_signups_with_user_logins AS (
+  SELECT 
+    e.month,
+    count(e.c_uid) AS count,
+    b.user_logins AS user_logins,
+    b.logins AS logins 
+    FROM (
+    SELECT 
+    date_trunc(('month'), i.time) as month, 
+    i.user_id AS c_uid  
+    FROM 
+    (
+       SELECT events.user_id as user_id, 
+       events.time as time, 
+       ROW_NUMBER() OVER (PARTITION BY events.user_id ORDER BY events.time ASC) AS uid_ranked
+       FROM events
+    ) i 
+    WHERE i.uid_ranked = 1 
+  ) e LEFT JOIN (
+    SELECT 
+    ji.month,
+    count(DISTINCT ji.cj_uid) AS user_logins,
+    count(ji.cj_uid) AS logins 
+    FROM (
+      SELECT 
+      j.month, 
+      j.user_id AS cj_uid  
+      FROM 
+      (
+        SELECT user_id,
+        date_trunc(('month'), events.time) as month
+        FROM events WHERE (events.name)::text = 'Email and Password Authentication' 
+      ) j
+    ) ji GROUP BY ji.month 
+  ) b ON (b.month = e.month) group by e.month, b.user_logins, b.logins ORDER BY e.month asc
 );
 
 CREATE VIEW avg_daily_signups_by_month AS (
