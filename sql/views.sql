@@ -18,12 +18,31 @@ as (
       GROUP BY hour
     );
 
+CREATE VIEW password_success_rate_by_month
+as (
+  SELECT SUM(success::integer)/COUNT(*)::float as success_rate,
+  date_trunc('month', time) as month
+  FROM events
+  WHERE name = 'Email and Password Authentication'
+  GROUP BY month
+);
+
 CREATE VIEW mfa_success_rate
 as (
+  SELECT SUM(success::integer)/COUNT(*)::float as success_rate,
+  date_trunc('hour', time) as hour
+  FROM events
+  WHERE name = 'Multi-Factor Authentication: max attempts reached'
+  GROUP BY hour
+);
+
+CREATE OR REPLACE VIEW personal_key_success_rate
+ as (
       SELECT SUM(success::integer)/COUNT(*)::float as success_rate,
       date_trunc('hour', time) as hour
       FROM events
-      WHERE name = 'Multi-Factor Authentication: max attempts reached'
+      WHERE name = 'Multi-Factor Authentication' AND
+      event_properties ILIKE '%personal_key%'
       GROUP BY hour
     );
 
@@ -156,6 +175,79 @@ CREATE VIEW monthly_signups AS (
   ) e group by e.month ORDER BY e.month asc
 );
 
+CREATE VIEW monthly_signups_with_first_logins AS (
+  SELECT 
+    e.month,
+    count(e.c_uid) AS count,
+    b.first_login_success AS first_login_success 
+    FROM (
+    SELECT 
+    date_trunc(('month'), i.time) as month, 
+    i.user_id AS c_uid  
+    FROM 
+    (
+       SELECT events.user_id as user_id, 
+       events.time as time, 
+       ROW_NUMBER() OVER (PARTITION BY events.user_id ORDER BY events.time ASC) AS uid_ranked
+       FROM events
+    ) i 
+    WHERE i.uid_ranked = 1 
+  ) e LEFT JOIN (
+    SELECT 
+    ji.month,
+    count(ji.cj_uid) AS first_login_success 
+    FROM (
+      SELECT 
+      j.month, 
+      j.user_id AS cj_uid  
+      FROM 
+      (
+        SELECT user_id,
+        date_trunc(('month'), events.time) as month,  
+        ROW_NUMBER() OVER (PARTITION BY events.user_id ORDER BY events.time ASC) AS uid_ranked
+        FROM events WHERE (events.name)::text = 'Email and Password Authentication' 
+      ) j WHERE j.uid_ranked = 1
+    ) ji GROUP BY ji.month 
+  ) b ON (b.month = e.month) group by e.month, b.first_login_success ORDER BY e.month asc
+);
+
+CREATE VIEW monthly_signups_with_user_logins AS (
+  SELECT 
+    e.month,
+    count(e.c_uid) AS count,
+    b.user_logins AS user_logins,
+    b.logins AS logins 
+    FROM (
+    SELECT 
+    date_trunc(('month'), i.time) as month, 
+    i.user_id AS c_uid  
+    FROM 
+    (
+       SELECT events.user_id as user_id, 
+       events.time as time, 
+       ROW_NUMBER() OVER (PARTITION BY events.user_id ORDER BY events.time ASC) AS uid_ranked
+       FROM events
+    ) i 
+    WHERE i.uid_ranked = 1 
+  ) e LEFT JOIN (
+    SELECT 
+    ji.month,
+    count(DISTINCT ji.cj_uid) AS user_logins,
+    count(ji.cj_uid) AS logins 
+    FROM (
+      SELECT 
+      j.month, 
+      j.user_id AS cj_uid  
+      FROM 
+      (
+        SELECT user_id,
+        date_trunc(('month'), events.time) as month
+        FROM events WHERE (events.name)::text = 'Email and Password Authentication' 
+      ) j
+    ) ji GROUP BY ji.month 
+  ) b ON (b.month = e.month) group by e.month, b.user_logins, b.logins ORDER BY e.month asc
+);
+
 CREATE VIEW avg_daily_signups_by_month AS (
   SELECT 
   ed.month as month, 
@@ -182,7 +274,7 @@ CREATE VIEW avg_daily_signups_by_month AS (
 );
 
 
-CREATE VIEW email_domain_return_rate AS
+CREATE OR REPLACE VIEW email_domain_return_rate AS
 SELECT ( (count(DISTINCT t.u2))::double precision / (count(DISTINCT t.u1))::double precision) AS return_rate,
        count(*) AS raw_count,
        (t.time1)::date AS time1,
@@ -219,7 +311,7 @@ FROM
                     events.active_profile,
                     events.errors
             FROM EVENTS
-            WHERE ( (events.name)::text = 'Email Confirmation'::text) ) e2 ON (((e2.user_id)::text = (e.user_id)::text)))
+            WHERE ( (events.name)::text = 'Email Confirmation'::text OR (events.name)::text = 'User Registration: Email Confirmation'::text ) ) e2 ON (((e2.user_id)::text = (e.user_id)::text)))
    WHERE (((((date_diff('days'::text, ((e2."time")::date)::TIMESTAMP WITHOUT TIME ZONE, ((e."time")::date)::TIMESTAMP WITHOUT TIME ZONE) < 2)
              OR (e2."time" IS NULL))
             AND ((e.user_id)::text <> 'anonymous-uuid'::text))
@@ -236,7 +328,7 @@ ORDER BY (t.time1)::date DESC;
 
 
 
-CREATE VIEW return_rate AS
+CREATE OR REPLACE VIEW return_rate AS
 SELECT ( (count(DISTINCT derived_table1.v2))::double precision / (count(DISTINCT derived_table1.v1))::double precision) AS return_rate,
        count(*) AS raw_count,
        derived_table1.time1,
@@ -272,7 +364,7 @@ FROM
                      events.active_profile,
                      events.errors
               FROM EVENTS
-              WHERE ((events.name)::text = 'User registration: agency handoff complete'::text)) e2 ON (((e.user_id)::text = (e2.user_id)::text)))
+              WHERE ((events.name)::text = 'User registration: agency handoff complete'::text) OR (events.name)::text = 'User Registration: Email Confirmation'::text ) e2 ON (((e.user_id)::text = (e2.user_id)::text)))
          LEFT JOIN service_providers sp ON (((e.service_provider)::text = (sp.events_sp)::text)))
    WHERE ((((e.name)::text = 'User Registration: Email Submitted'::text)
            AND ((e.user_id)::text <> 'anonymous-uuid'::text))
