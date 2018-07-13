@@ -6,13 +6,14 @@ import logging
 import src
 import random
 
+from secrets_manager import get_redshift_secrets
+
 def set_redshift_configs():
     # The bucket name and filename
     # could all be defined inside of the lambda resource in terraform.
-    bucket = boto3.resource('s3').Bucket("login-gov-{}-{}-redshift-secrets".format(os.environ['env'], os.environ['acct_id']))
-    data = yaml.load(bucket.Object('redshift_secrets.yml').get()['Body'])
+    redshift_prod_password = get_redshift_secrets(os.environ['env'])["password"]
     os.environ['REDSHIFT_URI'] = "redshift+psycopg2://awsuser:{redshift_password}@{redshift_host}/analytics".format(
-        redshift_password=data['redshift_password'],
+        redshift_password=redshift_prod_password,
         redshift_host=os.environ['redshift_host']
     )
 
