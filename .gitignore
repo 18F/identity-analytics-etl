@@ -15,3 +15,4 @@ data.txt
 test/
 .coverage
 .pytest_cache/*
+.vscode/settings.json
