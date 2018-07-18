@@ -1,8 +1,13 @@
-venv: venv/bin/activate
-venv/bin/activate: requirements.txt
-	test -d venv || python3 -m venv venv
-	venv/bin/pip install -Ur requirements.txt
-	touch venv/bin/activate
+help:
+	@echo 'venv'
+	@echo 'install pipenv and all project dependencies'
+	@echo 'test'
+	@echo 'run all tests'
+
+init: 
+	pip install pipenv
+	pipenv --python python3.6
+	pipenv install 
 
 docker_start: 
 	docker pull 18fgsa/login-analytics 
@@ -15,16 +20,17 @@ test: venv docker_start
 	bash test.sh
 
 coverage: test
-	venv/bin/py.test --cov=src tests/
+	pipenv run py.test --cov=src tests/
 
 destroy_db:
-	venv/bin/python destroy_db.py
+	pipenv run destroy_db.py
 
-clean: venv test destroy_db
-	rm -rf venv
+clean: init test destroy_db
+	pipenv clean
+	pipenv --rm
 
-run: venv
-	venv/bin/python upload_run.py
+run: 
+	pipenv run python upload_run.py
 
 lambda_cleanup:
 	rm -f lambda_$(TAG)_deploy.zip
