@@ -23,6 +23,7 @@ SQLAlchemy = "==1.1.9"
 cython = "*"
 
 [dev-packages]
+pylint = "*"
 
 [requires]
 python_version = "3.6"
