@@ -140,21 +140,31 @@ CREATE VIEW experience_durations_visitor_id AS (
   ) q
 );
 
-CREATE VIEW daily_active_users AS
+CREATE OR REPLACE VIEW daily_active_users AS
 (
-  SELECT count(DISTINCT events.user_id) AS count, events."time"::date AS "time"
+  SELECT count(DISTINCT events.user_id) AS count, date_trunc('day',time) as day
   FROM events
-  WHERE events."time"::date >= (GETDATE() - interval '30' day) 
-  GROUP BY events."time"::date
+  GROUP BY day
+  ORDER BY day DESC
 );
 
-CREATE VIEW hourly_active_users AS
+
+CREATE OR REPLACE VIEW hourly_active_users AS
 (
-  SELECT count(DISTINCT events.user_id) AS count, events."time"::date AS "day", date_part('hour', events."time")::text AS hr
+  SELECT count(DISTINCT events.user_id) AS count, date_trunc('hour',time) as hour
   FROM events
-  WHERE events."time"::date >= (GETDATE() - interval '30' day) 
-  GROUP BY events."time"::date, date_part('hour', events."time")::text
+  GROUP BY hour
+  ORDER BY hour DESC 
 );
+
+CREATE VIEW monthly_active_users
+as (
+      SELECT count(DISTINCT events.user_id),
+      date_trunc('month', time) as month
+      FROM events
+      GROUP BY month
+      ORDER BY month DESC
+    );
 
 CREATE VIEW monthly_signups AS (
   SELECT 
