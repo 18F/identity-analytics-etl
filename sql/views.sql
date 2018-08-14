@@ -46,6 +46,11 @@ CREATE OR REPLACE VIEW personal_key_success_rate
       GROUP BY hour
     );
 
+CREATE OR REPLACE VIEW account_reset_and_cancel as (
+   SELECT user_ip, event_properties WHERE name = 'Account Reset'
+
+);
+
 CREATE VIEW experience_durations AS (
   WITH tj as (
     SELECT
