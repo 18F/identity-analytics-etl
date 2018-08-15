@@ -8,9 +8,8 @@ jobs:
     working_directory: ~/identity-analytics-etl
     docker:
       # Specify the Python version you desire here
-      # TODO: figure out a better way to setup postgres see below 
       # https://discuss.circleci.com/t/rails-app-cant-connect-to-postgres-server/13059/3
-      - image: circleci/python:3.6.4
+      - image: circleci/python:3.6.5
         environment:
           PGHOST: 127.0.0.1
           PGUSER: circle
@@ -35,8 +34,12 @@ jobs:
          command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
       - run: 
-         name: install postgres-client(psql)
-         command: sudo apt-get install -y postgresql-client
+        name: Install PostgreSQL Client
+        command: |
+            echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+            wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+            sudo apt-get update
+            sudo apt-get install postgresql-client-9.5
 
       - run:
           name: tests
