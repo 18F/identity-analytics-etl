@@ -170,3 +170,17 @@ BEGIN;
     DROP TABLE pageviews;
     ALTER TABLE pageviews_tt RENAME TO pageviews;
 END;
+
+BEGIN;
+ DROP TABLE IF EXISTS uploaded_files_tt;
+  CREATE TABLE uploaded_files_tt(
+     s3filename VARCHAR(500) NOT NULL,
+     destination VARCHAR(255) NOT NULL,
+      uploaded_at TIMESTAMP
+  )
+  SORTKEY(uploaded_at);
+  
+  INSERT INTO uploaded_files_tt(SELECT * FROM uploaded_files);
+  DROP TABLE uploaded_files;
+  ALTER TABLE uploaded_files_tt RENAME TO uploaded_files;
+END;
