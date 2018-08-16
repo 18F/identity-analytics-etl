@@ -1,8 +1,6 @@
 help:
-	@echo 'venv'
-	@echo 'install pipenv and all project dependencies'
-	@echo 'test'
-	@echo 'run all tests'
+    @echo 'init: install pipenv and all project dependencies' 
+	@echo 'test: run all tests'
 
 init: 
 	pip install pipenv
@@ -16,14 +14,14 @@ docker_start:
 docker_stop: 
 	docker stop analytics && docker rm analytics
 
-test: venv docker_start
+test: init docker_start
 	bash test.sh
 
 coverage: test
 	pipenv run py.test --cov=src tests/
 
 destroy_db:
-	pipenv run destroy_db.py
+	pipenv run python destroy_db.py
 
 clean: init test destroy_db
 	pipenv clean
