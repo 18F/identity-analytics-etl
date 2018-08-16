@@ -1,6 +1,6 @@
 help:
-    @echo 'init: install pipenv and all project dependencies' 
-	@echo 'test: run all tests'
+    @echo 'init - install pipenv and all project dependencies' 
+	@echo 'test -  run all tests'
 
 init: 
 	pip install pipenv
