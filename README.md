@@ -8,7 +8,12 @@ for login.gov
 
 ## Developing
 
-The repository uses `python3`, `virtualenv`, and `docker`
+The repository uses `python 3`, `pipenv`, and `docker`
+
+To install pipenv:
+for MacOS, you can use Homebrew
+    `$ brew install pipenv `
+for other OSes, follow these instructions https://docs.pipenv.org/install/#installing-pipenv
 
 To install Docker:  
 (MacOSX) https://docs.docker.com/docker-for-mac/install/#install-and-run-docker-for-mac
@@ -18,7 +23,7 @@ To install Docker:
 To install requirements:
 
 ```
-make venv
+make init
 ```
 
 To run tests:
