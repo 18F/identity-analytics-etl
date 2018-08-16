@@ -1,6 +1,7 @@
 help:
-    @echo 'init - install pipenv and all project dependencies' 
+	@echo 'init - install pipenv and all project dependencies' 
 	@echo 'test -  run all tests'
+	@echo 'docker_start - start the docker daemon and pull the analytics docker image'
 
 init: 
 	pip install pipenv
