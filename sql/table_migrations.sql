@@ -153,15 +153,15 @@ BEGIN;
     path VARCHAR(1024),
     format VARCHAR(255),
     controller VARCHAR(100),
-    action VARCHAR(15),
+    action VARCHAR(30),
     status SMALLINT,
     duration FLOAT,
-    user_id VARCHAR(40),
+    user_id VARCHAR(80),
     user_agent VARCHAR(4096),
-    ip VARCHAR(50),
+    ip VARCHAR(80),
     host VARCHAR(255),
     timestamp TIMESTAMP,
-    uuid VARCHAR(64) NOT NULL
+    uuid VARCHAR(80) NOT NULL
     )
     SORTKEY(timestamp);
 

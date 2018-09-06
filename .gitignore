@@ -16,3 +16,4 @@ test/
 .coverage
 .pytest_cache/*
 .vscode/*
+deactivate/*
