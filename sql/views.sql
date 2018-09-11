@@ -171,6 +171,15 @@ as (
       ORDER BY month DESC
     );
 
+CREATE VIEW monthly_active_users_by_sp AS (
+ SELECT date_trunc('month'::text, events."time") AS "month",service_providers.service_provider as sp, count(DISTINCT events.user_id) AS count
+   FROM events
+   JOIN service_providers ON events.service_provider = service_providers.events_sp
+  GROUP BY sp, date_trunc('month'::text, events."time")
+  ORDER BY date_trunc('month'::text, events."time") DESC, count DESC
+  );
+
+
 CREATE VIEW monthly_signups AS (
   SELECT 
     e.month,
