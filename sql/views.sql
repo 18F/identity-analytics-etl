@@ -27,12 +27,12 @@ as (
   GROUP BY month
 );
 
-CREATE VIEW mfa_success_rate
+CREATE OR REPLACE VIEW mfa_success_rate
 as (
   SELECT SUM(success::integer)/COUNT(*)::float as success_rate,
   date_trunc('hour', time) as hour
   FROM events
-  WHERE name = 'Multi-Factor Authentication: max attempts reached'
+  WHERE name = 'Multi-Factor Authentication' AND context = 'authentication'
   GROUP BY hour
 );
 
