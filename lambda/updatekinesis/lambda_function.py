@@ -19,22 +19,27 @@ def lambda_handler(event, context):
     # connect to firehose
     firehose_client = boto3.client('firehose')
     # get the current secret from secretsmanager
-    current_dict = get_secret_dict(secrets_client, secret_name)
+    secret_dict = get_secret_dict(secrets_client, secret_name)
     # get delivery stream details
-    kinesis_dict = get_deliverystream_dict(firehose_client, delivery_stream_name)
+    firehose_dict = get_deliverystream_dict(firehose_client, delivery_stream_name)
 
+    # update delivery stream
+    try:
+        firehose_client.update_destination(
+            DeliveryStreamName = firehose_dict['DeliveryStreamName'],
+            CurrentDeliveryStreamVersionId = firehose_dict['VersionId'],
+            DestinationId = firehose_dict['Destinations'][0]['DestinationId'],
+            RedshiftDestinationUpdate = {
+                'Username': secret_dict['username'],
+                'Password': secret_dict['password']
+                }
+            )
+    except Exception as e:
+        logger.error("Updating Kinesis Firehose failed with error {}".format(e))
+        raise ValueError("Updating Kinesis Firehose %s failed." % (delivery_stream_name))
 
-    # todo update delivery stream here
-    DeliveryStreamName  = current_dict['DeliveryStreamName']
-    CurrentDeliveryStreamVersionId  = kinesis_dict['VerisonId']
-    DestinationId = kinesis_dict['Destinations'][0]['DestinationId']
-    RedshiftDestinationUpdate={
-        'Username': 'string',
-        'Password': 'string'
-    }
+    return
     
-    return ''
-
 def get_secret_dict(service_client, secretname):
     """Gets the secret dictionary corresponding for the secretname
 
@@ -61,7 +66,6 @@ def get_secret_dict(service_client, secretname):
     secret = service_client.get_secret_value(SecretId=secretname, VersionStage='AWSCURRENT')
     plaintext = secret['SecretString']
     secret_dict = json.loads(plaintext)
-    print (secret_dict)
 
     # Run validations against the secret
     for field in required_fields:
@@ -77,12 +81,12 @@ def get_deliverystream_dict(service_client, streamname):
     This helper function gets stream details for the streamname passed in and returns the dictionary by parsing the JSON string
 
     Args:
-        kinesis_client (client): The kinesis service client
+        service_client (client): The kinesis service client
 
         streamname (string): The streamname
 
     Returns:
-        StreamDictionary: Stream dictionary
+        DeliveryStreamDictionary: Delivery Stream dictionary
 
     Raises:
         ResourceNotFoundException: If the secret with the specified streamname does not exist
@@ -91,11 +95,12 @@ def get_deliverystream_dict(service_client, streamname):
 
     """
     
-    # Parse and return the secret JSON string
-    deliverystream = service_client.describe_delivery_stream(DeliveryStreamName=streamname)
-    plaintext = deliverystream['DeliveryStreamDescription']
-    deliverystream_dict = json.loads(plaintext)
-    print (deliverystream_dict)
-
+    try:
+        deliverystream = service_client.describe_delivery_stream(DeliveryStreamName=streamname)
+        deliverystream_dict = deliverystream['DeliveryStreamDescription']
+    except Exception as e:
+        logger.error("Failed to obtain firehose description with error {}".format(e))
+        raise ValueError("Failed attempting to obtain firehose description for %s." % (streamname))
+        
     return deliverystream_dict
     
