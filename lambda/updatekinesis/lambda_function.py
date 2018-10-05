@@ -1,3 +1,7 @@
+# (c) 2018 Amazon Web Services, Inc. or its affiliates. 
+# All Rights Reserved. This AWS Content is provided subject to the terms of the AWS Customer Agreement 
+# or other written agreement between Customer and Amazon Web Services, Inc.
+
 import boto3
 import os
 import json

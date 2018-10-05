@@ -1,12 +1,11 @@
-# Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: MIT-0
+# (c) 2018 Amazon Web Services, Inc. or its affiliates. 
+# All Rights Reserved. This AWS Content is provided subject to the terms of the AWS Customer Agreement 
+# or other written agreement between Customer and Amazon Web Services, Inc.
 
 import boto3
 import json
 import logging
 import os
-#import pg
-#import pgdb
 import psycopg2
 
 logger = logging.getLogger()
@@ -71,8 +70,8 @@ def lambda_handler(event, context):
         logger.error("Secret version %s not set as AWSPENDING for rotation of secret %s." % (token, arn))
         raise ValueError("Secret version %s not set as AWSPENDING for rotation of secret %s." % (token, arn))
 
-    print (step)
     # Call the appropriate step
+    logger.info("Step %s is being executed for secret %s." % (step, arn))
     if step == "createSecret":
         create_secret(service_client, arn, token)
 
@@ -118,8 +117,6 @@ def create_secret(service_client, arn, token):
         logger.info("createSecret: Successfully retrieved secret for %s." % arn)
     except service_client.exceptions.ResourceNotFoundException:
         # Get the alternate username swapping between the original user and the user with _clone appended to it
-        print (type(current_dict))
-        print (current_dict['username'])
         current_dict['username'] = get_alt_username(current_dict['username'])
 
         # Generate a random password
@@ -156,7 +153,6 @@ def set_secret(service_client, arn, token):
     """
     # First try to login with the pending secret, if it succeeds, return
     pending_dict = get_secret_dict(service_client, arn, "AWSPENDING", token)
-    print('step 1')
     conn = get_connection(pending_dict)
     if conn:
         conn.close()
@@ -165,7 +161,6 @@ def set_secret(service_client, arn, token):
 
     # Before we do anything with the secret, make sure the AWSCURRENT secret is valid by logging in to the db
     current_dict = get_secret_dict(service_client, arn, "AWSCURRENT")
-    print('step 2')
     conn = get_connection(current_dict)
     if not conn:
         logger.error("setSecret: Unable to log into database using current credentials for secret %s" % arn)
@@ -179,7 +174,6 @@ def set_secret(service_client, arn, token):
         logger.warn("setSecret: Master database endpoint %s is not the same endpoint as current %s" % (master_dict['endpoint'], current_dict['endpoint']))
 
     # Now log into the database with the master credentials
-    print('step 3')
     conn = get_connection(master_dict)
     if not conn:
         logger.error("setSecret: Unable to log into database using credentials in master secret %s" % master_arn)
@@ -187,7 +181,6 @@ def set_secret(service_client, arn, token):
 
     # Now set the password to the pending password
     try:
-        print ('step 4')
         with conn.cursor() as cur:
             # Check if the user exists, if not create it and grant it all permissions from the current role
             # If the user exists, just update the password
@@ -201,7 +194,7 @@ def set_secret(service_client, arn, token):
                 cur.execute(alter_user + " WITH PASSWORD %s", (pending_dict['password'],))
 
             conn.commit()
-            logger.info("setSecret: Successfully created user %s in PostgreSQL DB for secret arn %s." % (pending_dict['username'], arn))
+            logger.info("setSecret: Successfully created user %s in Redshift DB for secret arn %s." % (pending_dict['username'], arn))
     finally:
         conn.close()
 
@@ -299,11 +292,9 @@ def get_connection(secret_dict):
     port = int(secret_dict['port']) if 'port' in secret_dict else 5439
     dbname = secret_dict['dbname']
 
-    print (secret_dict['username'])
-    print (secret_dict['password'])
     # Try to obtain a connection to the db
     try:
-        conn = psycopg2.connect(host=secret_dict['endpoint'], user=secret_dict['username'], password=secret_dict['password'], database=dbname, port=port, connect_timeout=10)
+        conn = psycopg2.connect(host=secret_dict['endpoint'], user=secret_dict['username'], password=secret_dict['password'], database=dbname, port=port, connect_timeout=10, sslmode='require')
         return conn
     except psycopg2.Error:
         return None
@@ -343,7 +334,6 @@ def get_secret_dict(service_client, arn, stage, token=None):
         secret = service_client.get_secret_value(SecretId=arn, VersionStage=stage)
     plaintext = secret['SecretString']
     secret_dict = json.loads(plaintext)
-    print (secret_dict)
 
     # Run validations against the secret
     for field in required_fields:
