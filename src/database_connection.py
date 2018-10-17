@@ -36,7 +36,7 @@ class DataBaseConnection:
 
     def uploaded_files(self):
         result = self.safe_query(self.q.get_uploaded_files)
-        return [(row['s3filename'], row['destination']) for row in result]
+        return {(row['s3filename'], row['destination']) for row in result}
 
     def mark_uploaded(self, filename, destination):
         uploaded_at = datetime.now()
