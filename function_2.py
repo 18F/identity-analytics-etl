@@ -42,8 +42,8 @@ def lambda_handler(event, context):
 
     db = src.DataBaseConnection(redshift=True)
     db.build_db_if_needed()
-    uploaded_file_set = db.uploaded_files()
-    msg = "Got {} uploaded files in Redshift".format(len(uploaded_file_set))
+    uploaded_files = db.uploaded_files()
+    msg = "Got {} uploaded files in Redshift".format(len(uploaded_files))
     logging.info(msg)
 
     success_counter = 0
@@ -53,8 +53,7 @@ def lambda_handler(event, context):
         try:
             pth = "{}.txt".format('.'.join(f.split('.')[:-2]))
             table = f.split('.')[-2]
-            file_key = "{} - {}".format(pth, table)
-            if file_key in uploaded_file_set:
+            if (pth, table) in uploaded_files:
                 s3.delete_from_bucket(f)
                 continue
 
