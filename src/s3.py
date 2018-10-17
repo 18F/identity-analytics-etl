@@ -2,6 +2,7 @@ import boto3
 import io
 import gzip
 import pytz
+import logging
 
 from datetime import datetime, timedelta
 from botocore.config import Config
@@ -122,3 +123,5 @@ class S3:
 
     def delete_from_bucket(self, filename):
         self.hot_bucket.Object(filename).delete()
+        msg = "{} has been deleted".format(filename)
+        logging.info(msg)

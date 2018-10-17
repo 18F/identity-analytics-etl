@@ -41,16 +41,16 @@ class DataBaseTestCases(unittest.TestCase):
     def test_uploaded_files(self):
         db_conn = self.setup()
         db_conn.mark_uploaded('a.txt', 'test')
-        self.assertTrue(('a.txt', 'test') in db_conn.uploaded_files())
+        self.assertTrue('a.txt - test' in db_conn.uploaded_files())
 
     def test_not_in_uploaded_files(self):
         db_conn = self.setup()
         db_conn.mark_uploaded('a.txt', 'test')
-        self.assertFalse(('b.txt', 'test') in db_conn.uploaded_files())
+        self.assertFalse('b.txt - test' in db_conn.uploaded_files())
 
     def test_csv_upload(self):
         db_conn = self.csv_upload()
-        self.assertTrue(('test_csv.dat', 'pageviews') in db_conn.uploaded_files())
+        self.assertTrue('test_csv.dat - pageviews' in db_conn.uploaded_files())
 
     def test_csv_upload_values(self):
         db_conn = self.csv_upload()

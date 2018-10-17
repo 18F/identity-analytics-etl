@@ -37,17 +37,24 @@ def lambda_handler(event, context):
     s3 = src.S3(bucket, bucket, bucket, bucket, bucket, os.environ['encryption_key'])
 
     files = s3.get_all_csv()
+    msg = "Got {} csv files to copy to Redshift".format(len(files))
+    logging.info(msg)
+
     db = src.DataBaseConnection(redshift=True)
     db.build_db_if_needed()
-    uploaded_files = db.uploaded_files()
+    uploaded_file_set = db.uploaded_files()
+    msg = "Got {} uploaded files in Redshift".format(len(uploaded_file_set))
+    logging.info(msg)
 
+    success_counter = 0
     for f in files:
         if context.get_remaining_time_in_millis() < 10000:
             break
         try:
             pth = "{}.txt".format('.'.join(f.split('.')[:-2]))
             table = f.split('.')[-2]
-            if (pth, table) in uploaded_files:
+            file_key = "{} - {}".format(pth, table)
+            if file_key in uploaded_file_set:
                 s3.delete_from_bucket(f)
                 continue
 
@@ -58,7 +65,13 @@ def lambda_handler(event, context):
                         os.environ['region'],
                         'arn:aws:iam::{}:role/tf-redshift-{}-iam-role'.format(
                         os.environ['acct_id'], os.environ['env']))
+            msg = "Successfully copy {} to redshift".format(f)
+            logging.info(msg)
             s3.delete_from_bucket(f)
+
+            success_counter += 1
+            msg = "Successflly copied {} files to redshift".format(success_counter)
+            logging.info(msg)
         # TO-DO: Add granular/specific exception handling
         except Exception as e:
             logging.exception("Error while processing CSV file {}".format(e))
