@@ -36,7 +36,7 @@ class PhoneParserTestCases(unittest.TestCase):
     
     def test_has_valid_json(self):
       parser = PhoneParser()
-      self.assertTrue(parser.has_valid_json(self.area_code_event_json))
+      self.assertTrue(parser.has_valid_json(self.area_code_event_json, line_num=1))
 
 if __name__ == '__main__':
    unittest.main()
