@@ -1,10 +1,7 @@
 import json
 import csv
-import re
 import io
-import hashlib
-import numpy as np
-import os
+import logging
 
 # Try loading additional dependencies from tmp.
 
@@ -20,11 +17,13 @@ class Parser(object):
         out = io.StringIO()
         out_parquet = io.BytesIO()
         header_rows = self.header_fields.keys()
-        df = pd.DataFrame(columns=header_rows)
+        df_data = list()
         writer = csv.writer(out, delimiter=',')
         writer.writerow(header_rows)
 
-        for line in in_io.decode('utf-8').split('\n'):
+        lines = in_io.decode('utf-8').split('\n')
+        logging.info("got {} lines to parse".format(len(lines)))
+        for line in lines:
             if self.format_check(line):
                 continue
 
@@ -34,8 +33,9 @@ class Parser(object):
 
             self.uuids.add(uuid)
             writer.writerow(result)
-            df.loc[len(df)] = result
+            df_data.append(result)
             rows += 1
+        df = pd.DataFrame(df_data, columns=header_rows)
 
         # Pyarrow tries to infer types by default.
         # Explicitly set the types to prevent mis-typing.
