@@ -10,7 +10,8 @@ import pyarrow.parquet as pq
 import pandas as pd
 
 class Parser(object):
-    header_fields = {}
+    header_fields = dict()
+    json_cache = dict() # key line number, value json data
 
     def stream_csv(self, in_io):
         rows = 0
@@ -23,11 +24,11 @@ class Parser(object):
 
         lines = in_io.decode('utf-8').split('\n')
         logging.info("got {} lines to parse".format(len(lines)))
-        for line in lines:
-            if self.format_check(line):
+        for line_num, line in enumerate(lines):
+            if self.format_check(line, line_num):
                 continue
 
-            result, uuid = self.json_to_csv(self.extract_json(line))
+            result, uuid = self.json_to_csv(self.extract_json(line, line_num))
             if uuid in self.uuids:
                 continue
 
@@ -53,22 +54,24 @@ class Parser(object):
 
         return rows, out, out_parquet
 
-    def extract_json(self, line):
+    def extract_json(self, line, line_num):
+        if line_num in self.json_cache:
+            return self.json_cache[line_num]
         json_part = line[line.index('{'):]
         return json.loads(json_part)
 
-    def has_valid_json(self, line):
+    def has_valid_json(self, line, line_num):
         json_part = line[line.index('{'):]
 
         try:
-            json.loads(json_part)
+            self.json_cache[line_num] = json.loads(json_part)
         except ValueError:
             return False
 
         return True
 
-    def format_check(self, line):
-        return self.has_valid_json(line)
+    def format_check(self, line, line_num):
+        return self.has_valid_json(line, line_num)
 
     def get_uuid(self, data):
         raise NotImplementedError()
