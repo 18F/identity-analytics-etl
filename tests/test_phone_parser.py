@@ -19,7 +19,7 @@ class PhoneParserTestCases(unittest.TestCase):
 
     def test_extract_json(self):
       parser = PhoneParser()
-      res = parser.extract_json(self.area_code_event_json)
+      res = parser.extract_json(self.area_code_event_json, line_num=1)
       self.assertEqual(res['id'], 'b17wpieoqf35-525a-44oeodb-c904d4ac0b1e')
       self.assertEqual(res['visit_id'], '7e05fd69-69bf-4d5e-882c-873488ac4f9a')
       self.assertEqual(res['visitor_id'],'0a2d3b0a-c866-46ff-a6af-174455135a8a')
