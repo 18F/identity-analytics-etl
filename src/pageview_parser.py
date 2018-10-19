@@ -27,8 +27,17 @@ class PageViewParser(Parser):
 
     uuids = set()
 
-    def format_check(self, line, line_num):
-        if ('{' not in line) or ('path' not in line or 'controller' not in line) or (not self.has_valid_json(line, line_num)):
+    def stream_csv(self, in_io):
+        return Parser.stream_csv(self, in_io)
+
+    def extract_json(self, line):
+        return Parser.extract_json(self, line)
+
+    def has_valid_json(self, line):
+        return Parser.has_valid_json(self, line)
+
+    def format_check(self, line):
+        if ('{' not in line) or ('path' not in line or 'controller' not in line) or (not self.has_valid_json(line)):
             return True
         else:
             return False
