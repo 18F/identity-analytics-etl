@@ -41,7 +41,11 @@ def lambda_handler(event, context):
 
     logging.info('s3.get_all_csv()')
     files = s3.get_all_csv()
-    logging.info("Found {} csv files to copy to Redshift".format(len(files)))
+    if len(files):
+        logging.info("Found {} csv files to copy to Redshift".format(len(files)))
+    else:
+        logging.info("No csv files to copy to Redshift")
+        return
 
     db = src.DataBaseConnection(redshift=True)
     db.build_db_if_needed()
