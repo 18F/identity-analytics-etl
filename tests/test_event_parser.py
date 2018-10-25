@@ -29,7 +29,7 @@ class EventParserTestCases(unittest.TestCase):
 
     def test_extract_json(self):
         parser = EventParser()
-        res = parser.extract_json(self.event_json)
+        res = parser.extract_json(self.event_json, line_num=1)
         self.assertEqual(res['id'], 'ff2d1183-3a82-42d6-8b08-19845ea8da3d')
         self.assertEqual(res['properties']['user_ip'], '24.124.56.64')
         self.assertEqual(res.keys(), json.loads(self.event_json).keys())

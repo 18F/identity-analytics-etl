@@ -1,10 +1,9 @@
 import boto3
 import io
-import gzip
 import pytz
 import logging
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from botocore.config import Config
 
 
