@@ -3,6 +3,7 @@ import logging
 from datetime import timedelta
 import random
 
+from .log_parser import Parser
 from .event_parser import EventParser
 from .pageview_parser import PageViewParser
 from .device_parser import DeviceParser
@@ -22,7 +23,10 @@ class Uploader:
         self.staging_bucket = staging_bucket
         self.staging_stream_rate = staging_stream_rate
         self.s3 = S3(self.source_bucket, self.dest_bucket, self.dest_bucket_parquet, self.hot_bucket, self.staging_bucket, encryption_key) if s3 is None else s3
+
+        Parser.json_cache = dict()
         self.parsers = (EventParser(), PageViewParser(), DeviceParser(), EmailParser(), PhoneParser()) if parsers is None else parsers
+
         if not logger:
             logging.basicConfig(level=logging.INFO)
             self.logger = logging.getLogger('uploader')
@@ -42,7 +46,7 @@ class Uploader:
             self.logger.info("parsing {}".format(f))
             in_file = self.s3.get_logfile(f)
             logfile_content = in_file.read()
-            self.logger.iinfo("read {} bytes".format(sys.getsizeof(logfile_content)))
+            self.logger.info("read {} bytes".format(sys.getsizeof(logfile_content)))
             for parser in self.parsers:
                 try:
                     self.logger.info("Using {}".format(parser.__class__.__name__))

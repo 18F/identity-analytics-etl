@@ -44,7 +44,7 @@ def lambda_handler(event, context):
     if len(files):
         logging.info("Found {} csv files to copy to Redshift".format(len(files)))
     else:
-        logging.info("No csv files to copy to Redshift")
+        logging.info("No csv files to copy to Redshift, exiting")
         return
 
     db = src.DataBaseConnection(redshift=True)
