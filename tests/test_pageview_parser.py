@@ -31,7 +31,7 @@ class PageViewParserTestCases(unittest.TestCase):
 
     def test_extract_json(self):
         parser = PageViewParser()
-        res = parser.extract_json(self.pageview_json)
+        res = parser.extract_json(self.pageview_json, line_num=1)
         self.assertEqual(res['method'], 'GET')
         self.assertEqual(res['uuid'], '58d753fe-4542-437f-a812-1f0f146cb4ec')
         self.assertEqual(res.keys(), json.loads(self.pageview_json).keys())
