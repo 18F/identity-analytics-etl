@@ -1,0 +1,24 @@
+{
+    "jsonpaths": [
+       "$.id",
+       "$.name",
+       "$.properties.user_agent",
+       "$.properties.user_id",
+       "$.properties.user_ip",
+       "$.properties.host",
+       "$.visit_id",
+       "$.visitor_id",
+       "$.time",
+       "$.properties.event_properties",
+       "$.properties.event_properties.success",
+       "$.properties.event_properties.existing_user",
+       "$.properties.event_properties.otp_method",
+       "$.properties.event_properties.context",
+       "$.properties.event_properties.method",
+       "$.properties.event_properties.authn_context",
+       "$.properties.event_properties.service_provider",
+       "$.properties.event_properties.loa3",
+       "$.properties.event_properties.active_profile",
+       "$.properties.event_properties.errors"
+    ]
+}

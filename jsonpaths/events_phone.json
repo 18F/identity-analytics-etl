@@ -1,0 +1,10 @@
+{
+    "jsonpaths": [
+         "$.id",
+         "$.visit_id",
+         "$.visitor_id",
+         "$.area_code",
+         "$.country_code",
+         "$.time"
+      ]
+}

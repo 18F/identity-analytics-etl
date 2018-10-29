@@ -1,0 +1,17 @@
+{
+    "jsonpaths": [
+         "$.method",
+         "$.path",
+         "$.format",
+         "$.controller",
+         "$.action",
+         "$.status",
+         "$.duration",
+         "$.user_id",
+         "$.user_agent",
+         "$.ip",
+         "$.host",
+         "$.timestamp",
+         "$.uuid"
+      ]
+  }
