@@ -48,7 +48,7 @@ The code below will:
 import base64
 import json
 import gzip
-import io
+import StringIO
 import boto3
 
 
@@ -69,7 +69,7 @@ def transformLogEvent(log_event):
 def processRecords(records):
     for r in records:
         data = base64.b64decode(r['data'])
-        striodata = io.StringIO(data)
+        striodata = StringIO.StringIO(data)
         with gzip.GzipFile(fileobj=striodata, mode='r') as f:
             data = json.loads(f.read())
 
