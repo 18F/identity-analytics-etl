@@ -63,7 +63,18 @@ def transformLogEvent(log_event):
     Returns:
     str: The transformed log event.
     """
-    return log_event['message'] + '\n'
+    srcevent = json.loads(log_event['message'])
+    eprop = srcevent['properties']['event_properties']
+    
+    if 'domain_name' in eprop:
+        result = {}
+        result['id'] = srcevent.get('id', '')
+        result['name'] = srcevent.get('visit_id', '')
+        result['domain_name'] = eprop.get('domain_name', '')
+        result['time'] = srcevent['time']
+        return json.dumps(result) + '\n'
+        
+    return ''
 
 
 def processRecords(records):

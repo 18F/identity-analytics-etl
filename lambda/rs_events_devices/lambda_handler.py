@@ -71,13 +71,13 @@ def transformLogEvent(log_event):
         result['id'] = srcevent.get('id', '')
         result['name'] = srcevent.get('name', '')
         result['user_agent'] = srcevent.get('properties').get('user_agent', '')
-        result['browser_name'] = srcevent.get('browser_name').get('browser_name', '')
-        result['browser_version'] = srcevent.get('browser_version').get('browser_version', '')
-        result['browser_platform_name'] = srcevent.get('browser_platform_name').get('browser_platform_name', '')
-        result['browser_platform_version'] = srcevent.get('browser_platform_version').get('browser_platform_version', '')
-        result['browser_device_name'] = srcevent.get('browser_device_name').get('browser_device_name', '')
-        result['browser_device_type'] = srcevent.get('browser_device_type').get('browser_device_type', '')
-        result['browser_bot'] = srcevent.get('browser_bot').get('browser_bot', '')
+        result['browser_name'] = srcevent.get('properties').get('browser_name', '')
+        result['browser_version'] = srcevent.get('properties').get('browser_version', '')
+        result['browser_platform_name'] = srcevent.get('properties').get('browser_platform_name', '')
+        result['browser_platform_version'] = srcevent.get('properties').get('browser_platform_version', '')
+        result['browser_device_name'] = srcevent.get('properties').get('browser_device_name', '')
+        result['browser_device_type'] = srcevent.get('properties').get('browser_device_type', '')
+        result['browser_bot'] = srcevent.get('properties').get('browser_bot', '')
         result['time']=srcevent['time']
         return json.dumps(result) + '\n'
         
