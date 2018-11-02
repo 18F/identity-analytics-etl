@@ -1,3 +1,7 @@
+/*
+This SQL returns number of unique users that confirmed their email address.
+*/
+
 SELECT
     COUNT(DISTINCT events.user_id)
 FROM events
