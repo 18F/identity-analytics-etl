@@ -4,7 +4,7 @@
     :alt: Documentation Status
 
 .. image:: https://img.shields.io/badge/STAR_Me_on_GitHub!--None.svg?style=social
-    :target: https://github.com/18f/login_analytics-project
+    :target: https://github.com/18f/identity-analytics-etl
 
 ------
 
@@ -21,13 +21,13 @@
       :target: https://s3-us-west-2.amazonaws.com/login-gov-doc/login_analytics/py-modindex.html
 
 .. image:: https://img.shields.io/badge/Link-GitHub-blue.svg
-      :target: https://github.com/18f/login_analytics-project
+      :target: https://github.com/18f/identity-analytics-etl
 
 .. image:: https://img.shields.io/badge/Link-Submit_Issue-blue.svg
-      :target: https://github.com/18f/login_analytics-project/issues
+      :target: https://github.com/18f/identity-analytics-etl/issues
 
 .. image:: https://img.shields.io/badge/Link-Request_Feature-blue.svg
-      :target: https://github.com/18f/login_analytics-project/issues
+      :target: https://github.com/18f/identity-analytics-etl/issues
 
 
 Welcome to ``login_analytics`` Documentation
