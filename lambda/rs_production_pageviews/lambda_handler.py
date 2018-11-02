@@ -63,8 +63,32 @@ def transformLogEvent(log_event):
     Returns:
     str: The transformed log event.
     """
-    return log_event['message'] + '\n'
+    srcdata = json.loads(log_event['message'])
+    result = {}
+    result['method'] = srcdata.get('method', '')
+    result['path'] = truncate_path(srcdata)
+    result['format'] = srcdata.get('format', '')
+    result['controller'] = srcdata.get('controller', '')
+    result['action'] = srcdata.get('action', '')
+    result['status'] = srcdata.get('status', '')
+    result['duration'] = srcdata.get('duration', '')
+    result['user_id'] = srcdata.get('user_id', '')
+    result['user_agent'] = srcdata.get('user_agent', '')
+    result['ip'] = srcdata.get('ip', '')
+    result['host'] = srcdata.get('host', '')
+    result['uuid'] = srcdata.get('uuid', '')
+    result['timestamp'] = srcdata.get('timestamp')
+    return json.dumps(result) + '\n'
 
+def truncate_path(data):
+        if data.get('path') is None:
+            return None
+        elif len(data.get('path')) < 1024:
+            return data.get('path')
+        elif '=' in data.get('path'):
+            return data.get('path').split('=')[0]
+        else:
+            return data.get('path')[:1023]
 
 def processRecords(records):
     for r in records:
