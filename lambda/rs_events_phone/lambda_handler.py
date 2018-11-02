@@ -69,12 +69,12 @@ def transformLogEvent(log_event):
     
     if 'area_code' in eprop:
         result = {}
-        result['id']=srcevent.get("id", "")
-        result['visit_id']=srcevent.get("visit_id", "")
-        result['visitor_id']=srcevent.get("visitor_id", "")
-        result['area_code']=eprop.get("area_code", "")
-        result['country_code']=eprop.get("country_code", "")
-        result['time']=srcevent['time']
+        result['id'] = srcevent.get('id', '')
+        result['visit_id'] = srcevent.get('visit_id', '')
+        result['visitor_id'] = srcevent.get('visitor_id', '')
+        result['area_code'] = eprop.get('area_code', '')
+        result['country_code'] = eprop.get('country_code', '')
+        result['time'] = srcevent['time']
         return json.dumps(result) + '\n'
         
     return ''
