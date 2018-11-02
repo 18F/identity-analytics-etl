@@ -15,7 +15,7 @@ from .s3 import S3
 
 class Uploader:
 
-    def __init__(self, source_bucket, dest_bucket, dest_bucket_parquet, hot_bucket, staging_bucket, logger=None, s3=None, parsers=None, redshift=False, encryption_key="b10a84ce-1f80-44bc-8d0f-7a547b45ce53", lookback_period=None, staging_stream_rate=10):
+    def     __init__(self, source_bucket, dest_bucket, dest_bucket_parquet, hot_bucket, staging_bucket, logger=None, s3=None, parsers=None, redshift=False, encryption_key="b10a84ce-1f80-44bc-8d0f-7a547b45ce53", lookback_period=None, staging_stream_rate=10):
         self.redshift = redshift
         self.source_bucket = source_bucket
         self.dest_bucket = dest_bucket

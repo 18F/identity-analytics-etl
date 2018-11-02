@@ -3,21 +3,6 @@
     :target: https://login_analytics.readthedocs.io/?badge=latest
     :alt: Documentation Status
 
-.. image:: https://travis-ci.org/M8F/login_analytics-project.svg?branch=master
-    :target: https://travis-ci.org/M8F/login_analytics-project?branch=master
-
-.. image:: https://codecov.io/gh/M8F/login_analytics-project/branch/master/graph/badge.svg
-  :target: https://codecov.io/gh/M8F/login_analytics-project
-
-.. image:: https://img.shields.io/pypi/v/login_analytics.svg
-    :target: https://pypi.python.org/pypi/login_analytics
-
-.. image:: https://img.shields.io/pypi/l/login_analytics.svg
-    :target: https://pypi.python.org/pypi/login_analytics
-
-.. image:: https://img.shields.io/pypi/pyversions/login_analytics.svg
-    :target: https://pypi.python.org/pypi/login_analytics
-
 .. image:: https://img.shields.io/badge/STAR_Me_on_GitHub!--None.svg?style=social
     :target: https://github.com/M8F/login_analytics-project
 
@@ -47,5 +32,3 @@
 
 Welcome to ``login_analytics`` Documentation
 ==============================================================================
-
-Documentation for ``login_analytics``.
