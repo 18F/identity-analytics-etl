@@ -15,10 +15,10 @@
       :target: https://s3-us-west-2.amazonaws.com/login-gov-doc/login_analytics/index.html
 
 .. image:: https://img.shields.io/badge/Link-API-blue.svg
-      :target: https://login_analytics.readthedocs.io/py-modindex.html
+      :target: https://s3-us-west-2.amazonaws.com/login-gov-doc/login_analytics/py-modindex.html
 
 .. image:: https://img.shields.io/badge/Link-Source_Code-blue.svg
-      :target: https://login_analytics.readthedocs.io/py-modindex.html
+      :target: https://s3-us-west-2.amazonaws.com/login-gov-doc/login_analytics/py-modindex.html
 
 .. image:: https://img.shields.io/badge/Link-GitHub-blue.svg
       :target: https://github.com/M8F/login_analytics-project
