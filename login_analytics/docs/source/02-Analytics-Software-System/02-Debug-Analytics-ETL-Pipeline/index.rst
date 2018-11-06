@@ -135,3 +135,9 @@ Example Output (Updated on 2018-10-26)::
 You have to check the log files in `18f-identity/login-gov-prod-logs` bucket.
 
 To get help for setup your AWS account, click :ref:`aws-account`.
+
+
+4. How Fill Back in Missing Data?
+------------------------------------------------------------------------------
+
+1. Use ``src/uploader.py`` to run example data file
