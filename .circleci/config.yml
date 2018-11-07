@@ -26,9 +26,9 @@ jobs:
       - run:
         name: create virtualenv and install python dependencies
         command: |
-           python3.6 -m venv legacy_code/venv
-           . legacy_code/venv/bin/activate
-           pip install -r legacy_code/requirements.txt
+          python3.6 -m venv legacy_code/venv
+          . legacy_code/venv/bin/activate
+          pip install -r legacy_code/requirements.txt
       - run:
         name: Wait for DB
         command: dockerize -wait tcp://localhost:5432 -timeout 1m
