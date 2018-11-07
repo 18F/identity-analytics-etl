@@ -49,11 +49,19 @@ jobs:
             python legacy_code/tests/test_pageview_parser.py
             python legacy_code/tests/test_uploader.py
             python legacy_code/tests/test_phone_parser.py
-            
+
+      # For login_analytics python library
       - run:
-          name: tests
+          name: create virtualenv and install python dependencies
           command: |
-            pip3.6 install --upgrade pip
-            pip3.6 install --editable .
-            pip3.6 install -rrequirements-test.txt
+            python3.6 -m venv ./venv
+            source ./venv/bin/activate
+            pip install --upgrade pip
+            pip install .
+            pip install -rrequirements-test.txt
+
+      - run:
+          name: run tests
+          command: |
+            source ./venv/bin/activate
             pytest tests --cov=login-analytics
