@@ -8,7 +8,7 @@ for login.gov
 
 ## Developing
 
-The repository uses `python3`, `virtualenv`, and `docker`
+The repository uses `python3.6`, `virtualenv`, and `docker`
 
 To install Docker:  
 (MacOSX) https://docs.docker.com/docker-for-mac/install/#install-and-run-docker-for-mac
@@ -24,7 +24,7 @@ make venv
 To run tests:
 
 ```
-make clean
+make test
 ```
 
 To check code coverage locally:
