@@ -24,30 +24,36 @@ jobs:
       - checkout
 
       - run:
-         name: create virtualenv and install python dependencies
-         command: |
+        name: create virtualenv and install python dependencies
+        command: |
            python3.6 -m venv legacy_code/venv
            . legacy_code/venv/bin/activate
            pip install -r legacy_code/requirements.txt
       - run:
-         name: Wait for DB
-         command: dockerize -wait tcp://localhost:5432 -timeout 1m
+        name: Wait for DB
+        command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
       - run: 
-         name: Install PostgreSQL Client
-         command: |
-           echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
-           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-           sudo apt-get update
-           sudo apt-get install postgresql-client-9.5
+        name: Install PostgreSQL Client
+        command: |
+          echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install postgresql-client-9.5
 
       - run:
-          name: tests
-          command: |
-            . legacy_code/venv/bin/activate
-            python legacy_code/tests/test_event_parser.py
-            python legacy_code/tests/test_pageview_parser.py
-            python legacy_code/tests/test_uploader.py
-            python legacy_code/tests/test_phone_parser.py
+        name: tests_legacy
+        command: |
+          . legacy_code/venv/bin/activate
+          python legacy_code/tests/test_event_parser.py
+          python legacy_code/tests/test_pageview_parser.py
+          python legacy_code/tests/test_uploader.py
+          python legacy_code/tests/test_phone_parser.py
             
-            
+      - run:
+        name: tests
+        command: |
+          pip3.6 install --upgrade pip
+          pip3.6 install --editable .
+          pip3.6 install -rrequirements-test.txt
+          pytest tests --cov=login-analytics

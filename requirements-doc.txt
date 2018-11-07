@@ -1,0 +1,12 @@
+# dependencies to build documentation
+docutils
+sphinx==1.8.1
+
+# sphinx doc plugins
+sphinx-jinja        # allow jinja2 template
+sphinx-copybutton   # add copy to clipboard button for code block
+docfly==0.0.16      # auto API manual, auto Table of Content
+
+# Other
+
+pygments            # live RestructuredText preview
