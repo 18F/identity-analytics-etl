@@ -24,22 +24,22 @@ jobs:
       - checkout
 
       - run:
-         name: create virtualenv and install python dependencies
-         command: |
-           python3.6 -m venv legacy_code/venv
-           . legacy_code/venv/bin/activate
-           pip install -r legacy_code/requirements.txt
+          name: create virtualenv and install python dependencies
+          command: |
+            python3.6 -m venv legacy_code/venv
+            . legacy_code/venv/bin/activate
+            pip install -r legacy_code/requirements.txt
       - run:
-         name: Wait for DB
-         command: dockerize -wait tcp://localhost:5432 -timeout 1m
+          name: Wait for DB
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
       - run:
-         name: Install PostgreSQL Client
-         command: |
-           echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
-           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-           sudo apt-get update
-           sudo apt-get install postgresql-client-9.5
+          name: Install PostgreSQL Client
+          command: |
+            echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+            wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+            sudo apt-get update
+            sudo apt-get install postgresql-client-9.5
 
       - run:
           name: tests_legacy
@@ -64,4 +64,4 @@ jobs:
           name: run tests
           command: |
             source ./venv/bin/activate
-            pytest tests --cov=login-analytics
+            pytest tests --cov=login_analytics
