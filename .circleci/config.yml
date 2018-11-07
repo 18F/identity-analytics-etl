@@ -26,7 +26,7 @@ jobs:
       - run:
          name: create virtualenv and install python dependencies
          command: |
-           python3.6 -m venv venv
+           python3.6 -m venv legacy_code/venv
            . legacy_code/venv/bin/activate
            pip install -r legacy_code/requirements.txt
       - run:
