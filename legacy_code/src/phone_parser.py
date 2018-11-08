@@ -3,9 +3,9 @@ import csv
 import re
 import io
 
-from .log_parser import Parser
+from .log_parser import BaseEventParser
 
-class PhoneParser(Parser):
+class PhoneParser(BaseEventParser):
     table = 'events_phone'
     uuids = set()
     header_fields = {
@@ -16,16 +16,19 @@ class PhoneParser(Parser):
         'country_code': str,
         'time': str
     }
-    
+
+    AREA_CODE_PATTERN = '"area_code"'
+    COUNTRY_CODE_PATTERN = '"country_code"'
+
     def get_uuid(self, data):
         return data.get('id')
     
-    def format_check(self, line, line_num):
-        if ('event_properties' not in line) or ('area_code' not in line) or ('country_code' not in line) or (not self.has_valid_json(line, line_num)):
-            return True
+    def is_valid_format(self, line, line_num):
+        if (self.AREA_CODE_PATTERN in line) and (self.COUNTRY_CODE_PATTERN in line):
+            return super(PhoneParser, self).is_valid_format(line, line_num)
         else:
             return False
-    
+
     def json_to_csv(self, data):
         uuid = self.get_uuid(data)
 

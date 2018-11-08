@@ -3,9 +3,9 @@ import csv
 import re
 import io
 
-from .log_parser import Parser
+from .log_parser import BaseEventParser
 
-class EmailParser(Parser):
+class EmailParser(BaseEventParser):
     table = 'events_email'
     uuids = set()
     header_fields = {
@@ -15,12 +15,14 @@ class EmailParser(Parser):
         'time': str
     }
 
+    DOMAIN_PATTERN = '"domain_name"'
+
     def get_uuid(self, data):
         return data.get('id')
 
-    def format_check(self, line, line_num):
-        if ('event_properties' not in line) or ('domain_name' not in line) or (not self.has_valid_json(line, line_num)):
-            return True
+    def is_valid_format(self, line, line_num):
+        if  self.DOMAIN_PATTERN in line:
+            return super(EmailParser, self).is_valid_format(line, line_num)
         else:
             return False
 

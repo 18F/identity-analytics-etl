@@ -59,16 +59,16 @@ class Uploader:
     def etl(self, parser, logfile, logfile_content):
         csv_name = "{}.{}.csv".format(logfile.replace('.txt', ''), parser.table)
         parquet_name = "{}/{}.snappy.parquet".format(parser.table, logfile.replace('.txt', ''))
-        processed_rows, out, out_parquet = parser.stream_csv(logfile_content)
+        parsed_rows, total_rows, out, out_parquet = parser.stream_csv(logfile_content)
 
-        self.logger.info("parsed {} rows".format(processed_rows))
-        if processed_rows > 0:
+        self.logger.info("parsed {} rows from {} rows".format(parsed_rows, total_rows))
+        if parsed_rows > 0:
             self.s3.new_file(out, csv_name)
             self.s3.new_file_parquet(out_parquet, parquet_name)
             self.s3.new_file_hot(out, csv_name)
 
         # Copy ~ X% files as-is to staging bucket.
-        if random.randint(1,100) <= self.staging_stream_rate:
+        if random.randint(1, 100) <= self.staging_stream_rate:
             self.s3.new_file_staging(self.s3.get_logfile(logfile), logfile)
 
         out.close()
