@@ -115,7 +115,6 @@ BIN_JUPYTER="${BIN_DIR}/jupyter"
 
 
 S3_PREFIX="s3://${DOC_HOST_BUCKET_NAME}/${PACKAGE_NAME}"
-RTD_DOC_URL="https://login_analytics.readthedocs.io/index.html"
 AWS_DOC_URL="http://${DOC_HOST_BUCKET_NAME}.s3.amazonaws.com/${PACKAGE_NAME}/index.html"
 
 PY_VERSION="${PY_VER_MAJOR}.${PY_VER_MINOR}.${PY_VER_MICRO}"
@@ -132,7 +131,6 @@ info: ## ** Show information about python, pip in this environment
 	@echo - venv: ${VENV_DIR_REAL} "\n"
 	@echo - python executable: ${BIN_PYTHON} "\n"
 	@echo - pip executable: ${BIN_PIP} "\n"
-	@echo - document on rtd: ${RTD_DOC_URL} "\n"
 	@echo - document on s3: ${AWS_DOC_URL} "\n"
 	@echo - site-packages: ${SITE_PACKAGES} "\n"
 
