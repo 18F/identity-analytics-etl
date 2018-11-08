@@ -3,10 +3,10 @@ import csv
 import re
 import io
 
-from .log_parser import Parser
+from .log_parser import BaseEventParser
 
 
-class EventParser(Parser):
+class EventParser(BaseEventParser):
     table = 'events'
     header_fields = {
         'id': str,
@@ -33,12 +33,6 @@ class EventParser(Parser):
 
     uuids = set()
     service_provider_index = 6
-
-    def format_check(self, line, line_num):
-        if 'event_properties' not in line or not self.has_valid_json(line, line_num):
-            return True
-        else:
-            return False
 
     def get_uuid(self, data):
         return data.get('id')

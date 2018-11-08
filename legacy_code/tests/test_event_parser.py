@@ -23,8 +23,8 @@ class EventParserTestCases(unittest.TestCase):
 
     def test_stream_csv(self):
         parser = EventParser()
-        rows, out, out_parquet = parser.stream_csv(self.in_io)
-        self.assertEqual(rows, 1)
+        parsed_rows, total_rows, out, out_parquet = parser.stream_csv(self.in_io)
+        self.assertEqual(parsed_rows, 1)
         self.assertTrue(len(out_parquet.read()) > 0)
 
     def test_extract_json(self):
