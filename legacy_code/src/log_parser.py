@@ -99,7 +99,7 @@ class Parser(object):
 
 
 class BaseEventParser(Parser):
-    JSON_PREFIX_PATTERN = '{"name":'
+    JSON_PREFIX_PATTERN = '"name":'
     ANALYTICS_EVENT_PATTERN = '"event_properties":'
 
     def is_valid_format(self, line, line_num):

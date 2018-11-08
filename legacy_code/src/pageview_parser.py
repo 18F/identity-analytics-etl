@@ -27,7 +27,7 @@ class PageViewParser(Parser):
 
     uuids = set()
 
-    JSON_PREFIX_PATTERN = '{"method":'
+    JSON_PREFIX_PATTERN = '"method":'
     PATH_PATTERN = '"path":'
     CONTROLLER_PATTERN = '"controller":'
 
