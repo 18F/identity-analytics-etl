@@ -8,8 +8,8 @@ from io import BytesIO
 
 
 class PageViewParserTestCases(unittest.TestCase):
-    pageview_json = '{"method":"GET","path":"/?issuer=&timeout=true","format":"html","controller":"Users::SessionsController","action":"new","status":302,"duration":4.84,"location":"https://idp.staging.login.gov/?issuer=","user_id":"anonymous-uuid","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36","ip":"24.124.56.64","host":"idp.staging.login.gov","timestamp":"2017-04-10 17:45:22 +0000","uuid":"58d753fe-4542-437f-a812-1f0f146cb4ec"}'
-    pageview_json_no_id = '{"method":"GET","path":"/?issuer=&timeout=true","format":"html","controller":"Users::SessionsController","action":"new","status":302,"duration":4.84,"location":"https://idp.staging.login.gov/?issuer=","user_id":"anonymous-uuid","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36","ip":"24.124.56.64","host":"idp.staging.login.gov","timestamp":"2017-04-10 17:45:22 +0000"}'
+    pageview_json = '2017-04-10T17:45:22.600Z idp {"method":"GET","path":"/?issuer=&timeout=true","format":"html","controller":"Users::SessionsController","action":"new","status":302,"duration":4.84,"location":"https://idp.staging.login.gov/?issuer=","user_id":"anonymous-uuid","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36","ip":"24.124.56.64","host":"idp.staging.login.gov","timestamp":"2017-04-10 17:45:22 +0000","uuid":"58d753fe-4542-437f-a812-1f0f146cb4ec"}'
+    pageview_json_no_id = '2017-04-10T17:45:22.600Z idp {"method":"GET","path":"/?issuer=&timeout=true","format":"html","controller":"Users::SessionsController","action":"new","status":302,"duration":4.84,"location":"https://idp.staging.login.gov/?issuer=","user_id":"anonymous-uuid","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36","ip":"24.124.56.64","host":"idp.staging.login.gov","timestamp":"2017-04-10 17:45:22 +0000"}'
     test_pageview_log_txt = BytesIO(b"""
      2017-04-10T17:45:22.600Z idp 172.16.33.245 - - [10/Apr/2017:17:45:21 +0000] "GET / HTTP/1.1" 401 188 "-" "ELB-HealthChecker/2.0"
      2017-04-10T17:45:23.600Z idp 172.16.33.245 - 18f [10/Apr/2017:17:45:22 +0000] "GET /?issuer=&timeout=true HTTP/1.1" 302 115 "https://idp.staging.login.gov/?issuer=" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36"
@@ -31,27 +31,26 @@ class PageViewParserTestCases(unittest.TestCase):
 
     def test_extract_json(self):
         parser = PageViewParser()
-        res = parser.extract_json(self.pageview_json, line_num=1)
-        self.assertEqual(res['method'], 'GET')
-        self.assertEqual(res['uuid'], '58d753fe-4542-437f-a812-1f0f146cb4ec')
-        self.assertEqual(res.keys(), json.loads(self.pageview_json).keys())
+        data = parser.extract_json(self.pageview_json, line_num=1)
+        self.assertEqual(data['method'], 'GET')
+        self.assertEqual(data['uuid'], '58d753fe-4542-437f-a812-1f0f146cb4ec')
 
     def test_json_to_csv(self):
         parser = PageViewParser()
-        data = json.loads(self.pageview_json)
+        data = parser.extract_json(self.pageview_json, line_num=1)
         res = parser.json_to_csv(data)[0]
         self.assertEqual(len(res), 13)
         self.assertEqual(res[12], '2017-04-10 17:45:22')
 
     def test_get_uuid(self):
         parser = PageViewParser()
-        data = json.loads(self.pageview_json_no_id)
+        data = parser.extract_json(self.pageview_json_no_id, line_num=2)
         res = parser.get_uuid(data)
         self.assertEqual(res, 'da76b7beeff3142b8343f4e4281ded230f9c1c9c0092c4278769f1ec16e70423')
 
     def test_truncate_path(self):
         parser = PageViewParser()
-        data = json.loads(self.pageview_json)
+        data = parser.extract_json(self.pageview_json, line_num=1)
         res = parser.truncate_path(data)
         self.assertEqual(res, data.get('path'))
 

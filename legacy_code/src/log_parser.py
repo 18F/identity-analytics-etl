@@ -60,7 +60,7 @@ class Parser(object):
             return self.json_cache[line_num]
         else:
             try:
-                time_part, logger_part, json_part = line.split(" ", 2)
+                time_part, logger_part, json_part = line.strip().split(" ", 2)
             except ValueError:
                 raise ValueError
 
