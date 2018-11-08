@@ -10,26 +10,30 @@ from .log_parser import Parser
 class PageViewParser(Parser):
     table = 'pageviews'
     header_fields = {
-        'method': str, 
-        'path': str, 
-        'format': str, 
-        'controller': str, 
-        'action': str, 
-        'status': int, 
-        'duration': float, 
-        'user_id': str, 
-        'user_agent': str, 
+        'method': str,
+        'path': str,
+        'format': str,
+        'controller': str,
+        'action': str,
+        'status': int,
+        'duration': float,
+        'user_id': str,
+        'user_agent': str,
         'ip': str,
-        'host': str, 
-        'uuid': str, 
+        'host': str,
+        'uuid': str,
         'timestamp': str
     }
 
     uuids = set()
 
-    def format_check(self, line, line_num):
-        if ('{' not in line) or ('path' not in line or 'controller' not in line) or (not self.has_valid_json(line, line_num)):
-            return True
+    JSON_PREFIX_PATTERN = '"method":'
+    PATH_PATTERN = '"path":'
+    CONTROLLER_PATTERN = '"controller":'
+
+    def is_valid_format(self, line, line_num):
+        if (self.JSON_PREFIX_PATTERN in line) and (self.PATH_PATTERN in line) and (self.CONTROLLER_PATTERN in line):
+            return self.has_valid_json(line, line_num)
         else:
             return False
 
@@ -41,14 +45,15 @@ class PageViewParser(Parser):
         if data.get('uuid'):
             return data.get('uuid')
         else:
-            return hashlib.sha256('|'.join([
-                                                data['path'],
-                                                data['ip'],
-                                                data['timestamp'],
-                                                data['host'],
-                                                str(data['duration'])
-                                           ]).encode('utf-8')
-                                 ).hexdigest()
+            return hashlib.sha256(
+                '|'.join([
+                    data['path'],
+                    data['ip'],
+                    data['timestamp'],
+                    data['host'],
+                    str(data['duration'])
+                ]).encode('utf-8')
+            ).hexdigest()
 
     def truncate_path(self, data):
         if data.get('path') is None:
@@ -68,19 +73,19 @@ class PageViewParser(Parser):
         """
         uuid = self.get_uuid(data)
         result = [
-                  data.get('method'),
-                  self.truncate_path(data),
-                  data.get('format'),
-                  data.get('controller'),
-                  data.get('action'),
-                  data.get('status'),
-                  data.get('duration'),
-                  data.get('user_id'),
-                  data.get('user_agent'),
-                  data.get('ip'),
-                  data.get('host'),
-                  uuid,
-                  re.sub(r" \+\d+$", '', data.get('timestamp'))
-                 ]
+            data.get('method'),
+            self.truncate_path(data),
+            data.get('format'),
+            data.get('controller'),
+            data.get('action'),
+            data.get('status'),
+            data.get('duration'),
+            data.get('user_id'),
+            data.get('user_agent'),
+            data.get('ip'),
+            data.get('host'),
+            uuid,
+            re.sub(r" \+\d+$", '', data.get('timestamp'))
+        ]
 
         return result, uuid

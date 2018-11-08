@@ -9,23 +9,23 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import pandas as pd
 
+
 class Parser(object):
     header_fields = dict()
-    json_cache = dict() # key line number, value json data
+    json_cache = dict()  # key line number, value json data
 
     def stream_csv(self, in_io):
-        rows = 0
+        parsed_rows = 0
         out = io.StringIO()
         out_parquet = io.BytesIO()
         header_rows = self.header_fields.keys()
         df_data = list()
         writer = csv.writer(out, delimiter=',')
         writer.writerow(header_rows)
-
         lines = in_io.decode('utf-8').split('\n')
         logging.info("got {} lines to parse".format(len(lines)))
         for line_num, line in enumerate(lines):
-            if self.format_check(line, line_num):
+            if not self.is_valid_format(line, line_num):
                 continue
 
             result, uuid = self.json_to_csv(self.extract_json(line, line_num))
@@ -35,7 +35,7 @@ class Parser(object):
             self.uuids.add(uuid)
             writer.writerow(result)
             df_data.append(result)
-            rows += 1
+            parsed_rows += 1
         df = pd.DataFrame(df_data, columns=header_rows)
 
         # Pyarrow tries to infer types by default.
@@ -52,26 +52,34 @@ class Parser(object):
         out_parquet.seek(0)
         out.seek(0)
 
-        return rows, out, out_parquet
+        total_rows = len(lines)
+        return parsed_rows, total_rows, out, out_parquet
 
     def extract_json(self, line, line_num):
         if line_num in self.json_cache:
             return self.json_cache[line_num]
-        json_part = line[line.index('{'):]
-        return json.loads(json_part)
+        else:
+            try:
+                time_part, logger_part, json_part = line.strip().split(" ", 2)
+            except ValueError:
+                raise ValueError
+
+            try:
+                data = json.loads(json_part)
+                self.json_cache[line_num] = data
+                return data
+            except ValueError:
+                raise ValueError
 
     def has_valid_json(self, line, line_num):
-        json_part = line[line.index('{'):]
-
         try:
-            self.json_cache[line_num] = json.loads(json_part)
-        except ValueError:
+            self.extract_json(line, line_num)
+            return True
+        except Exception as e:
             return False
 
-        return True
-
-    def format_check(self, line, line_num):
-        return self.has_valid_json(line, line_num)
+    def is_valid_format(self, line, line_num):
+        raise NotImplementedError
 
     def get_uuid(self, data):
         raise NotImplementedError()
@@ -90,3 +98,12 @@ class Parser(object):
         return df
 
 
+class BaseEventParser(Parser):
+    JSON_PREFIX_PATTERN = '"name":'
+    ANALYTICS_EVENT_PATTERN = '"event_properties":'
+
+    def is_valid_format(self, line, line_num):
+        if (self.JSON_PREFIX_PATTERN in line) and (self.ANALYTICS_EVENT_PATTERN in line):
+            return self.has_valid_json(line, line_num)
+        else:
+            return False
