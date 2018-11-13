@@ -4,16 +4,24 @@ import yaml
 import boto3
 import logging
 
-from secrets_manager import get_redshift_secrets
+import hashlib
+
+
+def md5(text):
+    m = hashlib.md5()
+    m.update(text.encode("utf8"))
+    return m.hexdigest()
 
 
 def set_redshift_configs(env, acct_id):
-    redshift_prod_password = get_redshift_secrets(os.environ['env'])["password"]
+    bucket = boto3.resource('s3').Bucket("login-gov-{}-{}-redshift-secrets".format(env, acct_id))
+    data = yaml.load(bucket.Object('redshift_secrets.yml').get()['Body'])
     os.environ['REDSHIFT_URI'] = "redshift+psycopg2://awsuser:{redshift_password}@{redshift_host}/analytics".format(
-        redshift_password=redshift_prod_password,
+        redshift_password=data['redshift_password'],
         redshift_host=os.environ['redshift_host']
     )
     os.environ['env'] = env
+
 
 def lambda_handler(event, context):
     logging.getLogger().setLevel(logging.INFO)
@@ -67,7 +75,7 @@ def lambda_handler(event, context):
             table = f.split('.')[-2]
 
             logging.info('Checking if previously uploaded')
-            if (pth, table) in uploaded_files:
+            if "%s-%s" % (md5(pth), table) in uploaded_files:
                 logging.info('File was previously uploaded, deleting it')
                 s3.delete_from_bucket(f)
                 continue
