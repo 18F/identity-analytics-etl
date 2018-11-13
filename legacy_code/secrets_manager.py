@@ -30,6 +30,7 @@ def get_redshift_secrets(env,region="us-west-2"):
             logging.exception("The Request was invalid due to {}".format(e))
         elif e.response["Error"]["Code"] == "InvalidParamentException":
             logging.exception("The request has invalid parameters {}".format(e))
+
         raise
     
     else:
