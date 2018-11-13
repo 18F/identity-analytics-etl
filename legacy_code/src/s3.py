@@ -21,8 +21,8 @@ class S3:
         self.hot_bucket = self.conn.Bucket(hot_bucket)
         self.staging_bucket = self.conn.Bucket(staging_bucket)
         self.encryption_key = encryption_key
-        self.key_check = lambda key: ('.txt' in key) and ('cloud' not in key)
-        self.csv_check = lambda key: ('.csv' in key) and ('cloud' not in key)
+        self.key_check = lambda key: ('.txt' in key) and ('cloud' not in key or 'logstash' not in key)
+        self.csv_check = lambda key: ('.csv' in key) and ('cloud' not in key or 'logstash' not in key)
 
     def get_n_s3_logfiles(self, n):
         get_last_modified = lambda x: int(x.last_modified.strftime('%s'))
