@@ -1,4 +1,10 @@
 #!/bin/bash
+# This script installs:
+#
+# - HomeBrew: package manager for mac, https://brew.sh/
+# - pyenv: python version manager
+# - pyenv-virtualenv: python virtual environment manager
+# - Python3.6.2: our main analytics development version
 
 PY_VER="3.6.2"
 
