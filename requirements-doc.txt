@@ -1,6 +1,7 @@
 # dependencies to build documentation
 docutils
 sphinx==1.8.1
+recommonmark
 
 # sphinx doc plugins
 sphinx-jinja        # allow jinja2 template
