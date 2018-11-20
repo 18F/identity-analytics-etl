@@ -30,6 +30,10 @@ users have set up 2FA?". To make that easier to answer, a single event called
 "2FA Setup" would be preferable, and the various options could be captured as
 event properties in a field called `two_factor_method` for example.
 
+## Making changes to event properties
+Before making a change, please discuss it with the analytics team. Changing
+names of existing properties can impact the queries we make.
+
 ## Event Structure
 Events are stored in JSON format in `events.log`. Here is an example:
 ```json
@@ -97,10 +101,12 @@ parse the user agent.
 
 <!-- MarkdownTOC levels="3" autolink="true" bracket="round" -->
 
+- [Definitions](#definitions)
 - [Account Reset](#account-reset)
 - [Account Deletion Requested](#account-deletion-requested)
 - [Account deletion and reset visited](#account-deletion-and-reset-visited)
-- [Doc Auth](#doc-auth)
+- [Doc Auth visited](#doc-auth-visited)
+- [Doc Auth submitted](#doc-auth-submitted)
 - [Email and Password Authentication](#email-and-password-authentication)
 - [Email Change Request](#email-change-request)
 - [Email Confirmation](#email-confirmation)
@@ -190,29 +196,154 @@ parse the user agent.
 
 <!-- /MarkdownTOC -->
 
+### Definitions
 
+- Doc Auth: Document authentication used for identity verification
+
+- IdV: Identity Verification
+
+- OTP: One-time password, used to send 2FA codes via SMS or Voice
+
+- TOTP: Time-based One-Time Password, which is what authentication apps (such as
+Google Authenticator) use.
+
+- WebAuthn: refers to hardware security keys used for 2FA
 
 ### Account Reset
+Tracks events related to a user requesting to delete their account during the
+sign in process (because they have no other means to sign in).
+
+#### When the request is first made
+```ruby
+event_properties: {
+  event: 'request',
+  sms_phone: true | false # does the user have phone as a 2FA option?
+  totp: true | false, # does the user have an authentication app as a 2FA option?
+  piv_cac: true | false, # does the user have PIV/CAC as a 2FA option?
+  email_addresses: # number of email addresses the user has
+}
+```
+
+Note: `sms_phone`, `totp`, and `piv_cac` above should all be replaced with:
+```ruby
+# analytics_attributes method in app/controllers/account_reset/request_controller.rb
+mfa_method_counts: MfaContext.new(current_user).enabled_two_factor_configuration_counts_hash
+```
+This will return a hash that shows all of the user's 2FA configurations, such as:
+```ruby
+{:phone=>1, :auth_app=>1}
+```
+
+#### When the user clicks a link to cancel the request
+Tracks when a user chooses to cancel the account deletion after clicking a link
+in the email they received after making the initial request.
+```ruby
+event_properties: {
+  event: 'visit', # this is fixed to 'cancel token validation' in PR 2665
+  success: true | false, # whether or not the token was valid
+  errors: # a hash of errors if any, otherwise an empty hash
+}
+```
+
+#### When the user clicks the button to confirm the cancellation
+```ruby
+event_properties: {
+  event: 'cancel',
+  success: true | false, # whether or not the token was valid
+  errors: # a hash of errors if any, otherwise an empty hash
+}
+```
+
+#### When emails are sent to users who are eligible to delete their account.
+When a user first requests to delete their account, they have to wait 24 hours,
+and then they receive an email with a link that allows them to complete the
+deletion. We have an AWS lambda that pings the `/api/account_reset/send_notifications`
+endpoint every few minutes, and the IdP then checks to see which users are eligible,
+then sends an email to them.
+
+```ruby
+event_properties: {
+  event: 'notifications',
+  count: # number of emails that were sent
+}
+```
+
+#### When the user clicks the link in the email to complete the deletion
+This displays a confirmation page where the user must click a button in order
+to complete the deletion
+```ruby
+event_properties: {
+  event: 'granted token validation',
+  success: true | false, # whether or not the token was valid
+  errors: # a hash of errors if any, otherwise an empty hash
+}
+```
+
+#### When the user clicks the button to complete the deletion
+```ruby
+event_properties: {
+  event: 'delete',
+  account_age_in_days: # how long ago the user created their account,
+  mfa_method_counts: # a hash of the 2FA configurations the user had,
+  success: true | false, # whether or not the token was valid
+  errors: # a hash of errors if any, otherwise an empty hash
+}
+```
 
 ### Account Deletion Requested
+When the user deletes their account during one of these scenarios:
+- during account creation
+- from their account page after fully signing in
+- others?
+
+```ruby
+event_properties: {
+  request_came_from: # the referer that made the request, to see on which page the
+                     # user made the request. If there is no referer, the value
+                     # will be 'no referer'. Otherwise, it will show the Rails controller
+                     # and action, such as 'users/sessions#new'
+}
+```
 
 ### Account deletion and reset visited
+Tracks when a user visits the account deletion page during in the sign in flow.
 
-### Doc Auth
+### Doc Auth visited
+Tracks when a user visits the Doc Auth page.
+
+### Doc Auth submitted
+```ruby
+event_properties: {
+  success: true | false,
+  errors: # a hash of validation errors if any, otherwise an empty hash
+  step: # the step the user was on.
+        # Possible values: 'ssn', 'front_image', 'back_image', 'self_image'
+
+}
+```
+Need Steve Urciuoli to confirm this, as well as possible error values.
 
 ### Email and Password Authentication
 ```ruby
-properties = {
+event_properties: {
   success: true | false, # true if the user is signed in and not locked out
-  user_locked_out: true | false
+  user_locked_out: true | false,
+  stored_location: session['user_return_to'],
+  sp_request_url_present: true | false # tracks if the SP's request url is in the session
+  remember_device: true | false, # is the remember device cookie present?
 }
 ```
 
 ### Email Change Request
+When the user changes their email from their account page. This only tracks
+when they submit the form with the new email. In order for the email change
+to take place, they must first confirm their new email address by clicking a
+link in an email we send them. This is tracked in a separate event called
+"Email Confirmation".
 ```ruby
-properties = {
+event_properties: {
   success: true | false,
-  errors: # an array of validation errors if any, otherwise an empty array
+  errors: # a hash of validation errors if any, otherwise an empty hash
   email_already_exists: true | false, # true if the user tried to change their
                                       # email to an existing user's email
   email_changed: true | false # false if the user entered their current email
@@ -221,10 +352,11 @@ properties = {
 
 ### Email Confirmation
 ```ruby
-properties = {
+event_properties: {
   success: true | false,
-  error: describes the error, # possible errors are: invalid token, empty token,
-                              # token expired, email was already confirmed
+  error: # a hash of validation errors if any, otherwise an empty hash
+         # possible errors are: invalid token, empty token, token expired,
+         # email was already confirmed
   existing_user: true | false # true if the user already confirmed their email
 }
 ```
@@ -246,27 +378,19 @@ No properties. This tracks a page view.
 ### IdV: max attempts exceeded
 
 ### IdV: final resolution
-This can be triggered in the following scenarios:
+Recorded once the user reaches the IdV confirmations page after successfully
+verifying their identity
 
-- KBV is turned off, and the user's initial IdV submission passed, but they
-  entered a phone that needs to be confirmed
-
-   ```ruby
-   properties = {
-     success: true | false,
-     new_phone_added: true | false # true if the new phone was confirmed
-   }
-   ```
-- KBV is turned on, and the user's initial IdV submission passed, but they
-  entered a phone that needs to be confirmed
-
-   ```ruby
-   properties = {
-     kbv_passed: true | false,
-     idv_attempts_exceeded: true | false,
-     new_phone_added: true | false # true if the new phone was confirmed
-   }
-   ```
+```ruby
+ event_properties: {
+   success: true,
+   new_phone_added: true | false # true if the phone they used for IdV was not
+                                 # the same as their 2FA phone, or if they did
+                                 # not have a 2FA phone.
+ }
+```
+See LG-832 for issues with the `new_phone_added` property. If they have been
+resolved, please update this documentation.
 
 ### IdV: forgot password visited
 
@@ -312,26 +436,33 @@ No properties. This tracks a page view.
 
 ### Invalid Authenticity Token
 This is triggered when an attempt is made to submit a form with an invalid CSRF
-token. This should rarely happen.
+token.
+```ruby
+event_properties: {
+  controller: # The controller where the user last tried to submit a form,
+  user_signed_in: true | false
+}
+```
 
 ### Logout Initiated
 
 ### Multi-Factor Authentication
 This event captures all the different ways someone authenticates via MFA.
-This could be via SMS or Voice OTP, via an Authenticator app, or via the
-recovery code. This is captured in the `method` property.
+This could be via SMS or Voice OTP, an Authenticator app (`totp`), entering the
+personal key, PIV/CAC, or a hardware security key (`webauthn`). This is captured
+in the `multi_factor_auth_method` property.
 
 There are also different contexts for entering an MFA code, such as when
 signing in, and when confirming a phone number. Confirming a phone number can
-happen in 3 different contexts: when setting up the 2FA phone for the first time,
-when changing the 2FA phone, and when confirming a phone number during IdV setup.
-These are captured in the `context` and `confirmation_for_phone_change` properties.
+happen in 2 different contexts: when setting up the 2FA phone for the first time,
+or when adding a new phone. These are captured in the `context` and
+`confirmation_for_phone_change` properties.
 
 ```ruby
-properties = {
+event_properties: {
   success: true | false,
-  context: 'authentication' | 'confirmation' | 'idv',
-  method: 'sms' | 'voice' | 'totp' | 'recovery code',
+  context: 'authentication' | 'confirmation',
+  multi_factor_auth_method: 'sms' | 'voice' | 'totp' | 'personal key' | 'piv_cac' | 'webauthn',
   confirmation_for_phone_change: true | false
 }
 ```
@@ -350,11 +481,13 @@ row. This includes OTP, TOTP (authenticator app code), and recovery code.
 ### Multi-Factor Authentication: option list visited
 
 ### Multi-Factor Authentication: phone setup
+When a user enters a new phone number. This is only to validate the phone number
+format, not to confirm the phone.
 ```ruby
-properties = {
+event_properties: {
   success: true | false,
-  error: '' | 'Phone number is invalid. Please make sure you enter a 10-digit phone number.',
-  otp_method: 'sms' | 'voice'
+  errors: # a hash of validation errors if any, otherwise an empty hash,
+  otp_delivery_preference: 'sms' | 'voice'
 }
 ```
 
@@ -367,30 +500,42 @@ properties = {
 ### OpenID Connect: token
 
 ### OTP: Delivery Selection
+Triggered when an OTP code is sent, which validates the `otp_delivery_preference`.
+For example, if someone requests `voice` to a number that we can only send
+an SMS to, we display an error message. This lets us know how often this event
+contains failures.
+
 ```ruby
-properties = {
+event_properties: {
   success: true | false,
-  delivery_method: 'sms' | 'voice',
-  resend: true | false # true if the user clicked the "resend" link,
   errors: # this should rarely contain an error since the only way to make this
           # fail is to pass in a delivery method other than 'sms' or 'voice' by
           # manipulating the form
+  otp_delivery_preference: 'sms' | 'voice',
+  resend: true | false # true if the user clicked the "resend" link,
+  country_code: # the 2-letter country abbreviation,
+  area_code: # the area code of the phone number,
+  context: 'authentication' | 'confirmation'
 }
 ```
 
 ### Password Changed
+When a user changes their password. If the new password they entered is invalid,
+an error will show up in this event.
 ```ruby
-properties = {
+event_properties: {
   success: true | false,
-  errors: # empty array or any password validation errors
+  errors: # empty hash or any password validation errors
 }
 ```
 
 ### Password Creation
+When a user first creates their password during account creation.
 ```ruby
-properties = {
+event_properties: {
   success: true | false,
-  errors: # empty array or any password validation errors
+  errors: # empty hash or any password validation errors
+  request_id_present: true | false # tracks the presence of the `request_id` parameter
 }
 ```
 
@@ -400,8 +545,14 @@ properties = {
 This tracks the first step in the password reset process: entering the email
 address.
 ```ruby
-properties = {
-  role: 'user' | 'tech' | 'admin'
+event_properties: {
+  role: 'user' | 'tech' | 'admin',
+  confirmed: true | false, # whether or not the user was already confirmed
+  active_profile: true | false, # whether or not the user has an active profile,
+                                # i.e. verified identity
+  recaptcha_valid: true | false,
+  recaptcha_present: true | false,
+  recaptcha_enabled: true | false
 }
 ```
 
@@ -409,13 +560,9 @@ properties = {
 This tracks the final step in the password reset process: entering the new
 password.
 ```ruby
-properties = {
+event_properties: {
   success: true | false,
-  errors: # empty array or one containing one or more of:
-          # 'is too short (minimum is 8 characters)', 'token_expired',
-  active_profile: true | false # true means an LOA3 user reset their password,
-                               # which means their profile was deactivated if
-                               # the reset was successful.
+  errors: # hash of password or password reset token validation errors, or empty hash
 }
 ```
 
@@ -423,9 +570,9 @@ properties = {
 This tracks the second step in the password reset process: clicking the link
 in the reset password email.
 ```ruby
-properties = {
+event_properties: {
   success: true | false,
-  error: '' | 'invalid_token' | 'token_expired'
+  errors: # hash of password reset token validation errors, or empty hash
 }
 ```
 
@@ -446,7 +593,7 @@ number was actually confirmed can be tracked via the
 This is mainly for debugging encryption issues. We should hopefully never see
 this in production.
 ```ruby
-properties = {
+event_properties: {
   error: # some profile encryption error, such as 'Unable to parse encrypted payload.'
 }
 ```
@@ -460,31 +607,35 @@ properties = {
 ### SAML Auth
 This tracks incoming LOA1 and LOA3 requests from a Service Provider
 ```ruby
-properties = {
+event_properties: {
   authn_context: # the LOA, represented by a string such as 'http://idmanagement.gov/ns/assurance/loa/1',
-  errors: # empty array or one containing one or more of:
-          # 'Unauthorized authentication context', 'Unauthorized Service Provider',
+  errors: # empty hash or one containing SAML request validation errors
   service_provider: # The SP, as defined on our `service_providers.yml`,
-  valid: true | false,
-  idv: true | false # true if LOA3 and the user has not already proofed.
-                    # Note that this key won't be present if valid is `false`
-                    # because the SAML request must be valid before we can look
-                    # up the user
+  success: true | false,
+  finish_profile: true | false, # true if the user is still pending verification, such as if they
+                                # requested to verify via USPS and haven't entered their code yet.
+  idv: true | false, # true if LOA3 and the user has not already proofed.
+                     # Note that this key won't be present if success is `false`
+                     # because the SAML request must be valid before we can look
+                     # up the user
 }
 ```
 
 ### Session Timed Out
 No event-specific properties. This is triggered when a user was signed in,
-remained inactive for 8 minutes, and was auto signed out.
+remained inactive for 15 minutes, and was auto signed out.
 
 ### Sign in page visited
 No properties. This tracks a page view.
 
 ### TOTP Setup
-This tracks authenticator app setup.
+When a user sets up an authentication app.
 ```ruby
-properties = {
-  success: true | false
+event_properties: {
+  success: true | false,
+  errors: {},
+  totp_secret_present: true | false # this was added to troubleshoot a bug where the TOTP secret
+                                    # was no longer in the session
 }
 ```
 
@@ -504,11 +655,16 @@ No event-specific properties.
 ### User registration: agency handoff complete
 
 ### User Registration: Email Submitted
+The first step in the account creation process, when a user enters their email.
 ```ruby
-properties = {
+event_properties: {
   success: true | false,
-  errors: # empty array or array containing any email validation errors,
-  email_already_exists: true | false
+  errors: # empty hash or hash containing any email validation errors,
+  email_already_exists: true | false,
+  domain_name: # the domain name of the email entered by the user
+  recaptcha_valid: true | false,
+  recaptcha_present: true | false,
+  recaptcha_enabled: true | false
 }
 ```
 
