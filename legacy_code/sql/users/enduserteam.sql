@@ -7,3 +7,5 @@ CREATE USER ericmill WITH password '$my_password';
 ALTER GROUP enduserteam ADD USER ericmill;
 CREATE USER sanhehu WITH password '$my_password';
 ALTER GROUP enduserteam ADD USER sanhehu;
+CREATE USER jonathanhooper WITH password '$my_password';
+ALTER GROUP enduserteam ADD USER jonathanhooper;
