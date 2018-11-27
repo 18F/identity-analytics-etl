@@ -5,7 +5,9 @@ Document Developer Guide
     :depth: 1
     :local:
 
-This article aims to help:
+Akhlaq changes this
+
+This article aims to help Akhlaq:
 
 1. Non developer to understand how to contribute docs and do the doc review for other.
 2. Developer to know how to maintain the doc generation system set up, build doc, host the doc.
