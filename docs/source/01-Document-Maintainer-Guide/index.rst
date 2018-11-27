@@ -5,6 +5,11 @@ Document Developer Guide
     :depth: 1
     :local:
 
+This article aims to help:
+
+1. Non developer to understand how to contribute docs and do the doc review for other.
+2. Developer to know how to maintain the doc generation system set up, build doc, host the doc.
+
 
 If You Are Doc Writer
 ------------------------------------------------------------------------------
@@ -80,6 +85,19 @@ If you Are Doc Maintainer
     - How to build the doc site?
     - How to deploy the doc site?
     - :ref:`sphinx-doc-quick-explain`
+
+
+If you Are Doing Doc Review
+------------------------------------------------------------------------------
+
+1. Go to the `Pull Request <https://github.com/18F/identity-analytics-etl/pull>`_, find the specific PR, for example, `This One <https://github.com/18F/identity-analytics-etl/pull/155>`_.
+2. Click `Files Changed <https://github.com/18F/identity-analytics-etl/pull/155/files>`_, to see the file changes.
+3. Click `View File <https://github.com/18F/identity-analytics-etl/blob/607c3c064413a7c1a23c52d071751326b2111ab5/docs/source/01-Document-Maintainer-Guide/index.rst>`_ on doc source file (usually ``.rst`` or ``.md``) to preview the doc.
+4. Click on the line (the ``+`` icon), leave your comment and suggestion.
+5. Finally, Click ``Review changes`` button to take an action in one of ``Comment``, ``Approve`` or ``Request changes``.
+
+    .. image:: https://img.shields.io/badge/-Review_changes-brightgreen.svg
+
 
 
 .. _why-sphinx-doc:
