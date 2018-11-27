@@ -17,16 +17,8 @@ Then you can SSH into prod by only typing `prod` at any time.
 
 3. To run the Rails console:
 ```console
-exec sudo -H -u websrv sh -c 'cd '\''/srv/idp/current'\''; export ALLOW_CONSOLE_DB_WRITE_ACCESS=true; bundle exec rails c'
+id-rails-console
 ```
-Unfortunately, `ALLOW_CONSOLE_DB_WRITE_ACCESS=true` must be used in order to
-look up users by their email address because the `email_addresses` table has
-restricted read privileges. This needs to change. The purpose of the
-`ALLOW_CONSOLE_DB_WRITE_ACCESS` env var is to prevent writing to the DB, but
-for some reason, some tables also prevent reading, and the
-`ALLOW_CONSOLE_DB_WRITE_ACCESS` allows both reading and writing, which is wrong.
-
-
 
 ## Troubleshooting
 

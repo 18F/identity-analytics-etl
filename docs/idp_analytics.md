@@ -645,6 +645,20 @@ event_properties: {
 No event-specific properties.
 
 ### Twilio Phone Validation Failed
+When we receive an error from Twilio after the user requests an OTP code.
+```ruby
+event_properties: {
+  error: # a Twilio error message
+  code: # a Twilio error code, such as 60033,
+  context: 'authentication' | 'confirmation' | 'idv'
+  country: # 2-letter abbreviation of the country of the user's phone number
+  status: # HTTP status code, such as 400. Only applies to Twilio Verify errors.
+  response: # The body of the HTTP response. Only applies to Twilio Verify errors.
+}
+```
+Twilio error codes docs:
+https://www.twilio.com/docs/api/errors
+
 
 ### Twilio SMS Inbound Message Received
 
