@@ -11,9 +11,19 @@ If You Are Doc Writer
 
 **Step by Step: Make changes to the Doc**:
 
+**The Easy Way**:
+
+1. Go to https://github.com/18F/identity-analytics-etl/tree/master/docs/source, or the anywhere you want to create the doc file.
+2. Click button ``Create new file``.
+3. Write content in ``<filename>.rst`` (`RST Syntax <https://github.com/ralsina/rst-cheatsheet/blob/master/rst-cheatsheet.rst>`_, RECOMMENDED) or ``<filename>.md`` (Markdown Syntax)
+4. Commit the change. Create a :red:`new branch` for this commit, naming convention is ``<your-name>/<purpose-of-this-branch>``.
+5. Issue a `PR <https://github.com/18F/identity-analytics-etl/pulls>`_, ask other to do code review, deploy doc changes.
+
+**The Better Way (if you need to continually update the docs)**:
+
 1. Pull the latest code from `GitHub <https://github.com/18F/identity-analytics-etl>`_, create your own branch.
 2. Writing the doc in ``.rst`` or ``.md``, put the file in ``./identity-analytics-etl/docs/source``, for example ``./identity-analytics-etl/docs/source/FY2019-business-analytics-metrics.rst`` (File Style) or ``./identity-analytics-etl/docs/source/FY2019-business-analytics-metrics/index.rst`` (Folder Style).
-3. Issue a `PR <https://github.com/18F/identity-analytics-etl/pulls>`_, code review, deploy doc changes.
+3. Issue a `PR <https://github.com/18F/identity-analytics-etl/pulls>`_, ask other to do code review, deploy doc changes.
 
 If you are not familiar with Git / GitHub, read :ref:`use-github-client-to-update-docs`.
 
