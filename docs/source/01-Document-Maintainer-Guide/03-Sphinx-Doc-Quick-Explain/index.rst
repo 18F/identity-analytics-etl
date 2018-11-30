@@ -3,7 +3,7 @@
 Sphinx Doc Quick Explain
 ==============================================================================
 
-**This documentation is for developer that does know much about** `sphinx doc <http://www.sphinx-doc.org/en/master/>`_, **but want know how to use it correctly to generate beautiful, self managed doc site**.
+**This documentation is for developers who are not familiar with** `sphinx doc <http://www.sphinx-doc.org/en/master/>`_, **but want to explore how to use it to generate a slick, well organized and self managed doc site**.
 
 **Important directory and file**:
 
@@ -33,13 +33,13 @@ You should see something like::
     build succeeded, xxx warnings.
 
 - **Success**: if you see the ``build succeeded``, you can ignore most of warnings. Usually, it means you defined a link label, but never used, which is totally fine. **Occasional typo or RST/MD syntax error will NOT STOP the build**.
-- **Failed**: if you didn't see the ``build succeeded``. Usually, it means your config file ``conf.py`` is not correctly setup, could be Python syntax error, could be variable definition error, import error.
+- **Failed**: if you did not  see the ``build succeeded`` message, it usually means that your config file ``conf.py`` is not correctly setup, which could be caused by a Python syntax error, a variable definition error, import error etc.
 
 
 The ``conf.py`` file
 ------------------------------------------------------------------------------
 
-It is the configuration file, and it is actually a Python scripts. You can define:
+This is the configuration file, and it is actually a Python script. You can define:
 
 1. Theme to use.
 2. Extension to use.
