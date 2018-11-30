@@ -24,13 +24,13 @@ first:
 
 .. code-block:: bash
 
-    $ cd <path-to-identity-devops>
+    cd <path-to-identity-devops>
 
 stay in root dir, and:
 
 .. code-block:: bash
 
-    $ ./bin/ssh-instance --newest asg-prod-idp
+    ./bin/ssh-instance --newest asg-prod-idp
 
 2. Now you are in idp server, then get in ruby console:
 
