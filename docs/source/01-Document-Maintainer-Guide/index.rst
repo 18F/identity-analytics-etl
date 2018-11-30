@@ -5,12 +5,10 @@ Document Developer Guide
     :depth: 1
     :local:
 
-Akhlaq changes this
+This articled is targeted for:
 
-This article aims to help Akhlaq:
-
-1. Non developer to understand how to contribute docs and do the doc review for other.
-2. Developer to know how to maintain the doc generation system set up, build doc, host the doc.
+1. Non developer to help them understand how to contribute to docs and perform reviews for others.
+2. Developers to understand how to maintain the doc generation system set up, build doc, host the doc.
 
 
 If You Are Doc Writer
@@ -26,7 +24,7 @@ If You Are Doc Writer
 4. Commit the change. Create a :red:`new branch` for this commit, naming convention is ``<your-name>/<purpose-of-this-branch>``.
 5. Issue a `PR <https://github.com/18F/identity-analytics-etl/pulls>`_, ask other to do code review, deploy doc changes.
 
-**The Better Way (if you need to continually update the docs)**:
+**The Preferred Way (if you need to continually update the docs)**:
 
 1. Pull the latest code from `GitHub <https://github.com/18F/identity-analytics-etl>`_, create your own branch.
 2. Writing the doc in ``.rst`` or ``.md``, put the file in ``./identity-analytics-etl/docs/source``, for example ``./identity-analytics-etl/docs/source/FY2019-business-analytics-metrics.rst`` (File Style) or ``./identity-analytics-etl/docs/source/FY2019-business-analytics-metrics/index.rst`` (Folder Style).
@@ -40,7 +38,7 @@ If you are not familiar with Git / GitHub, read :ref:`use-github-client-to-updat
 
     A short answer is:
 
-    1. Markdown DOESN't HAVE CROSS FILE LINK.
+    1. Markdown does not offer cross file link.
     2. 80% RST Syntax compatible with MD, the 20% includes **Header** and **Hyper Link**
 
     Header:
@@ -80,8 +78,8 @@ If you are not familiar with Git / GitHub, read :ref:`use-github-client-to-updat
 If you Are Doc Maintainer
 ------------------------------------------------------------------------------
 
-1. If you are familiar with `Sphinx Doc <https://www.sphinx-doc.org/>`_, skip this section.
-2. If you are NOT, and want to know:
+If you are familiar with `Sphinx Doc <https://www.sphinx-doc.org/>`_, skip this section. If you are NOT, read on.
+
     - :ref:`doc-maintenance-faq`
     - How to include a document to the place where it is needed?
     - How to build the doc site?
@@ -111,4 +109,4 @@ We use `Sphinx Doc <https://www.sphinx-doc.org/>`_ builder tool to automatically
 1. **Doc is part of the code, write once, deploy it to anywhere**. (The doc source file is sitting at ``identity-analytics-etl/docs/source/...``)
 2. **Automatically extract comment and doc string from code, generate API document** (auto generated API docs is sitting at ``identity-analytics-etl/docs/source/login_analytics``).
 3. No need to maintain same thing in TWO place.
-4. More powerful feature we really need such as, cross page reference, copy code to clipboard, auto table of content, literal including. Markdown and Github WIKI doesn't have it.
+4. Powerful feature set such as cross page reference, copy code to clipboard, auto table of content, literal including. Markdown and Github WIKI do not offer these.
