@@ -1,6 +1,6 @@
 .. _how-to-run-query-on-idp-db-in-ruby-console:
 
-How To Run Query on IDP DB in Ruby Console
+How To Run a Custom Query on IDP DB in Ruby Console
 ==============================================================================
 
 .. contents::
@@ -11,14 +11,14 @@ How To Run Query on IDP DB in Ruby Console
 ------------------------------------------------------------------------------
 
 - Clone the repo: https://github.com/18F/identity-devops
-- Setup your ruby, follow this guide: https://github.com/18F/identity-idp. Finally you should able to see your ruby version is 2.3.X in ``ruby -v`` command.
-- Setup your PIV card auth, follow this guide: https://github.com/18F/identity-private/wiki/Operations:-MacOSX-PIV-to-SSH-key-extraction. This should be finished in your on-boarding process.
+- Setup your ruby following this guide: https://github.com/18F/identity-idp. Finally you should able to see your ruby version is 2.3.X by running ``ruby -v`` command.
+- Setup your PIV card auth, follow this guide: https://github.com/18F/identity-private/wiki/Operations:-MacOSX-PIV-to-SSH-key-extraction. This should be already be done as part of your on-boarding process.
 
 
 2. SSH to prod instance, log in to Ruby Console
 ------------------------------------------------------------------------------
 
-1. SSH to newest ipd prod server (ec2 instance):
+1. Establish SSH to current IDP prod server (ec2 instance):
 
 first:
 
@@ -32,7 +32,7 @@ stay in root dir, and:
 
     ./bin/ssh-instance --newest asg-prod-idp
 
-2. Now you are in idp server, then get in ruby console:
+2. Once you have access to the IDP server, then get in ruby console:
 
 first:
 
@@ -54,12 +54,11 @@ or:
 
 .. warning::
 
-    By default, the ruby console uses a read-only account
-    Setting ``ALLOW_CONSOLE_DB_WRITE_ACCESS=true`` tells it to NOT use the read-only account. Please be very careful with any write operations.
+    By default, the ruby console uses a read-only account. However, if the goal is to execute write operations, you can set  ``ALLOW_CONSOLE_DB_WRITE_ACCESS=true`` to switch to write mode, assuming your account has the required privileges and role.
 
 .. note::
 
-    The read-only account doesn't have access to all of the tables, but should be enough for making most of the query.
+    The read-only account doesn't have access to all of production tables, only access to tables that are mostly required for data analysis.
 
 
 ``id-rails-console`` is a short-cut command for ``sudo -uwebsrv RAILS_ENV=production bundle exec rails c``
