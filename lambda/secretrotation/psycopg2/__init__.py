@@ -47,25 +47,24 @@ Homepage: http://initd.org/projects/psycopg2
 
 # Import the DBAPI-2.0 stuff into top-level module.
 
-from psycopg2._psycopg import (                     # noqa
-    BINARY, NUMBER, STRING, DATETIME, ROWID,
+from psycopg2._psycopg import BINARY, NUMBER, STRING, DATETIME, ROWID
 
-    Binary, Date, Time, Timestamp,
-    DateFromTicks, TimeFromTicks, TimestampFromTicks,
+from psycopg2._psycopg import Binary, Date, Time, Timestamp
+from psycopg2._psycopg import DateFromTicks, TimeFromTicks, TimestampFromTicks
 
-    Error, Warning, DataError, DatabaseError, ProgrammingError, IntegrityError,
-    InterfaceError, InternalError, NotSupportedError, OperationalError,
+from psycopg2._psycopg import Error, Warning, DataError, DatabaseError, ProgrammingError
+from psycopg2._psycopg import IntegrityError, InterfaceError, InternalError
+from psycopg2._psycopg import NotSupportedError, OperationalError
 
-    _connect, apilevel, threadsafety, paramstyle,
-    __version__, __libpq_version__,
-)
+from psycopg2._psycopg import _connect, apilevel, threadsafety, paramstyle
+from psycopg2._psycopg import __version__
 
-from psycopg2 import tz                             # noqa
+from psycopg2 import tz
 
 
 # Register default adapters.
 
-from psycopg2 import extensions as _ext
+import psycopg2.extensions as _ext
 _ext.register_adapter(tuple, _ext.SQL_IN)
 _ext.register_adapter(type(None), _ext.NoneAdapter)
 
@@ -81,12 +80,32 @@ else:
     _ext.register_adapter(Decimal, Adapter)
     del Decimal, Adapter
 
+import re
 
-def connect(dsn=None, connection_factory=None, cursor_factory=None, **kwargs):
+def _param_escape(s,
+        re_escape=re.compile(r"([\\'])"),
+        re_space=re.compile(r'\s')):
+    """
+    Apply the escaping rule required by PQconnectdb
+    """
+    if not s: return "''"
+
+    s = re_escape.sub(r'\\\1', s)
+    if re_space.search(s):
+        s = "'" + s + "'"
+
+    return s
+
+del re
+
+
+def connect(dsn=None,
+        database=None, user=None, password=None, host=None, port=None,
+        connection_factory=None, cursor_factory=None, async=False, **kwargs):
     """
     Create a new database connection.
 
-    The connection parameters can be specified as a string:
+    The connection parameters can be specified either as a string:
 
         conn = psycopg2.connect("dbname=test user=postgres password=secret")
 
@@ -94,9 +113,9 @@ def connect(dsn=None, connection_factory=None, cursor_factory=None, **kwargs):
 
         conn = psycopg2.connect(database="test", user="postgres", password="secret")
 
-    Or as a mix of both. The basic connection parameters are:
+    The basic connection parameters are:
 
-    - *dbname*: the database name
+    - *dbname*: the database name (only in dsn string)
     - *database*: the database name (only as keyword argument)
     - *user*: user name used to authenticate
     - *password*: password used to authenticate
@@ -110,24 +129,39 @@ def connect(dsn=None, connection_factory=None, cursor_factory=None, **kwargs):
     Using the *cursor_factory* parameter, a new default cursor factory will be
     used by cursor().
 
-    Using *async*=True an asynchronous connection will be created. *async_* is
-    a valid alias (for Python versions where ``async`` is a keyword).
+    Using *async*=True an asynchronous connection will be created.
 
     Any other keyword parameter will be passed to the underlying client
     library: the list of supported parameters depends on the library version.
 
     """
-    kwasync = {}
-    if 'async' in kwargs:
-        kwasync['async'] = kwargs.pop('async')
-    if 'async_' in kwargs:
-        kwasync['async_'] = kwargs.pop('async_')
+    items = []
+    if database is not None:
+        items.append(('dbname', database))
+    if user is not None:
+        items.append(('user', user))
+    if password is not None:
+        items.append(('password', password))
+    if host is not None:
+        items.append(('host', host))
+    if port is not None:
+        items.append(('port', port))
 
-    if dsn is None and not kwargs:
-        raise TypeError('missing dsn and no parameters')
+    items.extend([(k, v) for (k, v) in kwargs.iteritems() if v is not None])
 
-    dsn = _ext.make_dsn(dsn, **kwargs)
-    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+    if dsn is not None and items:
+        raise TypeError(
+            "'%s' is an invalid keyword argument when the dsn is specified"
+                % items[0][0])
+
+    if dsn is None:
+        if not items:
+            raise TypeError('missing dsn and no parameters')
+        else:
+            dsn = " ".join(["%s=%s" % (k, _param_escape(str(v)))
+                for (k, v) in items])
+
+    conn = _connect(dsn, connection_factory=connection_factory, async=async)
     if cursor_factory is not None:
         conn.cursor_factory = cursor_factory
 
