@@ -71,7 +71,7 @@ Now you are in ruby console.
 
 **Set Timeout Limit**:
 
-By default ruby console use IDP app timeout setting, which is only 2 seconds. Set timeout to a higher value with this command:
+By default ruby console use IDP app timeout setting, which is only 2 seconds. Set timeout to a higher value (in this example 120,000 millisecond) this command:
 
 .. code-block:: bash
 
