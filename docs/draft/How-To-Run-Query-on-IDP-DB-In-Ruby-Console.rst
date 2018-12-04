@@ -10,9 +10,10 @@ How To Run a Custom Query on IDP DB in Ruby Console
 1. Get the Utility Shell Scripts from ``devops`` Repo
 ------------------------------------------------------------------------------
 
-- Clone the repo: https://github.com/18F/identity-devops
-- Setup your ruby following this guide: https://github.com/18F/identity-idp. Finally you should able to see your ruby version is 2.3.X by running ``ruby -v`` command.
-- Setup your PIV card auth, follow this guide: https://github.com/18F/identity-private/wiki/Operations:-MacOSX-PIV-to-SSH-key-extraction. This should be already be done as part of your on-boarding process.
+- **Clone the devops repo**: https://github.com/18F/identity-devops
+- **Setup your ruby** following this guide: https://github.com/18F/identity-idp. Finally you should able to see your ruby version is 2.3.X by running ``ruby -v`` command.
+- **Setup your PIV card auth**, follow this guide: https://github.com/18F/identity-private/wiki/Operations:-MacOSX-PIV-to-SSH-key-extraction. This should be already be done as part of your on-boarding process.
+- **Setup your AWS CLI**, follow this guide: https://aws.amazon.com/cli/. Configure your ``~/.aws/credentials`` and ``~/.aws/config``, put the ``identity-prod`` AWS Account API credential in it.
 
 
 2. SSH to prod instance, log in to Ruby Console
@@ -25,6 +26,12 @@ first:
 .. code-block:: bash
 
     cd <path-to-identity-devops>
+
+second, set ``AWS_PROFILE`` system variable:
+
+.. code-block:: bash
+
+    export AWS_PROFILE=login.gov
 
 stay in root dir, and:
 
