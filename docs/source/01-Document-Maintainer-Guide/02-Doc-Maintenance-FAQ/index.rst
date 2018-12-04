@@ -16,7 +16,14 @@ The docs are deployed to https://s3-us-west-2.amazonaws.com/login-gov-doc/login_
 Where is the source file for the doc?
 ------------------------------------------------------------------------------
 
-- https://github.com/18F/identity-analytics-etl/tree/master/docs/source
+- docs that integrated in doc site: https://github.com/18F/identity-analytics-etl/tree/master/docs/source
+- docs in draft and NOT integrated in doc site: https://github.com/18F/identity-analytics-etl/tree/master/docs/draft
+
+
+How can I integrate doc file into the doc site?
+------------------------------------------------------------------------------
+
+The basic idea is, each doc file has to be referenced at least once. Either from a table of content, or from ``:ref:`label``` markup.
 
 
 How can I view the changes after I updated the doc source?
