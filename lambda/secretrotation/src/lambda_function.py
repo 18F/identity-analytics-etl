@@ -82,7 +82,11 @@ def lambda_handler(event, context):
         test_secret(service_client, arn, token)
 
     elif step == "finishSecret":
+        tfusersecretarn = os.environ['TF_USER_SECRET_ARN']
+        tfpasswordsecretarn = os.environ['TF_PASSWORD_SECRET_ARN']
         finish_secret(service_client, arn, token)
+        finish_secret(service_client, tfusersecretarn, token)
+        finish_secret(service_client, tfpasswordsecretarn, token)
 
     else:
         logger.error("lambda_handler: Invalid step parameter %s for secret %s" % (step, arn))
@@ -197,7 +201,18 @@ def set_secret(service_client, arn, token):
             logger.info("setSecret: Successfully created user %s in Redshift DB for secret arn %s." % (pending_dict['username'], arn))
     finally:
         conn.close()
-
+        
+    # Set pending user and password for terraform use in secrets manager
+    tfuser = pending_dict['username']
+    tfpassword = pending_dict['password']
+    tfusersecretarn = os.environ['TF_USER_SECRET_ARN']
+    tfpasswordsecretarn = os.environ['TF_PASSWORD_SECRET_ARN']
+    
+    service_client.put_secret_value(SecretId=tfusersecretarn, ClientRequestToken=token, SecretString=tfuser, VersionStages=['AWSPENDING'])
+    logger.info("createSecret: Successfully put secret tfuser for ARN %s and version %s." % (tfusersecretarn, token))
+    
+    service_client.put_secret_value(SecretId=tfpasswordsecretarn, ClientRequestToken=token, SecretString=tfpassword, VersionStages=['AWSPENDING'])
+    logger.info("createSecret: Successfully put secret tfpassword for ARN %s and version %s." % (tfpasswordsecretarn, token))
 
 def test_secret(service_client, arn, token):
     """Test the pending secret against the database
@@ -266,7 +281,7 @@ def finish_secret(service_client, arn, token):
                 return
             current_version = version
             break
-
+ 
     # Finalize by staging the secret version current
     service_client.update_secret_version_stage(SecretId=arn, VersionStage="AWSCURRENT", MoveToVersionId=token, RemoveFromVersionId=current_version)
     logger.info("finishSecret: Successfully set AWSCURRENT stage to version %s for secret %s." % (version, arn))
