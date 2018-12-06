@@ -16,8 +16,8 @@ The docs are deployed to https://s3-us-west-2.amazonaws.com/login-gov-doc/login_
 Where is the source file for the doc?
 ------------------------------------------------------------------------------
 
-- docs that integrated in doc site: https://github.com/18F/identity-analytics-etl/tree/master/docs/source
-- docs in draft and NOT integrated in doc site: https://github.com/18F/identity-analytics-etl/tree/master/docs/draft
+- Docs that are integrated in doc site: https://github.com/18F/identity-analytics-etl/tree/master/docs/source
+- Docs in draft status and are NOT yet integrated in doc site: https://github.com/18F/identity-analytics-etl/tree/master/docs/draft
 
 
 How can I integrate doc file into the doc site?
