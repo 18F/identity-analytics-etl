@@ -7,7 +7,8 @@ Release v\ |release| (:ref:`What's new? <release_history>`).
 Table of Content
 ------------------------------------------------------------------------------
 
-.. articles::
+.. autotoctree::
+    :maxdepth: 1
 
 
 API Document
