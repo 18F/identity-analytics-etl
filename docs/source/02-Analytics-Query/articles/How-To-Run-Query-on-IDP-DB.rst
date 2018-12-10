@@ -1,7 +1,9 @@
-.. _how-to-run-query-on-idp-db-in-ruby-console:
+.. _how-to-run-query-on-idp-db:
 
-How To Run a Custom Query on IDP DB in Ruby Console
+How To Run a Custom Query on IDP DB
 ==============================================================================
+
+**IDB DB** is the production database serving login.gov website. It has less information than Redshift, but more accurate.
 
 .. contents::
     :local:
@@ -16,10 +18,12 @@ How To Run a Custom Query on IDP DB in Ruby Console
 - **Setup your AWS CLI**, follow this guide: https://aws.amazon.com/cli/. Configure your ``~/.aws/credentials`` and ``~/.aws/config``, put the ``identity-prod`` AWS Account API credential in it.
 
 
-2. SSH to prod instance
+.. _ssh-to-prod-server:
+
+2. SSH to prod server
 ------------------------------------------------------------------------------
 
-1. Establish SSH to current IDP prod server (ec2 instance):
+Establish SSH to current IDP prod server (ec2 instance):
 
 first:
 
@@ -90,12 +94,14 @@ Then log in to psql:
     cd /srv/idp/current
     sudo -uwebsrv RAILS_ENV=production ALLOW_CONSOLE_DB_WRITE_ACCESS=true bundle exec rails dbconsole
 
-It will ask you for password. There are only two db user account, and `rails dbconsole` will lead you to the app account, which means you have the **Write** access. **Please be very careful about that!**:
+`rails dbconsole` option will lead you to the app account, which means you have the **Write** access. **Please be very careful about that!**
+
+There are only two db user accounts:
 
 1. login.gov app
 2. Read only account
 
-Run this command on your local machine to get your db password:
+Run this command (with ``identity-prod`` AWS Account IAM credential) on your local machine to get your db password:
 
 .. code-block:: bash
 
