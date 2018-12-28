@@ -1,7 +1,3 @@
-.. contents:: Tables
-    :local:
-
-
 
 account_reset_requests
 ----------------------
