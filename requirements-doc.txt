@@ -12,3 +12,7 @@ rstobj==0.0.5       # generate RestructuredText
 # Other
 
 pygments            # live RestructuredText preview
+
+# Plot ERD for IDP DB
+ERAlchemy
+graphviz
