@@ -11,7 +11,7 @@ And the time they created will be stored in ``users.created_at`` field
 Remove the ``\set end_time ...`` and ``WHERE ... < :end_time`` line For most recent result.
 */
 
-\set end_time '''2019-01-01'''q
+\set end_time '''2019-01-01'''
 SELECT COUNT(users.id)
 FROM users
 WHERE users.created_at < :end_time;
