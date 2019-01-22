@@ -1,5 +1,5 @@
 /*
-**Definition**: number of Users who created their Login.gov account and completed registering MFA as a result of initiating their Login.gov session through that SP.
+**Definition**: number of Users who created their Login.gov account and completed registering MFA as a result of initiating their Login.gov session through at least one SP.
 
 **SQL Description**:
 
