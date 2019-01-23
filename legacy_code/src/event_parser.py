@@ -58,7 +58,7 @@ class EventParser(BaseEventParser):
             data.get('properties').get('user_agent'),
             data.get('properties').get('user_id'),
             data.get('properties').get('user_ip'),
-            data.get('properties').get('host'),
+            self.get_host(data.get('properties', {})),
             data.get('visit_id'),
             data.get('visitor_id'),
             re.sub(r"\.\d+Z$", '', data.get('time').replace('T', ' ')),
