@@ -71,6 +71,10 @@ def generate_rst(root_dir):
     :param root_dir: ``pathlib.Path``, The root directory.
         usually it is the ``Analytics-Query`` folder.
     :return: rst text.
+
+    .. note::
+
+        This extension not support directory deep nesting yet.
     """
 
     def filters(p):
@@ -99,12 +103,13 @@ def generate_rst(root_dir):
         header = Header(title=header_title, header_level=3, auto_label=True)
         rst_lines.append(header.render())
         comment, sql_stat = extract_comment_and_sql(content=p.read_text("utf-8"))
-        # comment to be the body text
-        rst_lines.append(comment)
 
         # sql_stat to be the code snippet
         code_block = CodeBlockSQL.from_string(sql_stat)
         rst_lines.append(code_block.render())
+
+        # comment to be the body text
+        rst_lines.append(comment)
 
     rst = "\n\n".join(rst_lines)
     return rst
