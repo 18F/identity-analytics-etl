@@ -97,6 +97,20 @@ class Parser(object):
             df[k] = df[k].astype(v)
         return df
 
+    @staticmethod
+    def get_host(data):
+        """
+        Get host value from dictionary data.
+
+        Devops changed the `host` key in the rails logs to `hostname`
+        due to a conflict with elasticsearch
+        """
+        if data.get('hostname') is not None:
+            return data.get('hostname')
+        else:
+            return data.get('host')
+
+
 
 class BaseEventParser(Parser):
     JSON_PREFIX_PATTERN = '"name":'
