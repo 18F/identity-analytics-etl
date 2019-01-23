@@ -50,7 +50,7 @@ class PageViewParser(Parser):
                     data['path'],
                     data['ip'],
                     data['timestamp'],
-                    data['host'],
+                    self.get_host(data),
                     str(data['duration'])
                 ]).encode('utf-8')
             ).hexdigest()
@@ -83,7 +83,7 @@ class PageViewParser(Parser):
             data.get('user_id'),
             data.get('user_agent'),
             data.get('ip'),
-            data.get('host'),
+            self.get_host(data),
             uuid,
             re.sub(r" \+\d+$", '', data.get('timestamp'))
         ]
