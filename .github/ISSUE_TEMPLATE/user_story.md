@@ -9,7 +9,7 @@ about: Create a user story for a new feature
 As a X, I would like to Y, so that I can Z.
 
 ## Notes
-* What is the value to the end user in this story?*
+* What is the value to the user in this story?*
 
 * What are things we should consider when making this story *
 
