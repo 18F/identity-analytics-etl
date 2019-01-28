@@ -1,6 +1,6 @@
 ---
 title: 'As a X I would like to Y.'
-labels: 'user story'
+labels: 'Agile: User Story'
 name: User story template
 about: Create a user story for a new feature
 
