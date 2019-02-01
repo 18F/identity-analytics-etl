@@ -55,9 +55,7 @@ DaveJones (2019-01-28):
     @mossadeq and the DevOps team just did an “audit” of the quicksight user-base.  Most of the users are external to login.gov as part of sales and agency integrations
 
     over half the folks invited seem to have never created an account.
+    
+    
 
-
-TODO (2019-01-28)
-------------------------------------------------------------------------------
-
-In order to make further decision of how to deal with external user accounts, we need to contact them.
+- In reaching out to our partners we received no responses. This may mean that this is not a frequently used tool, and thus may want to plan for depecration.
