@@ -4,6 +4,8 @@
 **SQL Description**:
 
 unlike ``users`` table, any users in ``identities`` have been finished MFA setup.
+
+**Database**: IDP-DB
 */
 
 \set end_time '''2019-01-01'''

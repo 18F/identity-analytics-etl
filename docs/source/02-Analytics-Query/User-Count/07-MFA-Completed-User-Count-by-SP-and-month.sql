@@ -6,6 +6,8 @@ Number of users who use login.gov account to sign in to specific service provide
 **SQL Description**:
 
 Similar to ``MFA-Completed-User-Count-by-SP.sql``.
+
+**Database**: IDP-DB
 */
 
 \set end_time '''2019-01-01'''
