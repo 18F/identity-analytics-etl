@@ -22,6 +22,8 @@ The MFA Setup workflow is: ``Email Password Signup`` -> ``The default Personal K
 Since there's no explicit time info for the moment user finished the default MFA Method Setup, it is impossible to get the accurate count. However, we can still estimate the number. The total actual count has to be less than using ``users.confirmed_at``, and greater than using ``users.phone_confirmed_at``, and also greater than using ``identities.created_at``.
 
 MFA count on ``2018-12-31 23:59:59`` is 11055433;
+
+**Database**: IDP-DB
 */
 
 \set end_time '''2019-01-01'''
