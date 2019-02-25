@@ -28,6 +28,8 @@ Verify ``identities.user_id`` is not nullable:
     SELECT COUNT(*)
     FROM identities
     WHERE identities.user_id IS NULL;
+
+**Database**: IDP-DB
 */
 
 \set end_time '''2019-01-01'''
