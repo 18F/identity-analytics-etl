@@ -6,6 +6,8 @@ How many new users finished login.gov signup (MFA completed) every month.
 **SQL Description**:
 
 User may have multiple MFA method setup, use the earliest one as MFA signup time.
+
+**Database**: IDP-DB
 */
 
 SELECT

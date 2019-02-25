@@ -9,6 +9,8 @@ And the time they created will be stored in ``users.created_at`` field
 **Note**:
 
 Remove the ``\set end_time ...`` and ``WHERE ... < :end_time`` line For most recent result.
+
+**Database**: IDP-DB
 */
 
 \set end_time '''2019-01-01'''
