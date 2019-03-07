@@ -7,20 +7,28 @@ How many events we have for each event name can tell how many events are missing
 
 Since we use event name heavily, **it helps us making decision on whether we should use Redshift for specific question**.
 
-You can pivot the result by ``success`` column in excel.
-
 **Database**: Redshift
 */
 
-\set start_time '''2019-01-01'''
-\set end_time '''2019-01-02'''
+\set start_time '''2019-02-21'''
+\set end_time '''2019-02-22'''
 
 SELECT
-    events.name as name,
-    events.success as success,
-    COUNT(*) as n_events
-FROM events
-WHERE
-    events.time BETWEEN :start_time AND :end_time
-GROUP BY name, success
-ORDER BY name ASC, success DESC;
+    T.name as name,
+    SUM(case when T.success IS TRUE then T.n_events else 0 end) AS n_success,
+    SUM(case when T.success IS FALSE then T.n_events else 0 end) AS n_failed,
+    SUM(case when T.success IS NULL then T.n_events else 0 end) AS n_null,
+    SUM(T.n_events) AS n_total
+FROM (
+    SELECT
+        events.name as name,
+        events.success as success,
+        COUNT(*) as n_events
+    FROM events
+    WHERE
+        events.time BETWEEN :start_time AND :end_time
+    GROUP BY name, success
+    ORDER BY name ASC, success DESC
+) T
+GROUP BY name
+ORDER BY name;
