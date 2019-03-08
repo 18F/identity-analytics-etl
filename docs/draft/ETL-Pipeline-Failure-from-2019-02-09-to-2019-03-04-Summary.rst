@@ -27,4 +27,4 @@ Current Status
 
 The patch code is deployed, now we overstocked **450,000 files**. I can visually see that number of rows data are growing after I fixed it. The rate is like 250 files per 5 min, it takes **450,000 / 250 x 5 / 60 = 150 Hour** to repopulate everything.
 
-I changed the cron job from 5 min to 1 min, and will change it back once all data are re-uploaded. Approximately it takes **150 / 5 = 30 Hour**
+Our normal workload only takes 1 minute to run, invoke every 5 minutes. Because we want to process overstock asap, I changed the cron job from 5 min to 1 min, and will change it back once all data are re-uploaded. Approximately it takes **150 / 5 = 30 Hour**

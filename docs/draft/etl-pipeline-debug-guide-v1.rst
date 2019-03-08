@@ -9,7 +9,7 @@ Check Status of the Pipeline
 Do we have data in Redshift?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This sql scripts gives you counts of rows we copied every days. You can visually check if there is missing data. If you observed significant drop in any date, it means that **ETL Pipeline is having problems.**
+Currently, we manually run this sql scripts every week. It gives me counts of rows we have every days. You can visually check if there is missing data. If you observed significant drop in any date, it means that **ETL Pipeline is having problems.**
 
 .. code-block:: SQL
 
