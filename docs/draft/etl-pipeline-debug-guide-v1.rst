@@ -84,7 +84,7 @@ Example Output (Updated on 2018-10-26)::
      2018-10-11 00:00:00 |      4288408 |              45851 |             278686 |              4287858 |         5404188
 
 
-Does lambda having problem with invokations, duration, errors looks right?
+Does lambda have problems with invoke count, time duration, errors counts?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Go AWS Console -> ``18-identity-analytics`` account -> lambda -> functions -> ``analytics-etl-prod`` (parser) ``analytics-etl-hot-prod`` (loader), take a look at Monitor Menu
