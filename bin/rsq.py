@@ -67,6 +67,7 @@ class SqlFileCollection(object):
     """
     Define query name and its sql file name
     """
+    test_rsq = find_sql_by_filename("test_rsq.sql")
     auth_funnel = find_sql_by_filename("Authentication-Funnel.sql")
 
     @classmethod

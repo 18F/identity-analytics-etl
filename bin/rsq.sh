@@ -9,7 +9,7 @@
 #
 # Example:
 #
-#   bash rsq.sh auth_funnel -v variable1=value1 -v=variable2=value2
+#   bash rsq.sh auth_funnel -W -v variable1=value1 -v=variable2=value2
 #
 # Explain:
 #
@@ -17,6 +17,16 @@
 #   <other-psql-option> can be any psql options other than -h, -p, -d, -U, -W, -f. Usually you use -v var1=value1 -v var2=value2 ... to pass parameters.
 #
 # This bin tools depends on rsq.py
+#
+# How to test:
+#
+#   bash tests/test_rsq.sh # password = 'password'
+#
+# Expected result:
+#
+#  count
+# -------
+#      2
 
 dir_bin="$( cd "$(dirname "$0")" ; pwd -P )"
 path_rsq_py="${dir_bin}/rsq.py"
@@ -31,4 +41,4 @@ query_name=$1
 path_sql="$(python $path_rsq_py get_sql $query_name)"
 
 shift
-psql -h $host -p $port -d $database -U $username -W -f $path_sql "$@"
+psql -h $host -p $port -d $database -U $username -f $path_sql "$@"
