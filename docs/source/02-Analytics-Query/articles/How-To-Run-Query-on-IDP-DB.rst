@@ -29,51 +29,10 @@ first:
 
 .. code-block:: bash
 
-    cd <path-to-identity-devops>
-
-second, set ``AWS_PROFILE`` system variable:
-
-.. code-block:: bash
-
-    export AWS_PROFILE=login.gov
-
-stay in root dir, and:
-
-.. code-block:: bash
-
-    ./bin/ssh-instance --newest asg-prod-idp
+    cd <path-to-identity-devops> && export AWS_PROFILE=login.gov && ./bin/ssh-instance --newest asg-prod-idp
 
 
-3.1 log in to Ruby Console
-------------------------------------------------------------------------------
-
-Once you have access to the IDP server, then get in ruby console:
-
-first:
-
-.. code-block:: bash
-
-    cd /srv/idp/current
-
-then connect to ruby console:
-
-.. code-block:: bash
-
-    sudo -uwebsrv RAILS_ENV=production bundle exec rails c
-
-.. warning::
-
-    By default, the ruby console uses a read-only account.
-
-.. note::
-
-    The read-only account doesn't have access to all of production tables, only access to tables that are mostly required for data analysis.
-
-
-``id-rails-console`` is a short-cut command for ``sudo -uwebsrv RAILS_ENV=production bundle exec rails c``
-
-
-3.2 log in to psql shell
+3.1 log in to psql shell
 ------------------------------------------------------------------------------
 Psql app are not installed on idp server yet. You need to run this (With sudo) to install it:
 
@@ -86,7 +45,7 @@ Then log in to psql:
 .. code-block:: bash
 
     cd /srv/idp/current
-    sudo -uwebsrv RAILS_ENV=production bundle exec rails dbconsole
+    sudo -uwebsrv bundle exec rails dbconsole
 
 `rails dbconsole` option will lead you to the app account.
 
