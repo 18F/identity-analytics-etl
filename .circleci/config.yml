@@ -64,4 +64,5 @@ jobs:
           name: run tests
           command: |
             source ./venv/bin/activate
-            pytest tests --cov=login_analytics
+            pytest tests --cov=login_analytics \
+              --ignore=tests/test_rsq.py
