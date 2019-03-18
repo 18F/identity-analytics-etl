@@ -35,15 +35,15 @@ Distinct count of unique visit_id with: "User Registration: intro visited" and "
 
 MFA Visited:
 
-...
+Distinct count of unique visit_id with: "User Registration: intro visited" and "Sign in page visited" and ("Email and Password Authentication" where success=true) and ("Multi-Factor Authentication: enter OTP visited' or "Multi-Factor Authentication: enter personal key visited") exclude events that have "User Registration: enter email visited" but not "Sign in page visited"
 
 MFA Attempt:
 
-...
+Distinct count of unique visit_id with: "User Registration: intro visited" and "Sign in page visited" and ("Email and Password Authentication" where success=true) and "Multi-Factor Authentication" exclude events that have "User Registration: enter email visited" but not "Sign in page visited"
 
 Authentication complete (pre-handoff):
 
-...
+Distinct count of unique visit_id with: "User Registration: intro visited" and "Sign in page visited" and ("Email and Password Authentication" where success=true) and ("Multi-Factor Authentication" where success=true) exclude events that have "User Registration: enter email visited" but not "Sign in page visited"
 
 OIDC request:
 
@@ -58,8 +58,7 @@ OIDC token:
 **Database**: Redshift
 */
 
-\set start_time '''2019-01-01'''
-\set end_time '''2019-02-01'''
+
 
 -- MAIN SUBQUERY, we only care about sessions from service provider
 WITH E AS (
@@ -69,7 +68,7 @@ WITH E AS (
         events.success AS success
     FROM events
     WHERE
-        events.time BETWEEN :start_time AND :end_time
+        events.time BETWEEN :starttime AND :endtime
         AND events.service_provider IS NOT NULL
         AND events.service_provider != ''
 ),
