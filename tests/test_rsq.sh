@@ -14,5 +14,5 @@ path_test_rst_py="${dir_tests}/test_rsq.py"
 
 docker run --rm --name identity-analytics-etl-test -p 5432:5432 -e POSTGRES_PASSWORD=password -d postgres
 python $path_test_rst_py
-bash $path_rsq_sh test_rsq -w password -v upper=2
+bash $path_rsq_sh test_rsq -W -v upper=2
 docker container stop identity-analytics-etl-test
