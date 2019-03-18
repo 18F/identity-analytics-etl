@@ -59,17 +59,11 @@ then connect to ruby console:
 
 .. code-block:: bash
 
-    sudo -uwebsrv RAILS_ENV=production ALLOW_CONSOLE_DB_WRITE_ACCESS=true bundle exec rails c
-
-or:
-
-.. code-block:: bash
-
     sudo -uwebsrv RAILS_ENV=production bundle exec rails c
 
 .. warning::
 
-    By default, the ruby console uses a read-only account. However, if the goal is to execute write operations, you can set  ``ALLOW_CONSOLE_DB_WRITE_ACCESS=true`` to switch to write mode, assuming your account has the required privileges and role.
+    By default, the ruby console uses a read-only account.
 
 .. note::
 
@@ -92,9 +86,9 @@ Then log in to psql:
 .. code-block:: bash
 
     cd /srv/idp/current
-    sudo -uwebsrv RAILS_ENV=production ALLOW_CONSOLE_DB_WRITE_ACCESS=true bundle exec rails dbconsole
+    sudo -uwebsrv RAILS_ENV=production bundle exec rails dbconsole
 
-`rails dbconsole` option will lead you to the app account, which means you have the **Write** access. **Please be very careful about that!**
+`rails dbconsole` option will lead you to the app account.
 
 There are only two db user accounts:
 
