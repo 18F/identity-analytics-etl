@@ -133,11 +133,9 @@ if [("User Registration: intro visited")
     ]
     return true
 
-OIDC token:
-
-...
-
 **SQL Description**:
+
+Use ``GROUP BY visit_id HAVING ...`` is not efficient and hard to extend by adding more criterion. A better solution is to find the distinct visit_id based on different criterion, and use set operation such as UNION, INTERSECT, EXCEPT to answer the question, which is faster and easier to understand.
 
 **Database**: Redshift
 */
@@ -264,6 +262,16 @@ t_ses_ids_oidc_request AS (
         E.name = 'OpenID Connect: authorization request'
 ),
 
+-- OIDC REQUEST SUCCESS
+t_ses_ids_oidc_request_success AS (
+    SELECT
+        DISTINCT(E.ses_id) AS ses_id
+    FROM E
+    WHERE
+        E.name = 'OpenID Connect: authorization request'
+        AND E.success IS TRUE
+),
+
 -- **Real count** ---
 t_arrival_from_sp AS (
     (SELECT * FROM t_ses_ids_that_intro_page_visit)
@@ -336,6 +344,8 @@ t_mfa_attempt_success AS (
 t_oidc_request AS (
     (SELECT * FROM t_email_attempt_success)
     INTERSECT
+    (SELECT * FROM t_ses_ids_oidc_request_success)
+    INTERSECT
     (
         SELECT * FROM (
             (
@@ -343,13 +353,19 @@ t_oidc_request AS (
                     (SELECT * FROM t_ses_ids_mfa_visit)
                     INTERSECT
                     (SELECT * FROM t_ses_ids_mfa_attempt_success)
-                    INTERSECT
-                    (SELECT * FROM t_ses_ids_oidc_request)
                 )
             ) UNION
             (SELECT * FROM t_ses_ids_that_email_pass_auth_success_with_device_remembered)
         )
     )
+),
+
+t_odic_requests_success_without_other_events AS (
+    (SELECT * FROM t_ses_ids_oidc_request_success)
+    EXCEPT
+    (SELECT * FROM t_ses_ids_that_email_pass_auth_success)
+    EXCEPT
+    (SELECT * FROM t_ses_ids_mfa_attempt_success)
 )
 
 -- Organize Output
@@ -361,5 +377,6 @@ SELECT
     (SELECT COUNT(*) FROM t_mfa_visit) AS n_mfa_visit,
     (SELECT COUNT(*) FROM t_mfa_attempt) AS n_mfa_attempt,
     (SELECT COUNT(*) FROM t_mfa_attempt_success) AS n_authentiation_complete,
-    (SELECT COUNT(*) FROM t_oidc_request) AS n_oidc_request
+    (SELECT COUNT(*) FROM t_oidc_request) AS n_oidc_request,
+    (SELECT COUNT(*) FROM t_oidc_request) AS t_odic_requests_success_without_other_events
 ;
