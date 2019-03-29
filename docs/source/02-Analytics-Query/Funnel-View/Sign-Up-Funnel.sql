@@ -1,40 +1,40 @@
 /*
 **Question**:
 
-There are 8 primary phases in login.gov sign up flow when user comes from a service provider.
+There are 8 primary phases in login.gov sign-up flow that the user is from a service provider.
 
-1. User entered a valid email
-2. User entered a confirmation email
-3. User created a valid password
-4. User visit the MFA setup page
-5. User finished MFA setup
-6. User viewed personal key page
-7. visit Handoff page with service provider
-8. Sign up workflow finished, and land to service provider
+1. User has entered a valid email
+2. User has entered a confirmation email
+3. User has created a valid password
+4. User has visited the MFA setup page
+5. User has finished MFA setup
+6. User has viewed personal key page
+7. User has visited hand-off page with service provider
+8. Sign-up workflow is finished, user is on service provider website
 
 We want to know how many unique sessions are there in each phase.
 
 **Definition**:
 
-1. User entered a valid email::
+1. User has entered a valid email::
 
     if have 'User Registration: Email Submitted' and success = True
         return True
 
-2. User entered a confirmation email::
+2. User has entered a confirmation email::
 
     if (have 'User Registration: Email Submitted' and success = True)
         AND (have 'User Registration: Email Confirmation' and success = True)
         return True
 
-3. User created a valid password::
+3. User has created a valid password::
 
     if (have 'User Registration: Email Submitted' and success = True)
         AND (have 'User Registration: Email Confirmation' and success = True)
         AND (have 'Password Creation' and success = True)
         return True
 
-4. User visit the MFA setup page::
+4. User has visited the MFA setup page::
 
     if (have 'User Registration: Email Submitted' and success = True)
         AND (have 'User Registration: Email Confirmation' and success = True)
@@ -42,7 +42,7 @@ We want to know how many unique sessions are there in each phase.
         AND (have 'User Registration: 2FA Setup visited')
         return True
 
-5. User finished MFA setup::
+5. User has finished MFA setup::
 
     if (have 'User Registration: Email Submitted' and success = True)
         AND (have 'User Registration: Email Confirmation' and success = True)
@@ -58,7 +58,7 @@ We want to know how many unique sessions are there in each phase.
         )
         return True
 
-6. User viewed personal key page::
+6. User has viewed personal key page::
 
     if (have 'User Registration: Email Submitted' and success = True)
         AND (have 'User Registration: Email Confirmation' and success = True)
@@ -76,7 +76,7 @@ We want to know how many unique sessions are there in each phase.
         return True
 
 
-7. visit Handoff page with service provider::
+7. User has visited hand-off page with service provider::
 
     if (have 'User Registration: Email Submitted' and success = True)
         AND (have 'User Registration: Email Confirmation' and success = True)
@@ -94,7 +94,7 @@ We want to know how many unique sessions are there in each phase.
         AND (have 'User registration: agency handoff visited')
         return True
 
-8. Sign up workflow finished, and land to service provider::
+8. Sign-up workflow is finished, user is on service provider website::
 
     if (have 'User Registration: Email Submitted' and success = True)
         AND (have 'User Registration: Email Confirmation' and success = True)
