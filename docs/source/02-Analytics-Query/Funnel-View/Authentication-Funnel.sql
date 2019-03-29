@@ -12,7 +12,7 @@ There are 9 primary phases in login.gov authentication flow.
 7. Authentication complete (pre-handoff)
 8. OIDC request
 
-We want to know there are how many unique sessions in each phase.
+We want to know how many unique sessions are there in each phase.
 
 **Definition**:
 
