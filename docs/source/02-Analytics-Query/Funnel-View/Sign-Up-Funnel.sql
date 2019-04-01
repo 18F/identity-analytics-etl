@@ -130,7 +130,7 @@ WITH E AS (
 ),
 
 
-t_user_id_email_entered AS (
+t_ses_id_email_entered AS (
     SELECT
         DISTINCT(E.ses_id) AS ses_id
     FROM E
@@ -140,7 +140,7 @@ t_user_id_email_entered AS (
 ),
 
 
-t_user_id_email_confirmation AS (
+t_ses_id_email_confirmation AS (
     SELECT
         DISTINCT(E.ses_id) AS ses_id
     FROM E
@@ -150,7 +150,7 @@ t_user_id_email_confirmation AS (
 ),
 
 
-t_user_id_password_creation AS (
+t_ses_id_password_creation AS (
     SELECT
         DISTINCT(E.ses_id) AS ses_id
     FROM E
@@ -160,7 +160,7 @@ t_user_id_password_creation AS (
 ),
 
 
-t_user_id_mfa_setup_visited AS (
+t_ses_id_mfa_setup_visited AS (
     SELECT
         DISTINCT(E.ses_id) AS ses_id
     FROM E
@@ -170,7 +170,7 @@ t_user_id_mfa_setup_visited AS (
 
 
 -- MFA Methods
-t_user_id_2fa_setup AS (
+t_ses_id_2fa_setup AS (
     SELECT
         DISTINCT(E.ses_id) AS ses_id
     FROM E
@@ -181,7 +181,7 @@ t_user_id_2fa_setup AS (
 
 
 -- text message or phone call
-t_user_id_mfa_phone_setup AS (
+t_ses_id_mfa_phone_setup AS (
     SELECT
         DISTINCT(E.ses_id) AS ses_id
     FROM E
@@ -192,7 +192,7 @@ t_user_id_mfa_phone_setup AS (
 
 
 -- authentication app
-t_user_id_mfa_setup AS (
+t_ses_id_mfa_setup AS (
     SELECT
         DISTINCT(E.ses_id) AS ses_id
     FROM E
@@ -203,7 +203,7 @@ t_user_id_mfa_setup AS (
 
 
 -- web auth
-t_user_id_mfa_web_app_setup AS (
+t_ses_id_mfa_web_app_setup AS (
     SELECT
         DISTINCT(E.ses_id) AS ses_id
     FROM E
@@ -214,7 +214,7 @@ t_user_id_mfa_web_app_setup AS (
 
 
 -- backup code
-t_user_id_mfa_backup_code_setup AS (
+t_ses_id_mfa_backup_code_setup AS (
     SELECT
         DISTINCT(E.ses_id) AS ses_id
     FROM E
@@ -223,26 +223,26 @@ t_user_id_mfa_backup_code_setup AS (
 ),
 
 
-t_user_id_at_least_one_mfa_method_setup_success AS (
-    (SELECT * FROM t_user_id_mfa_phone_setup)
+t_ses_id_at_least_one_mfa_method_setup_success AS (
+    (SELECT * FROM t_ses_id_mfa_phone_setup)
     UNION
-    (SELECT * FROM t_user_id_mfa_setup)
+    (SELECT * FROM t_ses_id_mfa_setup)
     UNION
-    (SELECT * FROM t_user_id_mfa_web_app_setup)
+    (SELECT * FROM t_ses_id_mfa_web_app_setup)
     UNION
-    (SELECT * FROM t_user_id_mfa_backup_code_setup)
+    (SELECT * FROM t_ses_id_mfa_backup_code_setup)
 ),
 
 
-t_user_id_mfa_setup_complete AS (
-    (SELECT * FROM t_user_id_2fa_setup)
+t_ses_id_mfa_setup_complete AS (
+    (SELECT * FROM t_ses_id_2fa_setup)
     INTERSECT
-    (SELECT * FROM t_user_id_at_least_one_mfa_method_setup_success)
+    (SELECT * FROM t_ses_id_at_least_one_mfa_method_setup_success)
 ),
 
 
 -- after MFA setup
-t_user_id_personal_key_visited AS (
+t_ses_id_personal_key_visited AS (
     SELECT
         DISTINCT(E.ses_id) AS ses_id
     FROM E
@@ -251,7 +251,7 @@ t_user_id_personal_key_visited AS (
 ),
 
 
-t_user_id_agency_handoff_visited AS (
+t_ses_id_agency_handoff_visited AS (
     SELECT
         DISTINCT(E.ses_id) AS ses_id
     FROM E
@@ -259,7 +259,7 @@ t_user_id_agency_handoff_visited AS (
         E.name = 'User registration: agency handoff visited'
 ),
 
-t_user_id_agency_handoff_complete AS (
+t_ses_id_agency_handoff_complete AS (
     SELECT
         DISTINCT(E.ses_id) AS ses_id
     FROM E
@@ -269,56 +269,56 @@ t_user_id_agency_handoff_complete AS (
 
 -- **Real count** ---
 t_step1_email_entered AS (
-    (SELECT * FROM t_user_id_email_entered)
+    (SELECT * FROM t_ses_id_email_entered)
 ),
 
 
 t_step2_email_confirmed AS (
     (SELECT * FROM t_step1_email_entered)
     INTERSECT
-    (SELECT * FROM t_user_id_email_confirmation)
+    (SELECT * FROM t_ses_id_email_confirmation)
 ),
 
 
 t_step3_password_created AS (
     (SELECT * FROM t_step2_email_confirmed)
     INTERSECT
-    (SELECT * FROM t_user_id_password_creation)
+    (SELECT * FROM t_ses_id_password_creation)
 ),
 
 
 t_step4_mfa_setup_visited AS (
     (SELECT * FROM t_step3_password_created)
     INTERSECT
-    (SELECT * FROM t_user_id_mfa_setup_visited)
+    (SELECT * FROM t_ses_id_mfa_setup_visited)
 ),
 
 
 t_step5_mfa_setup_complete AS (
     (SELECT * FROM t_step4_mfa_setup_visited)
     INTERSECT
-    (SELECT * FROM t_user_id_mfa_setup_complete)
+    (SELECT * FROM t_ses_id_mfa_setup_complete)
 ),
 
 
 t_step6_view_personal_key AS (
     (SELECT * FROM t_step5_mfa_setup_complete)
     INTERSECT
-    (SELECT * FROM t_user_id_personal_key_visited)
+    (SELECT * FROM t_ses_id_personal_key_visited)
 ),
 
 
 t_step7_hand_off AS (
     (SELECT * FROM t_step6_view_personal_key)
     INTERSECT
-    (SELECT * FROM t_user_id_agency_handoff_visited)
+    (SELECT * FROM t_ses_id_agency_handoff_visited)
 ),
 
 
 t_step8_registration_complete AS (
     (SELECT * FROM t_step7_hand_off)
     INTERSECT
-    (SELECT * FROM t_user_id_agency_handoff_complete)
+    (SELECT * FROM t_ses_id_agency_handoff_complete)
 )
 
 -- Organize Output
