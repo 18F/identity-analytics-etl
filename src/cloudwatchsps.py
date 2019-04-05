@@ -12,7 +12,7 @@ base_query_string = ('stats count_distinct(properties.user_id) as Users' #Count 
                      '%s' #Placeholder for the groupby
                      '| filter(name="Multi-Factor Authentication" and properties.event_properties.success=1)' #Authenications
                      ' or (name="User registration: agency handoff complete")' #New Users
-                     '| filter properties.service_provider like / urn/' #Exclude those without SP
+                     '| filter properties.service_provider like /urn/' #Exclude those without SP
                      '| sort ServiceProvider asc') #Sort on SP name
 
 
