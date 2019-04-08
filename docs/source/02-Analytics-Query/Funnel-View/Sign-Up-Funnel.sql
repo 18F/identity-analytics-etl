@@ -490,10 +490,10 @@ SELECT
     (SELECT COUNT(*) FROM t_step6_view_personal_key) AS n_view_personal_key,
     (SELECT COUNT(*) FROM t_step7_hand_off) AS n_hand_off,
     (SELECT COUNT(*) FROM t_step8_registration_complete) AS n_signup_done,
---    (SELECT COUNT(*) FROM t_ses_id_email_not_confirmed) AS n_not_confirmed,
---    (SELECT COUNT(*) FROM t_case1_finally_sign_in_success) AS n_case1,
---    (SELECT COUNT(*) FROM t_case2_password_reset_visited) AS n_case2,
---    (SELECT COUNT(*) FROM t_case3_only_visited_intro_email_entered_and_submitted_3_pages) AS n_case3,
---    (SELECT COUNT(*) FROM t_case4_social_engineering) AS n_case4,
---    (SELECT COUNT(*) FROM t_ses_id_submitted_email_then_sign_in) AS n_confused
+    (SELECT COUNT(*) FROM t_ses_id_email_not_confirmed) AS n_not_confirmed,
+    (SELECT COUNT(*) FROM t_case1_finally_sign_in_success) AS n_case1,
+    (SELECT COUNT(*) FROM t_case2_password_reset_visited) AS n_case2,
+    (SELECT COUNT(*) FROM t_case3_only_visited_intro_email_entered_and_submitted_3_pages) AS n_case3,
+    (SELECT COUNT(*) FROM t_case4_social_engineering) AS n_case4,
+    (SELECT COUNT(*) FROM t_ses_id_submitted_email_then_sign_in) AS n_confused
 ;
