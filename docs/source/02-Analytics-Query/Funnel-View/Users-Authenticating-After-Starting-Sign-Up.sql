@@ -3,7 +3,7 @@
 
 We observed that some users clicked ``Create Account`` button (Sign in page) https://secure.login.gov/sign_up/start?request_id=xxx) and ends with Sign in workflow.
 
-As business person, I want to figure out how many users been misled by the Highlighted ``Create Account`` Button.
+As business person, I want to figure out how many users attempted account creation before sign-in..
 
 **SQL Description**:
 

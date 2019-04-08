@@ -115,6 +115,6 @@ t_n_time_window_result_tmp AS (
 )
 
 
-SELECT * FROM t_n_time_window_result_tmp LIMIT 100
+SELECT * FROM t_n_time_window_result_tmp
 --SELECT COUNT(*) FROM t_user_id_with_one_session_id
 ;
