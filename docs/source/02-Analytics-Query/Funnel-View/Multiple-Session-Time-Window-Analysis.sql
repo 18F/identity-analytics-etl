@@ -1,15 +1,16 @@
 /*
 **Question**:
 
-We observed that **many users use multiple sessions in single sign-up / authentication workflow**. This observation means:
+We observed that **many users using multiple sessions in single sign-up / authentication workflow**. In order words, if we didn't observe any sign-in event in a session, it doesn't mean that user are not doing sign-in in this workflow.
 
-1. user changed device or web browser in the workflow.
-2. user made multiple attempts on different device or web browser.
-3. the session timed out.
+Usually it is because:
 
-All of them potentially means poor user experience.
+1. user switches devices in sign-up / sign-in.
+2. user uses different device or web browser.
+3. user uses anonymous browser.
+4. sign out and sign back in.
 
-I want to figure out what's the impact and what is causing this.
+As a business person, I want to figure out what's the impact, and how to take multi sessions into account.
 */
 
 
@@ -32,6 +33,7 @@ WITH E AS (
 ),
 
 
+-- user_id that finished everything in 5 minutes with one sessions.
 t_user_id_with_one_session_id AS (
     SELECT
         E.user_id
@@ -58,7 +60,7 @@ t_user_id_with_multi_session_id AS (
         AND (max(E.time) - min(E.time)) <= 300000000
 ),
 
-
+-- prepare venn diagram
 t_user_id_with_multi_session_id_extended AS (
     SELECT
         T.user_id,
@@ -73,6 +75,7 @@ t_user_id_with_multi_session_id_extended AS (
 ),
 
 
+-- count total numbers
 t_n_time_window AS (
     SELECT
         (SELECT COUNT(t_user_id_with_one_session_id.user_id) FROM t_user_id_with_one_session_id) AS n_time_window_with_one_ses,
@@ -88,6 +91,7 @@ t_n_time_window AS (
 ),
 
 
+-- solve the number of each generic part in venn diagram
 t_n_time_window_result_tmp AS (
     SELECT
         T.n_time_window_with_one_ses,
