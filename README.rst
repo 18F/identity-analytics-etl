@@ -20,5 +20,4 @@ Welcome to ``login_analytics`` Documentation
 https://login.gov analytics code repo. Source code for:
 
 - Data ETL Pipeline
-- Analytics Query
-- Machine Learning Model
+- Regularly running queries
