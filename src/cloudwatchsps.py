@@ -10,7 +10,8 @@ event_log_stream = os.environ["EVENT_LOG_STREAM"]
 
 base_query_string = ('stats count_distinct(properties.user_id) as Users' #Count new distinct users
                      '%s' #Placeholder for the groupby
-                     '| filter(name="Multi-Factor Authentication" and properties.event_properties.success=1)' #Authenications
+                     '| filter (name="OpenID Connect: authorization request" and properties.event_properties.success=1)' #Authenications
+                     ' or (name="SAML Auth" and properties.event_properties.success=1)' #saml auth
                      ' or (name="User registration: agency handoff complete")' #New Users
                      '| filter properties.service_provider like /urn/' #Exclude those without SP
                      '| sort ServiceProvider asc') #Sort on SP name
