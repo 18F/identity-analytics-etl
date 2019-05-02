@@ -49,19 +49,3 @@ jobs:
             python src/redshift_parse_code/tests/test_pageview_parser.py
             python src/redshift_parse_code/tests/test_uploader.py
             python src/redshift_parse_code/tests/test_phone_parser.py
-
-      # For login_analytics python library
-      - run:
-          name: create virtualenv and install python dependencies
-          command: |
-            python3.6 -m venv ./venv
-            source ./venv/bin/activate
-            pip install --upgrade pip
-            pip install .
-            pip install -rrequirements-test.txt
-
-      - run:
-          name: run tests
-          command: |
-            source ./venv/bin/activate
-            pytest tests --cov=login_analytics
