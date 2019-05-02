@@ -26,9 +26,9 @@ jobs:
       - run:
           name: create virtualenv and install python dependencies
           command: |
-            python3.6 -m venv legacy_code/venv
-            . legacy_code/venv/bin/activate
-            pip install -r legacy_code/requirements.txt
+            python3.6 -m venv src/redshift_parse_code/venv
+            . src/redshift_parse_code/venv/bin/activate
+            pip install -r src/redshift_parse_code/requirements.txt
       - run:
           name: Wait for DB
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
@@ -44,7 +44,7 @@ jobs:
       - run:
           name: tests_parser
           command: |
-            . legacy_code/venv/bin/activate
+            . src/redshift_parse_code/venv/bin/activate
             python src/redshift_parse_code/tests/test_event_parser.py
             python src/redshift_parse_code/tests/test_pageview_parser.py
             python src/redshift_parse_code/tests/test_uploader.py
