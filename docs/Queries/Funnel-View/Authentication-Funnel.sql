@@ -212,9 +212,9 @@ t_ses_ids_that_email_pass_auth_success_with_device_remembered AS (
         DISTINCT(E.ses_id) AS ses_id
     FROM E
     WHERE
-        E.name = 'Email and Password Authentication'
+        E.name = 'User marked authenticated'
         AND E.success IS TRUE
-        AND json_extract_path_text(E.event_properties, 'remember_device') = 'true'
+        AND json_extract_path_text(E.event_properties, 'authentication_type') = 'device_remembered'
 ),
 
 -- MFA VISITED
@@ -249,8 +249,9 @@ t_ses_ids_mfa_attempt_success AS (
         DISTINCT(E.ses_id) AS ses_id
     FROM E
     WHERE
-        E.name = 'Multi-Factor Authentication'
+        E.name = 'User marked authenticated'
         AND E.success IS TRUE
+        AND json_extract_path_text(E.event_properties, 'authentication_type') = 'valid_2fa'
 ),
 
 -- OIDC REQUEST
