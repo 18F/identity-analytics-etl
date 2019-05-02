@@ -3,9 +3,6 @@
 Assess QuickSight Usage
 ==============================================================================
 
-.. contents::
-    :local:
-
 Relative Issue: https://github.com/18F/identity-analytics-etl/issues/171
 
 

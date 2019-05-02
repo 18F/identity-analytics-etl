@@ -42,13 +42,13 @@ jobs:
             sudo apt-get install postgresql-client-9.5
 
       - run:
-          name: tests_legacy
+          name: tests_parser
           command: |
             . legacy_code/venv/bin/activate
-            python legacy_code/tests/test_event_parser.py
-            python legacy_code/tests/test_pageview_parser.py
-            python legacy_code/tests/test_uploader.py
-            python legacy_code/tests/test_phone_parser.py
+            python src/redshift_parse_code/tests/test_event_parser.py
+            python src/redshift_parse_code/tests/test_pageview_parser.py
+            python src/redshift_parse_code/tests/test_uploader.py
+            python src/redshift_parse_code/tests/test_phone_parser.py
 
       # For login_analytics python library
       - run:
