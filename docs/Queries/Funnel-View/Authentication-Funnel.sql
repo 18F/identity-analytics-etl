@@ -12,7 +12,7 @@ There are 9 primary phases in login.gov authentication flow.
 7. Authentication complete (pre-handoff)
 8. OIDC request
 
-We want to know there are how many unique sessions in each phase.
+We want to know how many unique sessions are there in each phase.
 
 **Definition**:
 
@@ -140,8 +140,8 @@ Use ``GROUP BY visit_id HAVING ...`` is not efficient and hard to extend by addi
 **Database**: Redshift
 */
 
-\set starttime '''2019-01-01'''
-\set endtime '''2019-02-01'''
+\set starttime '''2018-01-01'''
+\set endtime '''2018-02-01'''
 
 -- MAIN SUBQUERY, we only care about sessions from service provider
 WITH E AS (
@@ -363,10 +363,13 @@ t_oidc_request AS (
 -- only has one OIDC requests success=true event in entire session
 t_odic_requests_success_without_other_events AS (
     (SELECT * FROM t_ses_ids_oidc_request_success)
-    EXCEPT
-    (SELECT * FROM t_ses_ids_that_email_pass_auth_success)
-    EXCEPT
-    (SELECT * FROM t_ses_ids_mfa_attempt_success)
+    INTERSECT
+    (
+        SELECT E.ses_id
+        FROM E
+        GROUP BY E.ses_id
+        HAVING COUNT(E.ses_id) = 1
+    )
 )
 
 -- Organize Output
