@@ -140,8 +140,8 @@ Use ``GROUP BY visit_id HAVING ...`` is not efficient and hard to extend by addi
 **Database**: Redshift
 */
 
-\set starttime '''2018-01-01'''
-\set endtime '''2018-02-01'''
+\set starttime '''2019-04-13'''
+\set endtime '''2019-05-01'''
 
 -- MAIN SUBQUERY, we only care about sessions from service provider
 WITH E AS (
@@ -212,9 +212,8 @@ t_ses_ids_that_email_pass_auth_success_with_device_remembered AS (
         DISTINCT(E.ses_id) AS ses_id
     FROM E
     WHERE
-        E.name = 'Email and Password Authentication'
-        AND E.success IS TRUE
-        AND json_extract_path_text(E.event_properties, 'remember_device') = 'true'
+        E.name = 'User marked authenticated'
+        AND json_extract_path_text(E.event_properties, 'authentication_type') = 'device_remembered'
 ),
 
 -- MFA VISITED
@@ -225,6 +224,7 @@ t_ses_ids_mfa_visit AS (
     WHERE
         E.name = 'Multi-Factor Authentication: enter OTP visited'
         OR E.name = 'Multi-Factor Authentication: enter personal key visited'
+        OR E.name = 'Multi-Factor Authentication: enter TOTP visited'
 ),
 
 -- MFA VISITED WITH DEVICE REMEMBERED
@@ -249,8 +249,8 @@ t_ses_ids_mfa_attempt_success AS (
         DISTINCT(E.ses_id) AS ses_id
     FROM E
     WHERE
-        E.name = 'Multi-Factor Authentication'
-        AND E.success IS TRUE
+        E.name = 'User marked authenticated'
+        AND json_extract_path_text(E.event_properties, 'authentication_type') = 'valid_2fa'
 ),
 
 -- OIDC REQUEST
