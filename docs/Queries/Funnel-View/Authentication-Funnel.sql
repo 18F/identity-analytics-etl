@@ -3,15 +3,15 @@ Authentication drop off rate by step
 
 Steps in authenication
 1. Sign up page
-2. Enter email
-3. Enter email successfully
+2. Enter email and password
+3. Enter email and password successfully
 4. Visit MFA page (or bypass because remembered device)
 5. Enter MFA
 6. Complete Auth
 */
 
 
-\set starttime '''2019-05-10'''
+\set starttime '''2019-05-14'''
 \set endtime '''2019-06-01'''
 
 -- MAIN SUBQUERY, we only care about sessions from service provider
@@ -34,6 +34,13 @@ t_ses_ids_that_sign_in_page_visit AS (
         DISTINCT(E.ses_id) AS ses_id
     FROM E
     WHERE E.name = 'Sign in page visited'
+),
+
+t_ses_ids_that_enter_email_registration AS (
+    SELECT
+        DISTINCT(E.ses_id) AS ses_id
+    FROM E
+    WHERE E.name =  'User Registration: Email Submitted'
 ),
 
 -- EMAIL AND PASSWORD AUTH
@@ -126,6 +133,8 @@ t_ses_ids_oidc_request_success AS (
 -- Aggregations
 t_sign_in_page_visit AS (
     (SELECT * FROM t_ses_ids_that_sign_in_page_visit)
+    EXCEPT
+    (SELECT * FROM t_ses_ids_that_enter_email_registration)
 ),
 t_enter_email AS (
     (SELECT * FROM t_ses_ids_that_sign_in_page_visit)
@@ -174,7 +183,7 @@ SELECT
     (SELECT COUNT(*) FROM t_enter_email_success) AS email_attempt_success,
     (SELECT COUNT(*) FROM t_mfa_visits) AS mfa_visits,
     (SELECT COUNT(*) FROM t_mfa_attempt) AS mfa_attempts,
-    (SELECT COUNT(*) FROM t_mfa_complete) AS n_authentiation_complete,
-    (SELECT COUNT(*) FROM t_oidc_request) AS n_oidc_request
+    (SELECT COUNT(*) FROM t_mfa_complete) AS authentiation_complete,
+    (SELECT COUNT(*) FROM t_oidc_request) AS oidc_request
 ;
 
