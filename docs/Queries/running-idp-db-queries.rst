@@ -3,10 +3,7 @@
 How To Run a Custom Query on IDP DB
 ==============================================================================
 
-**IDB DB** is the production database serving login.gov website. It has less information than Redshift, but more accurate.
-
-.. contents::
-    :local:
+**IDB DB** is the production database serving login.gov website. As such, we discourage you from running queries in this database when possible. It has less information than the CloudWatch Insights, but more accurate.
 
 
 1. Get the Utility Shell Scripts from ``devops`` Repo
