@@ -14,6 +14,7 @@ Steps in authenication
 \set starttime '''2019-05-14'''
 \set endtime '''2019-06-01'''
 
+
 -- MAIN SUBQUERY, we only care about sessions from service provider
 WITH E AS (
     SELECT
@@ -78,7 +79,6 @@ t_ses_ids_mfa_visit AS (
     FROM E
     WHERE
         E.name LIKE 'Multi-Factor Authentication: enter %'
-
 ),
 
 t_ses_ids_mfa_visit_with_device_remembered AS (
